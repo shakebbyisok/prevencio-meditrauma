@@ -153,80 +153,76 @@ class TrabajadorController extends AbstractController
 			    $this->addFlash('danger',  $traduccion);
 		    }else{
 
-			    //Cargamos el fichero a importar
+			    $sheetDataNombre = null;
+			    $dniTrabajador = null;
+			    $altaTrabajador = null;
+		    	$start = 16;
+		    	//Cargamos el fichero a importar
 			    $spreadsheet = IOFactory::load($fichero);
-			    $totalSheets = $spreadsheet->getSheetCount();
 
-			    //Procesamos todas las hojas del Excel
-			    for ($sheetIndex = 0; $sheetIndex < $totalSheets; $sheetIndex++) {
-				    $sheet = $spreadsheet->getSheet($sheetIndex);
-				    $sheetDataNombre = null;
-				    $start = 16;
+			    while($sheetDataNombre != '* FIN DE INFORME *'){
+				    //Seleccionamos del Excel donde comienza la lista de trabajadores
+				    $sheetDataNombre = $spreadsheet->getActiveSheet()->getCell('A'.$start);
+				    $sheetDataDNI = $spreadsheet->getActiveSheet()->getCell('M'.$start);
 
-				    while($sheetDataNombre != '* FIN DE INFORME *'){
-					    //Seleccionamos del Excel donde comienza la lista de trabajadores
-					    $sheetDataNombre = $sheet->getCell('A'.$start);
-					    $sheetDataDNI = $sheet->getCell('M'.$start);
+				    //Recogemos los datos
+				    $nombreTrabajador = $sheetDataNombre->getValue();
+				    $dniTrabajador = $sheetDataDNI->getValue();
 
-					    //Recogemos los datos
-					    $nombreTrabajador = $sheetDataNombre->getValue();
-					    $dniTrabajador = $sheetDataDNI->getValue();
+				    if($nombreTrabajador != "" && !is_null($nombreTrabajador) && $nombreTrabajador != "* FIN DE INFORME *" && $dniTrabajador != "" && !is_null($dniTrabajador)){
+                        $dniTrabajador = trim($dniTrabajador);
 
-					    if($nombreTrabajador != "" && !is_null($nombreTrabajador) && $nombreTrabajador != "* FIN DE INFORME *" && $dniTrabajador != "" && !is_null($dniTrabajador)){
-						    $dniTrabajador = trim($dniTrabajador);
+					    //Comprobamos que el DNI no está dado ya de alta
+					    $trabajador = $em->getRepository('App\Entity\Trabajador')->findOneBy(array('dni' => $dniTrabajador));
 
-						    //Comprobamos que el DNI no está dado ya de alta
-						    $trabajador = $em->getRepository('App\Entity\Trabajador')->findOneBy(array('dni' => $dniTrabajador));
+					    $trabajadorEmpresa = new TrabajadorEmpresa();
+					    $trabajadorEmpresa->setEmpresa($empresa);
+					    $trabajadorEmpresa->setAnulado(false);
 
-						    $trabajadorEmpresa = new TrabajadorEmpresa();
-						    $trabajadorEmpresa->setEmpresa($empresa);
-						    $trabajadorEmpresa->setAnulado(false);
+					    //Si el dni no existe creamos el trabajador
+					    if(is_null($trabajador)){
+					        $fechaActual = new \DateTime();
+					    	$trabajador = new Trabajador();
+					    	$trabajador->setNombre($nombreTrabajador);
+					    	$trabajador->setDni($dniTrabajador);
+					    	$trabajador->setObservaciones('Creado automáticamente desde la importación de trabajadores '.$fechaActual->format('d-m-Y H:i:s'));
+					    	$em->persist($trabajador);
 
-						    //Si el dni no existe creamos el trabajador
-						    if(is_null($trabajador)){
-						        $fechaActual = new \DateTime();
-						    	$trabajador = new Trabajador();
-						    	$trabajador->setNombre($nombreTrabajador);
-						    	$trabajador->setDni($dniTrabajador);
-						    	$trabajador->setObservaciones('Creado automáticamente desde la importación de trabajadores '.$fechaActual->format('d-m-Y H:i:s'));
-						    	$em->persist($trabajador);
+						    $trabajadorEmpresa->setTrabajador($trabajador);
+					    }else{
+						    //Comprobamos si el trabajador está dado de alta en otra empresa.
+						    $trabajadorEmpresaOld = $em->getRepository('App\Entity\TrabajadorEmpresa')->findBy(array('trabajador' => $trabajador));
 
-							    $trabajadorEmpresa->setTrabajador($trabajador);
-						    }else{
-							    //Comprobamos si el trabajador está dado de alta en otra empresa.
-							    $trabajadorEmpresaOld = $em->getRepository('App\Entity\TrabajadorEmpresa')->findBy(array('trabajador' => $trabajador));
-
-							    foreach ($trabajadorEmpresaOld as $teo){
-								    $teo->setAnulado(true);
-								    $em->persist($teo);
-								    $em->flush();
-							    }
-
-							    //Damos de baja el trabajador
-							    $baja = $em->getRepository('App\Entity\TrabajadorAltaBaja')->findBy(array('trabajador' => $trabajador, 'anulado' => false, 'activo' => true, 'fechaBaja' => null));
-							    foreach ($baja as $b){
-									$b->setFechaBaja(new \DateTime());
-								    $em->persist($b);
-								    $em->flush();
-							    }
-
-							    $trabajadorEmpresa->setTrabajador($trabajador);
+						    foreach ($trabajadorEmpresaOld as $teo){
+							    $teo->setAnulado(true);
+							    $em->persist($teo);
+							    $em->flush();
 						    }
 
-						    //Creamos el alta
-						    $alta = new TrabajadorAltaBaja();
-						    $alta->setTrabajador($trabajador);
-						    $alta->setEmpresa($empresa);
-						    $alta->setFechaAlta(new \DateTime());
-						    $alta->setActivo(true);
-						    $alta->setAnulado(false);
+						    //Damos de baja el trabajador
+						    $baja = $em->getRepository('App\Entity\TrabajadorAltaBaja')->findBy(array('trabajador' => $trabajador, 'anulado' => false, 'activo' => true, 'fechaBaja' => null));
+						    foreach ($baja as $b){
+								$b->setFechaBaja(new \DateTime());
+							    $em->persist($b);
+							    $em->flush();
+						    }
 
-						    $em->persist($alta);
-						    $em->persist($trabajadorEmpresa);
-						    $em->flush();
-
-						    $start++;
+						    $trabajadorEmpresa->setTrabajador($trabajador);
 					    }
+
+					    //Creamos el alta
+					    $alta = new TrabajadorAltaBaja();
+					    $alta->setTrabajador($trabajador);
+					    $alta->setEmpresa($empresa);
+					    $alta->setFechaAlta(new \DateTime());
+					    $alta->setActivo(true);
+					    $alta->setAnulado(false);
+
+					    $em->persist($alta);
+					    $em->persist($trabajadorEmpresa);
+					    $em->flush();
+
+					    $start++;
 				    }
 			    }
 
