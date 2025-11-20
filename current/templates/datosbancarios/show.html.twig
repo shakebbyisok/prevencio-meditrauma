@@ -1,0 +1,140 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'datosbancarios' %}
+
+{% block title %} {% trans %}TRANS_DATOS_BANCARIOS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addDatosBancariosSn is defined and app.session.get('privilegiosRol').addDatosBancariosSn is not null %}
+        {% if app.session.get('privilegiosRol').addDatosBancariosSn %}
+            {% if app.session.get('empresa') is defined and app.session.get('empresa') is not null %}
+                <a href="{{ path('datos_bancarios_create') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVO_DATO_BANCARIO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+            {% else %}
+                <a href="#" class="btn btn-labeled btn-labeled-left bg-primary noEmpresa">{% trans %}TRANS_NUEVO_DATO_BANCARIO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for datosbancario in datosbancarios %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editDatosBancariosSn is defined and app.session.get('privilegiosRol').editDatosBancariosSn is not null %}
+                    {% if app.session.get('privilegiosRol').editDatosBancariosSn %}
+                        actions += '<a href="{{ path('datos_bancarios_update', { "id": datosbancario.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var entidad = null;
+                var principal = null;
+
+                {% if datosbancario.entidadBancaria is not null %}
+                    entidad = '{{ datosbancario.entidadBancaria.descripcion }}';
+                {% endif %}
+
+                {% if datosbancario.principal == true %}
+                    principal = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    principal = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                array.push(entidad, principal, actions);
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportDatosBancariosSn is defined and app.session.get('privilegiosRol').exportDatosBancariosSn is not null %}
+                {% if app.session.get('privilegiosRol').exportDatosBancariosSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+        });
+
+        $(document).on('click', 'a.noEmpresa', function(){
+            new PNotify({
+                title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                text: '{% trans from 'messages' %}TRANS_SELECT_EMPRESA{% endtrans %}',
+                icon: 'icon-warning22',
+                type: 'warning'
+            });
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Banco" aria-sort="ascending">{% trans %}TRANS_BANCO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Principal">{% trans %}TRANS_PRINCIPAL{% endtrans %}
+                        </th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

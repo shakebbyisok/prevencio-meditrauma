@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_REVISION</source>
+                <target>Revisión</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_REVISIONES</source>
+                <target>Revisiones</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_TRABAJADOR</source>
+                <target>Trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_APTO</source>
+                <target>Apto</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Puesto trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_DESCARGAR_APTITUD</source>
+                <target>Descargar aptitud/es</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_ERROR_DESCARGAR_APTITUD</source>
+                <target>Debes seleccionar como mínimo una aptitud a descargar</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

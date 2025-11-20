@@ -1,0 +1,1236 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'empresas' %}
+
+{% block arrow %}<a href="{{ path('tecnico_empresa_show') }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_EMPRESA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.empresa }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script src="{{ asset('jstree/jstree.min.js') }}"></script>
+    <link href="{{ asset('jstree/themes/default/style.min.css') }}" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('.summernote').summernote();
+            $(".note-editable").attr("contenteditable","false");
+
+            var arrayDataTrabajadores = [];
+            var arrayDataAccidentes = [];
+            var arrayDataEvaluaciones = [];
+            var arrayDataMaquinas = [];
+            var arrayDataPlanPrevencion = [];
+            var arrayDataProtocoloAcoso = [];
+            var arrayDataMaquinasGenericasPuestoTrabajo = [];
+            var arrayDataMaquinasGenericasZonaTrabajo = [];
+            var arrayDataMaquinasEmpresaPuestoTrabajo = [];
+            var arrayDataMaquinasEmpresaZonaTrabajo = [];
+            var arrayDataTarifasRevisionesMedicas = [];
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            {% for te in trabajadoresEmpresa %}
+                var array = [];
+
+                var estado = '<span class="badge badge-success">{% trans from 'trabajadores' %}TRANS_ACTIVO{% endtrans %}</span>';
+                {% if te.activo == false %}
+                    estado = '<span class="badge badge-danger">{% trans from 'trabajadores' %}TRANS_NO_ACTIVO{% endtrans %}</span>';
+                {% endif %}
+
+                array.push(estado, '{{ te.trabajador }}', '{{ te.dni }}', '{{ te.puesto }}');
+                arrayDataTrabajadores.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-trabajadores').DataTable({
+                data: arrayDataTrabajadores,
+                order: [[1, "asc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-trabajadores .dt-buttons').css('display', 'none');
+
+            {% for ae in accidentesEmpresa %}
+                var array = [];
+
+                array.push('{{ ae.trabajador.nombre }}', '{{ ae.fecha|date('d/m/Y') }}');
+                arrayDataAccidentes.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-accidentes').DataTable({
+                data: arrayDataAccidentes,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for pp in planPrevencion %}
+                var array = [];
+
+                array.push('{{ pp.fecha|date('d/m/Y') }}');
+                arrayDataPlanPrevencion.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-plan-prevencion').DataTable({
+                data: arrayDataPlanPrevencion,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-plan-prevencion .dt-buttons').css('display', 'none');
+
+            {% for pa in protocoloAcoso %}
+                var array = [];
+
+                array.push('{{ pa.fecha|date('d/m/Y') }}');
+                arrayDataProtocoloAcoso.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-protocolo-acoso').DataTable({
+                data: arrayDataProtocoloAcoso,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-protocolo-acoso .dt-buttons').css('display', 'none');
+
+            {% for evaluacion in evaluaciones %}
+                var array = [];
+
+                array.push('{{ evaluacion.centros }}', '{{ evaluacion.fechainicio }}', '{{ evaluacion.fechafin }}', '{{ evaluacion.tipo }}', '{{ evaluacion.metodologia }}');
+                arrayDataEvaluaciones.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-evaluaciones').DataTable({
+                data: arrayDataEvaluaciones,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-evaluaciones .dt-buttons').css('display', 'none');
+
+            {% for m in maquinas %}
+                var array = [];
+
+                var grupo = '';
+                var generica = '';
+
+                {% if m.grupoMaquina is not null %}
+                grupo = '{{ m.grupoMaquina.descripcion }}';
+                {% endif %}
+
+                {% if m.maquinaGenerica is not null %}
+                generica = '{{ m.maquinaGenerica.descripcion }}';
+                {% endif %}
+
+                array.push('{{ m.centro.nombre }}', '{{ m.descripcion }}', grupo, generica);
+                arrayDataMaquinas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinaria').DataTable({
+                data: arrayDataMaquinas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-maquinaria .dt-buttons').css('display', 'none');
+
+            {% for maquinaGenericaPuestoTrabajo in maquinasGenericasPuestoTrabajo %}
+                var array = [];
+
+                array.push('{{ maquinaGenericaPuestoTrabajo.puestoTrabajo.descripcion }}', '{{ maquinaGenericaPuestoTrabajo.maquinaGenerica.descripcion }}');
+                arrayDataMaquinasGenericasPuestoTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-genericas-puesto-trabajo').DataTable({
+                data: arrayDataMaquinasGenericasPuestoTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-maquinas-genericas-puesto-trabajo .dt-buttons').css('display', 'none');
+
+            {% for maquinaGenericaZonaTrabajo in maquinasGenericasZonaTrabajo %}
+                var array = [];
+
+                array.push('{{ maquinaGenericaZonaTrabajo.zonaTrabajo.descripcion }}', '{{ maquinaGenericaZonaTrabajo.maquinaGenerica.descripcion }}');
+                arrayDataMaquinasGenericasZonaTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-genericas-zona-trabajo').DataTable({
+                data: arrayDataMaquinasGenericasZonaTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-maquinas-genericas-zona-trabajo .dt-buttons').css('display', 'none');
+
+            {% for maquinaEmpresaPuestoTrabajo in maquinasEmpresaPuestoTrabajo %}
+                var array = [];
+
+                array.push('{{ maquinaEmpresaPuestoTrabajo.puestoTrabajo.descripcion }}', '{{ maquinaEmpresaPuestoTrabajo.maquinaEmpresa.descripcion }}');
+                arrayDataMaquinasEmpresaPuestoTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-empresa-puesto-trabajo').DataTable({
+                data: arrayDataMaquinasEmpresaPuestoTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-maquinas-empresa-puesto-trabajo .dt-buttons').css('display', 'none');
+
+            {% for maquinaEmpresaZonaTrabajo in maquinasEmpresaZonaTrabajo %}
+                var array = [];
+
+                array.push('{{ maquinaEmpresaZonaTrabajo.zonaTrabajo.descripcion }}', '{{ maquinaEmpresaZonaTrabajo.maquinaEmpresa.descripcion }}');
+                arrayDataMaquinasEmpresaZonaTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-empresa-zona-trabajo').DataTable({
+                data: arrayDataMaquinasEmpresaZonaTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-maquinas-empresa-zona-trabajo .dt-buttons').css('display', 'none');
+
+            {% for tarifaRevisionesMedicas in tarifasRevisionesMedicas %}
+                var array = [];
+
+                array.push('{{ tarifaRevisionesMedicas.concepto.descripcion }}', '{{ tarifaRevisionesMedicas.iva|number_format(2, ",", ".") }} €', '{{ tarifaRevisionesMedicas.importe|number_format(2, ",", ".") }} €');
+                arrayDataTarifasRevisionesMedicas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-tarifas-revisiones').DataTable({
+                data: arrayDataTarifasRevisionesMedicas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('#datatable-tarifas-revisiones .dt-buttons').css('display', 'none');
+
+            // $('.form-check-input-switch').bootstrapSwitch();
+            $('#empresa_tecnico_estadoEmpresaTecnico').each(function(){
+                var val = $(this).val();
+                switch (val) {
+                    case '0':
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-danger');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-warning');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').addClass('bg-success');
+                        break;
+                    case '1':
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-danger');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-success');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').addClass('bg-warning');
+                        break;
+                    case '2':
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-success');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-warning');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').addClass('bg-danger');
+                        break;
+                    case '101':
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-danger');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-success');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').addClass('bg-warning');
+                        break;
+                    default:
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-success');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-danger');
+                        $('#empresa_tecnico_estadoEmpresaTecnico').removeClass('bg-warning');
+                }
+            });
+
+            var xhr;
+            var json = {{ tree | raw }};
+            var selected_id;
+
+            function ControlViews() {
+                selected_id = $("#tree").find(".jstree-clicked").attr('id');
+                //Algun nodo selecionado.
+                if (typeof selected_id != 'undefined' && selected_id != '') {
+                    var remove = /_anchor$/;
+                    selected_id = selected_id.replace(remove, "");
+                    //FICHERO
+                    if (selected_id.indexOf("fileId") == 0) {
+                        selected_id = selected_id.replace("fileId", "");
+                        plantillaAjaxRequest(selected_id);
+                    }
+                }
+            }
+
+            $(function () {
+                $("#tree")
+                    .jstree({
+                        'core': {
+                            'data': json,
+                            'check_callback': true
+                        },
+
+                        'plugins': ["search", "sort", "state"]
+
+                    })
+                    .on('changed.jstree', function (e, data) {
+                        if (xhr && xhr.readyState != 4) {
+                            xhr.abort();
+                        }
+                        ControlViews();
+                    })
+                    .on('ready.jstree', function (e, data) {
+                        var fileUploadedID = location.search.split('fileid=')[1];
+                        //console.log(fileUploadedID);
+                        if (typeof(fileUploadedID) != "undefined") {
+                            var node = "fileId" + fileUploadedID;
+                            $('#tree').jstree('deselect_all');
+                            setTimeout(function(){
+                                $('#tree').jstree('select_node', node);
+                            },300);
+
+                        }
+                    });
+            });
+
+            ControlViews();
+
+            function plantillaAjaxRequest(plantillaId) {
+
+                $("#nombreFichero").val("");
+                $("#fechaFichero").val("");
+                $("#usuarioFichero").val("");
+                $("#tipoFichero").val("");
+                $("#midaFichero").val("");
+                $("#idFichero").val("");
+                $("#btnDownPlantilla").attr('href', "");
+                $("#btnOpenPlantilla").attr('href', "");
+
+                $('#modal_view_fichero').modal('show');
+
+                var url = '{{ path('gdoc_plantilla_view') }}';
+
+                $("#btnOpenPlantilla").hide();
+                $("#btnDownPlantilla").hide();
+                $('#btnDeletePlantilla').hide();
+
+                var empresaId = '{{ app.request.get('id') }}';
+
+                xhr = $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'id': plantillaId,
+                        'tipo': 3,
+                        'empresaId': '{{ app.request.get('id') }}'
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        $("#nombreFichero").val(response.name);
+                        $("#fechaFichero").val(response.fecha);
+                        $("#usuarioFichero").val(response.usuario);
+                        $("#tipoFichero").val(response.tipo);
+                        $("#midaFichero").val(response.mida);
+                        $("#idFichero").val(response.id);
+                        $("#btnDownPlantilla").attr('href', '{{ path('gdoc_down_plantilla') }}?plantillaId='+response.down+'&tipo=3&empresaId='+empresaId);
+                        $("#btnDownPlantilla").show();
+                    }
+                });
+            }
+
+            var xhrPuestos;
+            var jsonPuestos = {{ treePuestos | raw }};
+            var selected_idPuestos;
+
+            $(function () {
+                $("#treePuestos")
+                    .jstree({
+                        'core': {
+                            'data': jsonPuestos,
+                            'check_callback': true
+                        },
+                        'plugins': ["search", "sort", "state"]
+                    })
+                    .on('changed.jstree', function (e, data) {
+                        if (xhrPuestos && xhrPuestos.readyState != 4) {
+                            xhrPuestos.abort();
+                        }
+                    })
+                    .on('ready.jstree', function (e, data) {
+                        var fileUploadedID = location.search.split('fileid=')[1];
+                        //console.log(fileUploadedID);
+                        if (typeof(fileUploadedID) != "undefined") {
+                            var node = "fileId" + fileUploadedID;
+                            $('#treePuestos').jstree('deselect_all');
+                            setTimeout(function(){
+                                $('#treePuestos').jstree('select_node', node);
+                            },300);
+
+                        }
+                    });
+            });
+
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_6{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_7{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_ACCIDENTES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab5" class="nav-link" data-toggle="tab">{% trans %}TRANS_EVALUACIONES{% endtrans %}</a></li>
+{#                    <li class="nav-item"><a href="#tab6" class="nav-link" data-toggle="tab">{% trans %}TRANS_MAQUINARIA{% endtrans %}</a></li>#}
+                    <li class="nav-item"><a href="#tab7" class="nav-link" data-toggle="tab">{% trans %}TRANS_PLA_PREVENCION{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab8" class="nav-link" data-toggle="tab">{% trans %}TRANS_GESTION_DOCUMENTAL{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab9" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_TEC_PUESTOS_TRABAJO{% endtrans %}</a></li>
+{#                    <li class="nav-item"><a href="#tab10" class="nav-link" data-toggle="tab">{% trans %}TRANS_MAQUINARIA_PUESTO_TRABAJO{% endtrans %}</a></li>#}
+                    <li class="nav-item"><a href="#tab11" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_13{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab12" class="nav-link" data-toggle="tab">{% trans %}TRANS_PROTOCOLO_ACOSO{% endtrans %}</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_6{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_7{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_ACCIDENTES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_EVALUACIONES{% endtrans %}</a></li>
+{#                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MAQUINARIA{% endtrans %}</a></li>#}
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_PLA_PREVENCION{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_GESTION_DOCUMENTAL{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans from 'messages' %}TRANS_MENU_TEC_PUESTOS_TRABAJO{% endtrans %}</a></li>
+{#                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MAQUINARIA_PUESTO_TRABAJO{% endtrans %}</a></li>#}
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_13{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_PROTOCOLO_ACOSO{% endtrans %}</a></li>
+                {% endif %}
+
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+                    <div class="row">
+                        <div class="col-lg-4">
+{#                            {% trans %}TRANS_ESTADO{% endtrans %}#}
+{#                            {{ form_row(form.anulado) }}#}
+                            {{ form_row(form.estadoAdministrativoPrevencion) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.codigo) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.idioma) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.cif) }}
+                            <span class="form-text text-danger incorrectoCif" style="display: none;">{% trans %}TRANS_ERROR_CIF{% endtrans %}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.empresa) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.marcaComercial) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.grupoEmpresa) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.logo) }}
+                            {% if logo is defined and logo is not empty %}
+                                <label style="font-weight: bolder;">{% trans %}TRANS_LOGO_ACTUAL{% endtrans %}</label>
+                                <img src="../../../upload/media/logos/{{ logo }}" width="255px" />
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.fechaContrato) }}
+                        </div>
+                        <!--Peticio 01/09/2023
+                        <div class="col-lg-4">
+                             form_row(form.fechaProximaVisita)
+                        </div>-->
+                    </div>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_OTROS_DATOS_INTERES{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.colaborador) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.mutua) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.modalidadPreventiva) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_TELEFONO_EMAIL{% endtrans %}</legend>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.telefono1) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.telefono2) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="correos">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_EMAIL{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_FUNCION_EMAIL{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if correos is not empty %}
+                                            {% for c in correos %}
+                                                <tr>
+                                                    <td>{{ c.correo }}</td>
+                                                    {% if c.funcion is not null %}
+                                                        <td>{{ c.funcion.descripcion }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_USUARIOS_RESPONSABLES{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="tecnicos">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_TECNICO{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if tecnicos is not empty %}
+                                            {% for t in tecnicos %}
+                                                <tr>
+                                                    {% if t.tecnico is not null %}
+                                                        <td>{{ t.tecnico.nombre }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.agente) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.vigilanciaSalud) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.gestorAdministrativo) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_RESPONSABLE_EMPRESA{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.nombreRepresentante) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.dniRepresentante) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.cargoRepresentante) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PERSONAS_CONTACTO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.personaContacto) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DIRECCION_POSTAL{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                {{ form_row(form.domicilioPostal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.localidadPostal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.codigoPostalPostal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.provinciaPostal) }}
+                            </div>
+                        </div>
+
+                        <h5>{% trans %}TRANS_CODIGO_SERPA{% endtrans %}</h5>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.provinciaPostalSerpa) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.municipioPostalSerpa) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CNAE{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="cnae">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_PRINCIPAL_CNAE{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_CODIGO_CNAE{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_DESCRIPCION_CNAE{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if cnae is not empty %}
+                                            {% for c in cnae %}
+                                                <tr>
+                                                    {% if c.principal == true %}
+                                                        <td><span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span></td>
+                                                    {% else %}
+                                                        <td><span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>
+                                                    {% endif %}
+                                                    {% if c.cnae is not null %}
+                                                        <td>{{ c.cnae.cnae }}</td>
+                                                        <td>{{ c.cnae.descripcion }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                        <td></td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PROCESO_PRODUCTIVO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_widget(form.procesoProductivo) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_OBS_GEN{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_widget(form.observacionesGenerales) }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.centroTrabajoDeslocalizado) }}
+
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <table class="table" id="centroTrabajoEmpresa">
+                                    <thead>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans %}TRANS_DIRECCION{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if centroTrabajoEmpresa is not empty %}
+                                        {% for cte in centroTrabajoEmpresa %}
+                                            <tr>
+                                                <td>{{ cte.centro.direccion }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="1" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-trabajadores" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-trabajadores dataTable no-footer" id="trabajadoresEmpresa" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Estado">{% trans from 'trabajadores' %}TRANS_ESTADO{% endtrans %}
+                                            </th>
+                                            <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Nombre" aria-sort="ascending">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="DNI">{% trans %}TRANS_DNI_RESPONSABLE_EMPRESA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Puesto">{% trans from 'revision' %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-accidentes" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-accidentes dataTable no-footer" id="accidentesEmpresa" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Trabajador" aria-sort="ascending">{% trans %}TRANS_TRABAJADOR{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha">{% trans %}TRANS_FECHA_MODELO_347{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab5">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-evaluaciones" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-evaluaciones dataTable no-footer" id="evaluacionesEmpresa" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Centro">{% trans from 'evaluacion' %}TRANS_CENTRO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Inicio">{% trans from 'evaluacion' %}TRANS_FECHA_INICIO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fin">{% trans from 'evaluacion' %}TRANS_FECHA_FIN{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Evaluación">{% trans from 'evaluacion' %}TRANS_EVALUACION{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Tipo">{% trans from 'evaluacion' %}TRANS_TIPO{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-maquinaria" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinaria dataTable no-footer" id="evaluacionesEmpresa" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Centro">{% trans  %}TRANS_CENTRO_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Maquina">{% trans %}TRANS_MAQUINA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Grupo">{% trans  %}TRANS_GRUPO_MAQUINARIA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Generica">{% trans  %}TRANS_MAQUINARIA_GENERICA{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab7">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-plan-prevencion" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-plan-prevencion dataTable no-footer" id="planPrevencion" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha">{% trans %}TRANS_FECHA_MODELO_347{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="tree" style="border: 1px solid #DDD; border-radius: 5px; padding:20px; margin:0 auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab9">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="treePuestos" style="border: 1px solid #DDD; border-radius: 5px; padding:20px; margin:0 auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab10">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>{% trans from 'empresas' %}TRANS_MAQUINA_GENERICA{% endtrans %}</h4>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-genericas-puesto-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-genericas-puesto-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="PuestoTrabajo">{% trans from 'puestotrabajo' %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-genericas-zona-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-genericas-zona-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="ZonaTrabajo">{% trans from 'puestotrabajo' %}TRANS_ZONA_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>{% trans from 'empresas' %}TRANS_MAQUINA_EMPRESA{% endtrans %}</h4>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-empresa-puesto-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-empresa-puesto-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="PuestoTrabajo">{% trans from 'puestotrabajo' %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-empresa-zona-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-empresa-zona-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="ZonaTrabajo">{% trans from 'puestotrabajo' %}TRANS_ZONA_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab11">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="text-center">{% trans %}TRANS_REVISIONES_MEDICAS{% endtrans %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-tarifas-revisiones" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-tarifas-revisiones dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Concepto" aria-sort="ascending">{% trans from 'facturacion' %}TRANS_CONCEPTO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Iva" >{% trans from 'facturacion' %}TRANS_IVA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Importe" >{% trans from 'facturacion' %}TRANS_IMPORTE_TOTAL{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab12">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-protocolo-acoso" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-protocolo-acoso dataTable no-footer" id="protocoloAcoso" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha">{% trans %}TRANS_FECHA_MODELO_347{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editEmpresaSn is defined and app.session.get('privilegiosRol').editEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').editEmpresaSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal view fichero -->
+    <div id="modal_view_fichero" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'gdoc' %}TRANS_DATOS_FICHERO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'gdoc' %}TRANS_NOMBRE_FICHERO{% endtrans %}</label>
+                    <input type="text" id="nombreFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_FECHA_FICHERO{% endtrans %}</label>
+                    <input type="text" id="fechaFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_NOMBRE_USUARIO_FICHERO{% endtrans %}</label>
+                    <input type="text" id="usuarioFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_TIPO_FICHERO{% endtrans %}</label>
+                    <input type="text" id="tipoFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_MIDA_FICHERO{% endtrans %}</label>
+                    <input type="text" id="midaFichero" class="form-control" disabled="disabled" />
+
+                    <input type="hidden" id="idFichero" class="form-control" />
+
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').downGdocFileSn is defined and app.session.get('privilegiosRol').downGdocFileSn is not null %}
+                        {% if app.session.get('privilegiosRol').downGdocFileSn %}
+                            <a href="#" id="btnDownPlantilla" class="btn btn-labeled btn-labeled-left bg-success" target="_blank">{% trans from 'messages' %}TRANS_DOWN{% endtrans %}<b><i class="icon-file-download"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal view fichero -->
+
+{% endblock %}
+
+
+

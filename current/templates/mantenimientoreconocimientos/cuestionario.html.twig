@@ -1,0 +1,193 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'mantenimientoreconocimientos' %}
+
+{% block arrow %}<a href="{{ path('mantenimiento_reconocimientos') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_CUESTIONARIO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.codigo }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        });
+
+        function deletePreguntaCuestionario(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_pregunta_cuestionario_delete') }}",
+                data: {
+                    'preguntaCuestionarioId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la pregunta seleccionada
+        $(document).on('click', 'a.eliminarPreguntaCuestionario', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_PREGUNTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deletePreguntaCuestionario(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-1">
+                    {{ form_row(form.codigo) }}
+                </div>
+                <div class="col-lg-1">
+                    {{ form_row(form.orden) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcionCa) }}
+                </div>
+                <div class="col-lg-3">
+                    {{ form_row(form.tipoCuestionario) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 style="font-weight: bolder;">{% trans %}TRANS_PREGUNTAS{% endtrans %}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                            {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                                <a href="{{ path('mantenimiento_reconocimientos_pregunta_cuestionario_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                <br/>
+                                <br/>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-bordered">
+                        <table class="table" id="preguntas">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>{% trans %}TRANS_TEXTO_PREGUNTA{% endtrans %}</th>
+                                <th>{% trans %}TRANS_GRUPO{% endtrans %}</th>
+                                <th>{% trans %}TRANS_ORDEN{% endtrans %}</th>
+                                <th>{% trans %}TRANS_TEXTO_PREGUNTA{% endtrans %}</th>
+                                <th>{% trans %}TRANS_TIPO_RESPUESTA{% endtrans %}</th>
+                                <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if preguntas is defined and preguntas is not empty %}
+                                {% for p in preguntas %}
+                                    <tr>
+                                        <td>{{ p.pregunta.id }}</td>
+                                        <td>{{ p.grupo }}</td>
+                                        <td>{{ p.orden }}</td>
+                                        <td>{{ p.pregunta.descripcion }}</td>
+                                        <td>{{ p.pregunta.tipoRespuesta.descripcion }}</td>
+                                        <td>
+                                            <div class="list-icons">
+                                                {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                                                        <a href="{{ path('mantenimiento_reconocimientos_pregunta_cuestionario_update', { "id": p.id }) }}" target="_self" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                                                        <a href="#" data-id="{{ p.id }}" target="_self" class="list-icons-item eliminarPreguntaCuestionario"><i class="icon-trash"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+
+{% endblock %}
+
+
+

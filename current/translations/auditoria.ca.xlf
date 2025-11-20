@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_MONITOR_AUDITORIA</source>
+                <target>Monitor auditoria</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_ACCION</source>
+                <target>Acció</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_FECHA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_ID_OBJETO</source>
+                <target>ID d'objecte</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_CLASE</source>
+                <target>Classe</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_DATA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_USUARIO</source>
+                <target>Usuari</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

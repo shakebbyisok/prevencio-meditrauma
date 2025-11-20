@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_FACTURAS</source>
+                <target>Facturas</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_FACTURA</source>
+                <target>Factura</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_IMPORTE</source>
+                <target>Importe</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_PAGADA</source>
+                <target>Pagada</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_DESCARGAR_FACTURA</source>
+                <target>Descargar factura/as</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_ERROR_DESCARGAR_FACTURA</source>
+                <target>Debes seleccionar como mínimo una factura a descargar</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_PUESTO_TRABAJO_PROTOCOLOS_CUESTIONARIOS</source>
+                <target>Lloc de treball - Protocols - Qüestionaris</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Lloc de treball</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_PROTOCOLO</source>
+                <target>Protocol</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_PUESTO_TRABAJO_PROTOCOLO_CUESTIONARIO</source>
+                <target>Lloc de treball - Protocol - Qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_CUESTIONARIOS</source>
+                <target>Qüestionaris</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_CUESTIONARIO</source>
+                <target>Qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_PROTOCOLOS</source>
+                <target>Protocols</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_PUESTO_TRABAJO_PROTOCOLO</source>
+                <target>Empresa - Lloc de treball - Protocol</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_EXPLORACIONES</source>
+                <target>Exploracions</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_EXPLORACION</source>
+                <target>Exploració</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_AÑADIR_CUESTIONARIO</source>
+                <target>Afegir qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_AÑADIR_EXPLORACION</source>
+                <target>Exploració</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MODIFICAR_CUESTIONARIO</source>
+                <target>Modificar qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MODIFICAR_EXPLORACION</source>
+                <target>Modificar exploració</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_PROTOCOLO_ES</source>
+                <target>Protocol castellà</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_PROTOCOLO_CA</source>
+                <target>Protocol català</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_ACTUALIZADO</source>
+                <target>Actualitzat</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

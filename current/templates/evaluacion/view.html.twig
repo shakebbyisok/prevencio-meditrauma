@@ -1,0 +1,59 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block arrow %}<a href="{{ path('evaluaciones_show') }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_EVALUACIONES{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {{ app.session.get('empresa').empresa }}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <label>{% trans %}TRANS_EMPRESA{% endtrans %}:</label>
+                    <select id="empresaList" disabled="disabled" class="select-search form-control">
+                        <option value="{{ empresa.id }}">{{ empresa.empresa }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-6">
+                    <label>{% trans %}TRANS_CENTRO{% endtrans %}:</label>
+                    <select id="centroList" class="select-search form-control">
+                        <option value=""></option>
+                        {% if centros is defined and centros is not empty %}
+                            {% for c in centros %}
+                                <option value="{{ c.centro.id }}">{{ c.centro.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 30px;">
+                <div class="col-lg-12">
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

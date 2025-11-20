@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_CITACIONES</source>
+                <target>Citaciones</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_AGENDA</source>
+                <target>Agenda</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_AÑADIR_CITACION</source>
+                <target>Añadir citación</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_FECHA_INICIO</source>
+                <target>Fecha inicio</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_FECHA_FIN</source>
+                <target>Fecha fin</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_CITACION</source>
+                <target>Citación</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_HORA_LLEGADA</source>
+                <target>Hora llegada</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_HORA_SALIDA</source>
+                <target>Hora salida</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_LLEGADA_SALIDA</source>
+                <target>Llegada y salida</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_EMPRESA_TRABAJADOR</source>
+                <target>Empresa y trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_DATOS_CITACION</source>
+                <target>Citación</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_COMENTARIOS</source>
+                <target>Comentarios</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_PRUEBAS_COMPLEMENTARIAS</source>
+                <target>Pruebas complementarias</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_CITACION_ALERT_PROGRAMAR</source>
+                <target>Desea programar una cita para la empresa</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_IMPRIMIR_FICHERO</source>
+                <target>Imprimir fichero</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_IMPRIMIR_CITACION</source>
+                <target>Imprimir citación</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_PLANTILLA</source>
+                <target>Plantilla</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_ESTADO</source>
+                <target>Estado</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

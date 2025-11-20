@@ -1,0 +1,105 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'balanceeconomico' %}
+
+{% block title %} {% trans %}TRANS_BALANCE_ECONOMICO{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for empresa in empresas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').viewBalanceEconomicoSn is defined and app.session.get('privilegiosRol').viewBalanceEconomicoSn is not null %}
+                    {% if app.session.get('privilegiosRol').viewBalanceEconomicoSn %}
+                        actions += '<a href="{{ path('balance_economico_view', { "id": empresa.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-eye"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ empresa.empresa }}', actions);
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportGiroBalanceEconomicoSn is defined and app.session.get('privilegiosRol').exportGiroBalanceEconomicoSn is not null %}
+                {% if app.session.get('privilegiosRol').exportGiroBalanceEconomicoSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa" aria-sort="ascending">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

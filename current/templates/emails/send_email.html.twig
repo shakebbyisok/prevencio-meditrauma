@@ -1,0 +1,115 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'messages' %}
+
+{% block title %} {% trans %}TRANS_ENVIAR_CORREO{% endtrans %} {% endblock %}
+{% block subtitle %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#enviar_correo_plantilla').change(function(){
+                var val = $(this).val();
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_recuperar_texto_plantilla') }}",
+                    data: {
+                        'plantillaId': val,
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != null){
+                            $('#enviar_correo_mensaje').val(data.texto);
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                    }
+                });
+
+            });
+
+        });
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="alert alert-info bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                {% trans %}TRANS_AVISO_MULTIPLE_CORREO{% endtrans %} <strong>;</strong>
+            </div>
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.para) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.cc) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.cco) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.asunto) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <label>{% trans from 'facturacion' %}TRANS_FICHEROS_ADJUNTOS{% endtrans %}</label>
+                    <div style="width: 100%; border: 1px solid #ddd; padding: .4375rem .875rem;">
+                        {% if ficherosEnviar is defined and ficherosEnviar is not empty %}
+                            {% for f in ficherosEnviar %}
+                                <div style="display: inline;"><img src="{{ asset('images/pdf.png') }}" width="25px;" />{{ f }} | </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-lg-12">
+                    {{ form_row(form.plantilla) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.mensaje, {'attr': {'style': 'height: 200px;'}}) }}
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+                {{ form_row(form.enviar) }}
+            </div>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,51 @@
+{% include 'theme/header.html.twig' %}
+
+<body class="bg-slate-300">
+
+<!-- Page content -->
+<div class="page-content">
+
+    <!-- Main content -->
+    <div class="content-wrapper">
+        <!-- Content area -->
+        <div class="content d-flex justify-content-center align-items-center">
+
+            <!-- change password card -->
+            {{ form_start(form) }}
+
+            <div class="card mb-0">
+                <div class="card-body">
+
+                    {% for message in app.flashes('danger') %}
+                        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    <div class="text-center mb-3">
+                        <i class="icon-lock2 icon-2x text-warning border-warning border-3 rounded-round p-3 mb-3 mt-1"></i>
+                        <h5 class="mb-0">Verificación</h5>
+                        <span class="d-block text-muted">Introduzca la contraseña para descargar la revisión médica:</span>
+                    </div>
+
+                    <div class="form-group form-group-feedback form-group-feedback-right">
+                        {{ form_widget(form.dni) }}
+                    </div>
+
+                    <button type="submit" class="btn bg-blue btn-block"><i class="icon-checkmark3 mr-2"></i> Validar</button>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+            <!-- /change password card -->
+
+        </div>
+        <!-- /content area -->
+
+    </div>
+    <!-- /main content -->
+
+</div>
+<!-- /page content -->
+
+</body>

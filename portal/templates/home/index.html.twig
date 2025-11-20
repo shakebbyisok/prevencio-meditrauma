@@ -1,0 +1,180 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'dashboard' %}
+
+{% block title %} {% trans %}TRANS_DASHBOARD{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_INICIO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            //Generamos los datos de las facturas
+            var yearFacturas = [];
+            var totalFacturas = [];
+
+            {% for f in facturas %}
+                yearFacturas.push('{{f.year}}');
+                totalFacturas.push('{{f.total}}');
+            {% endfor %}
+
+            var facturas = document.getElementById('facturas');
+            if (facturas) {
+
+                // Initialize chart
+                var factura_chart = echarts.init(facturas);
+
+                // Options
+                factura_chart.setOption({
+
+                    // Define colors
+                    color: ['#2ec7c9'],
+
+                    // Global text styles
+                    textStyle: {
+                        fontFamily: 'Roboto, Arial, Verdana, sans-serif',
+                        fontSize: 13
+                    },
+
+                    // Chart animation duration
+                    animationDuration: 750,
+
+                    // Setup grid
+                    grid: {
+                        left: 0,
+                        right: 40,
+                        top: 35,
+                        bottom: 0,
+                        containLabel: true
+                    },
+
+                    // Add legend
+                    legend: {
+                        data: ['Facturas'],
+                        itemHeight: 8,
+                        itemGap: 20,
+                        textStyle: {
+                            padding: [0, 5]
+                        }
+                    },
+
+                    // Add tooltip
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.75)',
+                        padding: [10, 15],
+                        textStyle: {
+                            fontSize: 13,
+                            fontFamily: 'Roboto, sans-serif'
+                        }
+                    },
+
+                    // Horizontal axis
+                    xAxis: [{
+                        type: 'category',
+                        data: yearFacturas,
+                        axisLabel: {
+                            color: '#333'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#999'
+                            }
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#eee',
+                                type: 'dashed'
+                            }
+                        }
+                    }],
+
+                    // Vertical axis
+                    yAxis: [{
+                        type: 'value',
+                        axisLabel: {
+                            color: '#333'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#999'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: ['#eee']
+                            }
+                        },
+                        splitArea: {
+                            show: true,
+                            areaStyle: {
+                                color: ['rgba(250,250,250,0.1)', 'rgba(0,0,0,0.01)']
+                            }
+                        }
+                    }],
+
+                    // Add series
+                    series: [
+                        {
+                            name: 'Facturas',
+                            type: 'bar',
+                            data: totalFacturas,
+                            itemStyle: {
+                                normal: {
+                                    label: {
+                                        show: true,
+                                        position: 'top',
+                                        textStyle: {
+                                            fontWeight: 500
+                                        }
+                                    }
+                                }
+                            },
+                            markLine: {
+                                data: [{type: 'average', name: 'Average'}]
+                            }
+                        }
+                    ]
+                });
+            }
+
+
+            // Resize function
+            var triggerChartResize = function() {
+                facturas && factura_chart.resize();
+            };
+
+            // On sidebar width change
+            var sidebarToggle = document.querySelector('.sidebar-control');
+            sidebarToggle && sidebarToggle.addEventListener('click', triggerChartResize);
+
+            // On window resize
+            var resizeCharts;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeCharts);
+                resizeCharts = setTimeout(function () {
+                    triggerChartResize();
+                }, 200);
+            });
+
+        });
+    </script>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="text-center">
+                <h5 class="card-title">{% trans %}TRANS_FACTURAS{% endtrans %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <div class="chart has-fixed-height" id="facturas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

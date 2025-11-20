@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ENFERMEDADES</source>
+                <target>Enfermedades</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_ENFERMEDAD</source>
+                <target>Enfermedad</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_NUEVA_ENFERMEDAD</source>
+                <target>Nueva enfermedad</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_ADD_ENFERMEDAD</source>
+                <target>Añadir enfermedad</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_UPDATE_ENFERMEDAD</source>
+                <target>Modificar enfermedad</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

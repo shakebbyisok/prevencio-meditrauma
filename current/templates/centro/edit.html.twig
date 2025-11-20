@@ -1,0 +1,480 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'centrostrabajo' %}
+
+{% block arrow %}<a href="{{ path('centro_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_CENTRO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.nombre }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var arrayDataTrabajadores = [];
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            {% for te in trabajadoresEmpresa %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEmpresaSn is defined and app.session.get('privilegiosRol').editEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEmpresaSn %}
+                        actions += '<a href="#" data-id="{{ te.id }}" target="_self" class="list-icons-item eliminarTrabajador"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ te.trabajador.nombre }}', '{{ te.trabajador.dni }}', actions);
+                arrayDataTrabajadores.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-trabajadores').DataTable({
+                data: arrayDataTrabajadores,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportTrabajadorSn is defined and app.session.get('privilegiosRol').exportTrabajadorSn is not null %}
+                {% if app.session.get('privilegiosRol').exportTrabajadorSn != true %}
+                    $('#datatable-trabajadores .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton para añadir un trabajador
+            $('#btnAddTrabajador').click(function(){
+
+                if($('#trabajadorEmpresa').val() == ''){
+                    $('#trabajadorEmpresa').focus();
+                    return false;
+                }
+
+                $('#btnAddTrabajador').prop("disabled", true);
+                $('#btnAddTrabajador').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('empresa_add_trabajador_empresa') }}",
+                    data: {
+                        'trabajadorId': $('#trabajadorEmpresa').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddTrabajador').prop("disabled", false);
+                        $('#btnAddTrabajador').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            // Format displayed data
+            function formatRepo (repo) {
+                if (repo.loading) return repo.text;
+
+                var markup = '<div class="clearfix">' +
+                    '<div>' + repo.descripcion + '</div>' +
+                    '</div>';
+
+                return markup;
+            }
+
+            // Format selection
+            function formatRepoSelection (repo) {
+                return repo.full_name || repo.text;
+            }
+
+            $('.js_busca_ajax_trabajador').select2({
+                ajax: {
+                    url: "{{ path('busca_ajax_query',{ 'option': 'trabajadorEmpresa' }) }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+
+                        var select2Data = $.map(JSON.parse(data), function (obj) {
+                            obj.id = parseInt(obj.id);
+                            obj.text = obj.descripcion;
+
+                            return obj;
+                        });
+
+                        return {
+                            results: select2Data
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 3,
+                templateResult: formatRepo, // omitted for brevity, see the source of this page
+                templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+            });
+
+            //Evento que busca la localidad y provincia
+            $('#centro_codigoPostal').keyup(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('empresa_busca_localidad_provincia') }}",
+                    data: {
+                        'codigopostal': $('#centro_codigoPostal').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        console.log(data);
+                        if(data != ""){
+                            $('#centro_localidad').val(data.localidad);
+                            $('#centro_provincia').val(data.provincia);
+                            $('#centro_provinciaSerpa').val(data.provincia_id).change();
+                            $('#centro_municipioSerpa').val(data.localidad_id).change();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            });
+
+        });
+
+        $(document).on('click', 'a.eliminarTrabajador', function(){
+            var id = $(this).data('id');
+
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_TRABAJADOR{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteTrabajadorEmpresa(id)
+                    }
+                }
+            });
+        });
+
+        function deleteTrabajadorEmpresa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('empresa_delete_trabajador_empresa') }}",
+                data: {
+                    'trabajadorEmpresaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_3{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_4{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab5" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_5{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab6" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_6{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab7" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_7{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab8" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_8{% endtrans %}</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_3{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_4{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab5" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_5{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab6" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_6{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab7" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_7{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab8" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_8{% endtrans %}</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            {{ form_row(form.nombre) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.codigo) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.trabajadores) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.tipo) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.direccion) }}
+                            {{ form_row(form.localidad) }}
+                            {{ form_row(form.codigoPostal) }}
+                            {{ form_row(form.provincia) }}
+                            {{ form_row(form.zona) }}
+                            {{ form_row(form.centroMismaProvincia) }}
+                        </div>
+                        <div class="col-lg-6">
+                            {{ form_row(form.email) }}
+                            {{ form_row(form.telefono) }}
+                            {{ form_row(form.telefono2) }}
+                            {{ form_row(form.fax) }}
+                            <h5>Consentimiento para la cesión de datos</h5>
+                            {{ form_row(form.provinciaSerpa) }}
+                            {{ form_row(form.municipioSerpa) }}
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_ACTIVIDAD_CENTRO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.actividadCentro) }}
+                                {{ form_row(form.cnae) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.excluirRatios) }}
+                                {{ form_row(form.excluirMemoria) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_SEGURIDAD_SOCIAL{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.regimenss) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.ccc) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CENTRO_MEDICO_ASIGNADO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.centroMedico) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CONSENTIMIENTO_CESION_DATOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.cesionDatos) }}
+                                <br/>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if app.session.get('privilegiosRol').editEmpresaSn is defined and app.session.get('privilegiosRol').editEmpresaSn is not null %}
+                                {% if app.session.get('privilegiosRol').editEmpresaSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_trabajador">{% trans from 'empresas' %}TRANS_AÑADIR_TRABAJADOR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-trabajadores" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-trabajadores dataTable no-footer" id="trabajadoresEmpresa" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Nombre" aria-sort="ascending">{% trans from 'empresas' %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="DNI">{% trans from 'empresas' %}TRANS_DNI_RESPONSABLE_EMPRESA{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.estructuraCentro) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab5">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.actuaciones) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.avisosControl) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab7">
+                </div>
+
+                <div class="tab-pane fade" id="tab8">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+
+            {% if app.session.get('privilegiosRol').editCentroTrabajoSn is defined and app.session.get('privilegiosRol').editCentroTrabajoSn is not null %}
+                {% if app.session.get('privilegiosRol').editCentroTrabajoSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir trabajador -->
+    <div id="modal_añadir_trabajador" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'empresas' %}TRANS_AÑADIR_TRABAJADOR{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'empresas' %}TRANS_TRABAJADOR{% endtrans %}</label>
+                    <select id="trabajadorEmpresa" class="form-control js_busca_ajax_trabajador" data-fouc></select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddTrabajador">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir trabajador -->
+
+{% endblock %}
+
+
+

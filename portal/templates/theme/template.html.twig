@@ -1,0 +1,270 @@
+{% include 'theme/header.html.twig' %}
+
+
+<body class="navbar-top">
+
+{% block navbar %}
+    <!-- Main navbar -->
+    <div class="navbar navbar-expand-md navbar-light fixed-top">
+
+        <!-- Header with logos -->
+        <div class="navbar-header navbar-dark d-none d-md-flex align-items-md-center">
+
+            <div class="navbar-brand navbar-brand-md">
+                <a href="#" class="d-inline-block">
+                    <h5 class="navbar-text" style="margin: 0 auto !important; padding: 0 !important; text-align: center !important;">MDT Prevención - Intranet</h5>
+                </a>
+            </div>
+
+            <div class="navbar-brand navbar-brand-xs">
+                <a href="#" class="d-inline-block">
+                    <h5 class="navbar-text" style="margin: 0 auto !important; padding: 0 !important; text-align: center !important;">MDT Prevención - Intranet</h5>
+                </a>
+            </div>
+
+        </div>
+        <!-- /header with logos -->
+
+        <!-- Mobile controls -->
+        <div class="d-flex flex-1 d-md-none">
+            <div class="navbar-brand mr-auto">
+                <a href="#" class="d-inline-block">
+                    <h5 class="navbar-text" style="margin: 0 auto !important; padding: 0 !important; text-align: center !important;">MDT Prevención - Intranet</h5>
+                </a>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-mobile">
+                <i class="icon-tree5"></i>
+            </button>
+
+            <button class="navbar-toggler sidebar-mobile-main-toggle" type="button">
+                <i class="icon-paragraph-justify3"></i>
+            </button>
+        </div>
+        <!-- /mobile controls -->
+
+
+        <!-- Navbar content -->
+        <div class="collapse navbar-collapse" id="navbar-mobile">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="#" class="navbar-nav-link sidebar-control sidebar-main-toggle d-none d-md-block">
+                        <i class="icon-paragraph-justify3"></i>
+                    </a>
+                </li>
+            </ul>
+
+            {% if app.session.get('empresaIntranet') is defined and app.session.get('empresaIntranet') is not null %}
+                <h4 class="ml-md-3 mr-md-auto"
+                        {% if (app.session.get('administrador') is defined and app.session.get('administrador')) or (app.session.get('grupoEmpresa') is defined and app.session.get('grupoEmpresa')) %}
+                            style="cursor: pointer;" data-toggle="modal" data-target="#changeEmpresa"
+                        {% endif %}
+                >
+                    Empresa: <strong>{{ app.session.get('empresaIntranet').empresa }}</strong>
+                </h4>
+            {% endif %}
+
+            <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item dropdown language-switch">
+                    {% if app.session.get('_locale') == 'es' %}
+                        <a class="navbar-nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ asset('images/lang/es.png') }}" class="img-flag mr-2" alt="">
+                            {% trans %}TRANS_MENU_SELECT_IDIOMA_ES{% endtrans %}
+                        </a>
+                    {% else %}
+                        <a class="navbar-nav-link dropdown-toggle catalan" data-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ asset('images/lang/cat.png') }}" class="img-flag" alt="">
+                            {% trans %}TRANS_MENU_SELECT_IDIOMA_CA{% endtrans %}
+                        </a>
+                    {% endif %}
+                    <div class="dropdown-menu">
+                        {% if app.session.get('_locale') == 'es' %}
+                            <a href="#" onclick="cambioIdioma('ca')" class="dropdown-item catalan">
+                                <img src="{{ asset('images/lang/cat.png') }}" class="img-flag" alt="">
+                                {% trans %}TRANS_MENU_SELECT_IDIOMA_CA{% endtrans %}
+                            </a>
+                        {% else %}
+                            <a href="#" onclick="cambioIdioma('es')" class="dropdown-item spanish">
+                                <img src="{{ asset('images/lang/es.png') }}" class="img-flag" alt="">
+                                {% trans %}TRANS_MENU_SELECT_IDIOMA_ES{% endtrans %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown dropdown-user">
+                    <a href="#" class="navbar-nav-link d-flex align-items-center dropdown-toggle" data-toggle="dropdown">
+                        <img src="{{ asset('images/image.png') }}" class="rounded-circle mr-2" height="34" alt="">
+                        <span>{{ app.user.username | capitalize }}</span>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+{#                        <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal_idioma"><i class="icon-earth"></i> {% trans %}TRANS_MENU_CAMBIAR_IDIOMA{% endtrans %}</a>#}
+
+                        {% if app.session.get('privilegiosRolIntranet').administracionSn is defined and app.session.get('privilegiosRolIntranet').administracionSn is not null %}
+                            {% if app.session.get('privilegiosRolIntranet').administracionSn %}
+                                <a href="{{ path('sonata_admin_dashboard') }}" class="dropdown-item" target="_blank"><i class="icon-cog5"></i> {% trans %}TRANS_MENU_CONFIGURACION{% endtrans %}</a>
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ path('ulogout') }}" class="dropdown-item"><i class="icon-switch2"></i> {% trans %}TRANS_MENU_LOGOUT{% endtrans %}</a>
+                    </div>
+                </li>
+            </ul>
+            </div>
+
+        </div>
+        <!-- /navbar content -->
+
+    </div>
+    <!-- /main navbar -->
+{% endblock %}
+
+
+<!-- Page content -->
+<div class="page-content">
+    {% block sidebar %}
+
+        <!-- Main sidebar -->
+        <div class="sidebar sidebar-dark sidebar-main sidebar-expand-md">
+
+            <!-- Sidebar mobile toggler -->
+            <div class="sidebar-mobile-toggler text-center">
+                <a href="#" class="sidebar-mobile-main-toggle">
+                    <i class="icon-arrow-left8"></i>
+                </a>
+                Navigation
+                <a href="#" class="sidebar-mobile-expand">
+                    <i class="icon-screen-full"></i>
+                    <i class="icon-screen-normal"></i>
+                </a>
+            </div>
+            <!-- /sidebar mobile toggler -->
+
+            <!--MENU-->
+            {% include 'theme/menu.html.twig' %}
+
+{#            <div class="sidebar-content">#}
+
+{#                <!-- Main navigation -->#}
+{#                <div class="card card-sidebar-mobile">#}
+{#                    <ul class="nav nav-sidebar" data-nav-type="accordion">#}
+
+{#                        {{ knp_menu_render('main') }}#}
+
+{#                    </ul>#}
+{#                </div>#}
+{#                <!-- /main navigation -->#}
+{#            </div>#}
+
+
+        </div>
+        <!-- /main sidebar -->
+        <!-- Main content -->
+    {% endblock %}
+
+
+    <div class="content-wrapper">
+
+        {% block contentheader %}
+            <!-- Page header -->
+            <div class="page-header">
+                <div class="page-header-content header-elements-md-inline">
+                    <div class="page-title d-flex">
+                        <h4>{% block arrow %}{% endblock %} <span class="font-weight-semibold">{% block title %}{% endblock %}</span> - {% block subtitle %}{% endblock %}</h4>
+                        <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                    </div>
+
+                    <div class="header-elements d-none text-center text-md-left mb-3 mb-md-0">
+                        {% block actions %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+            <!-- /page header -->
+        {% endblock %}
+
+        {% block contentpage %}
+            <!-- Content area -->
+            <div class="content pt-0">
+
+                {% block card %}
+                {% endblock %}
+
+            </div>
+            <!-- /content area -->
+        {% endblock %}
+
+        {% block footer %}
+            <!-- Footer -->
+            <div class="navbar navbar-expand-lg navbar-light">
+                <div class="text-center d-lg-none w-100">
+                    <button type="button" class="navbar-toggler dropdown-toggle" data-toggle="collapse" data-target="#navbar-footer">
+                        <i class="icon-unfold mr-2"></i>
+                        Footer
+                    </button>
+                </div>
+
+                <div class="navbar-collapse collapse" id="navbar-footer">
+                <span class="navbar-text">
+
+                </span>
+                </div>
+            </div>
+            <!-- /footer -->
+        {% endblock %}
+    </div>
+
+    <!-- Modal cambio idioma -->
+    <div id="modal_idioma" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MENU_CAMBIAR_IDIOMA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_MENU_SELECT_IDIOMA{% endtrans %}</label>
+                    <select class="form-control select-icons" id="selectIdioma" data-fouc>
+                        <option value="es">{% trans %}TRANS_MENU_SELECT_IDIOMA_ES{% endtrans %}</option>
+{#                        <option value="ca">{% trans %}TRANS_MENU_SELECT_IDIOMA_CA{% endtrans %}</option>#}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnCambioIdioma">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal cambio idioma -->
+
+    <!-- Cambiar empresa -->
+    <div class="modal fade" id="changeEmpresa" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{% trans %}TRANS_CAMBIAR_EMPRESA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-control select-search" id="selectEmpresa">
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnChangeEmpresa">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal cambio idioma -->
+
+</div>
+<!-- /page content -->
+
+</body>
+</html>

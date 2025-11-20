@@ -1,0 +1,153 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'agendatecnico' %}
+
+{% block title %} {% trans %}TRANS_TAREAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addAgendaTecnicoSn is defined and app.session.get('privilegiosRol').addAgendaTecnicoSn is not null %}
+        {% if app.session.get('privilegiosRol').addAgendaTecnicoSn %}
+            <a href="{{ path('tecnico_agenda_tarea_add') }}" class="btn btn-labeled btn-labeled-left bg-slate" style="margin-left: 5px;">{% trans %}TRANS_AÑADIR_TAREA{% endtrans %}<b><i class="icon-plus2"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var finDeSemana = {{ finSemanaSn }};
+
+            if (finDeSemana == "1") {
+                finDeSemana = true;
+            } else {
+                finDeSemana = false;
+            }
+
+            var currentRequest;
+            //Creamos el calendario
+            var calendar = document.querySelector('#citaciones');
+            var calendarInit = new FullCalendar.Calendar(calendar, {
+                plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    //right: 'dayGridMonth,dayGridWeek,dayGridDay,timeGridWeek,timeGridDay'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                locale: 'es',
+                editable: false,
+                //events: citacionesArray,
+                eventLimit: true,
+                weekends: finDeSemana,
+                minTime: '{{ horaInicio }}',
+                maxTime: '{{ horaFin }}',
+                slotDuration: '{{ duracionTramo }}',
+                allDaySlot: false,
+                selectable: true,
+                selectHelper: true,
+                defaultView: 'timeGridWeek',
+                displayEventTime: false,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false
+                },
+                {% if app.session.get('privilegiosRol').editAgendaTecnicoSn is defined and app.session.get('privilegiosRol').editAgendaTecnicoSn is not null %}
+                    {% if app.session.get('privilegiosRol').editAgendaTecnicoSn %}
+                        eventClick: function(info) {
+                            var route = "{{ path('tecnico_agenda_tarea_update',{'id':'id'}) }}";
+                            var newUrl = route.replace('id', info.event.id);
+                            window.location.href = newUrl;
+                        },
+                    {% endif %}
+                {% endif %}
+                eventRender: function (info) {
+                    $(info.el).tooltip({ title: info.event.title });
+                },
+                {% if app.session.get('privilegiosRol').addAgendaTecnicoSn is defined and app.session.get('privilegiosRol').addAgendaTecnicoSn is not null %}
+                    {% if app.session.get('privilegiosRol').addAgendaTecnicoSn %}
+                        dateClick: function(info) {
+                            var dateString = info.dateStr.toString();
+                            var del = dateString.substring(dateString.length -6);
+                            var date = dateString.replace(del, "");
+                            $(location).attr('href', '{{ path('tecnico_agenda_tarea_add') }}?dtini=' + date);
+                        },
+                    {% endif %}
+                {% endif %}
+
+                events: function(info, successCallback, failureCallback) {
+                    if(currentRequest){
+                        currentRequest.abort();
+                        currentRequest = null;
+                    }
+
+                    var dtiniString = info.startStr.toString();
+                    var delIni = dtiniString.substring(dtiniString.length - 6);
+                    var dtini = dtiniString.replace(delIni, "");
+
+                    var delIni2 = dtini.substring(dtini.length - 9);
+                    dtini = dtini.replace(delIni2, "");
+
+                    var dtfinString = info.endStr.toString();
+                    var delFin = dtfinString.substring(dtfinString.length - 6);
+                    var dtfin = dtfinString.replace(delFin, "");
+
+                    var delFin2 = dtfin.substring(dtfin.length - 9);
+                    dtfin = dtfin.replace(delFin2, "");
+
+                    currentRequest = $.ajax({
+                        type: "POST",
+                        url: '{{ path('tecnico_agenda_busca_tareas') }}',
+                        dataType: 'JSON',
+                        data: {
+                            start: dtini,
+                            end: dtfin
+                        },
+                        cache: true,
+                        success: function (data) {
+                            var events = [];
+                            $(JSON.parse(data)).each(function() {
+                                events.push({
+                                    id:  $(this).attr('id'),
+                                    title: $(this).attr('title'),
+                                    start: $(this).attr('start'),
+                                    end: $(this).attr('end'),
+                                    color: $(this).attr('color'),
+                                });
+                            });
+                           successCallback(events);
+                        }
+                    });
+                },
+            }).render();
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-header header-elements-inline">
+            <h2 class="card-title" style="text-align: center !important;">{% trans %}TRANS_AGENDA{% endtrans %} de {{ nombreAgenda }}</h2>
+            <div>
+                {% if estados is defined and estados is not empty %}
+                    {% for estado in estados %}
+                        <span style="background-color: {{ estado.color }}; color: white;" class="badge">{{ estado.descripcion }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="citaciones"></div>
+        </div>
+    </div>
+{% endblock %}

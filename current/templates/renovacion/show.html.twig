@@ -1,0 +1,620 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'renovaciones' %}
+
+{% block title %} {% trans %}TRANS_RENOVACIONES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{#    {% if app.session.get('privilegiosRol').addRenovacionSn is defined and app.session.get('privilegiosRol').addRenovacionSn is not null %}#}
+{#        {% if app.session.get('privilegiosRol').addRenovacionSn %}#}
+{#            <a href="{{ path('renovacion_create') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVA_RENOVACION{% endtrans %}<b><i class="icon-plus3"></i></b></a>#}
+{#        {% endif %}#}
+{#    {% endif %}#}
+
+{#    {% if app.session.get('privilegiosRol').addRenovacionSn is defined and app.session.get('privilegiosRol').addRenovacionSn is not null %}#}
+{#        {% if app.session.get('privilegiosRol').addRenovacionSn %}#}
+{#            <a href="#" class="btn btn-labeled btn-labeled-left bg-slate" style="margin-left: 5px;">{% trans %}TRANS_RENOVACION_MULTIPLE{% endtrans %}<b><i class="icon-stack-plus"></i></b></a>#}
+{#        {% endif %}#}
+{#    {% endif %}#}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for renovacion in renovaciones %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editRenovacionSn is defined and app.session.get('privilegiosRol').editRenovacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editRenovacionSn %}
+                        actions += '<a href="{{ path('renovacion_update', { "id": renovacion.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').renovarRenovacionSn is defined and app.session.get('privilegiosRol').renovarRenovacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').renovarRenovacionSn %}
+                        actions += '<a href="{{ path('renovacion_renovar', { 'id': renovacion.id }) }}" class="list-icons-item" data-popup="tooltip" title="Renovar" data-container="body"><i class="icon-copy4"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').printContratoSn is defined and app.session.get('privilegiosRol').printContratoSn is not null %}
+                    {% if app.session.get('privilegiosRol').printContratoSn %}
+                        {% if renovacion.fichero_id is not null %}
+                            actions += '<a href="{{ path('gdoc_open_file', { "fileId": renovacion.fichero_id, "tipo": "1" }) }}" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir" data-container="body"><i class="icon-printer2"></i></a>';
+
+                                {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                    {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                        actions += '<a href="#" data-id="{{ renovacion.fichero_id }}" class="list-icons-item eliminarFicheroContrato" data-popup="tooltip" title="Eliminar fichero" data-container="body"><i class="icon-file-minus"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+
+                            {% else %}
+                            actions += '<a href="#" data-id="{{ renovacion.contratoid }}" class="list-icons-item selectContrato" data-toggle="modal" data-target="#modal_generate_contrato" data-popup="tooltip" title="Generar fichero" data-container="body"><i class="icon-file-plus"></i></a>';
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').deleteRenovacionSn is defined and app.session.get('privilegiosRol').deleteRenovacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteRenovacionSn %}
+                        actions += '<a href="{{ path('renovacion_delete', { "id": renovacion.id }) }}" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var renovado = null;
+                var documentoRenovacion = null;
+
+                {% if renovacion.renovado == true %}
+                    renovado ='<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    renovado ='<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                {% endif %}
+
+                {% if renovacion.documento_renovacion is not null %}
+                    {% if renovacion.documento_renovacion == 1 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_1{% endtrans %}</span>';
+                    {% elseif renovacion.documento_renovacion == 2 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_2{% endtrans %}</span>';
+                    {% elseif renovacion.documento_renovacion == 3 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_3{% endtrans %}</span>';
+                    {% elseif renovacion.documento_renovacion == 4 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_4{% endtrans %}</span>';
+                    {% endif %}
+                {% endif %}
+
+                {#var input = '<div class="uniform-checker" id="uniform-{{ renovacion.id }}"><span><input type="checkbox" name="renovacion" id="{{ renovacion.id }}" class="form-check-input-styled form-check-input" value="1" /></span></div>';#}
+
+                array.push(actions, '<span style="display:none;">{{ renovacion.fechainiciotimestamp }}</span>{{ renovacion.fechainicio }}', '<span style="display:none;">{{ renovacion.fechavencimientotimestamp }}</span>{{ renovacion.fechavencimiento }}', '{{ renovacion.empresa }}', '{{ renovacion.contrato }}', renovado, documentoRenovacion);
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportRenovacionSn is defined and app.session.get('privilegiosRol').exportRenovacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportRenovacionSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que filtra las renovaciones
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }
+
+                if(fechaFin != ""){
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }
+
+                if(dtInici != "" || dtFin != ""){
+                    filtrar(dtInici, dtFin, 1);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                filtrar(null, null, 2);
+            });
+
+            //Boton que genera el contrato
+            $('#btnGeneraContrato').click(function(){
+
+                $('#btnGeneraContrato').prop("disabled", true);
+                $('#btnGeneraContrato').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantilla').val(),
+                        'id': $('#contratoId').val(),
+                        'tipo': 1
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnGeneraContrato').prop("disabled", false);
+                            $('#btnGeneraContrato').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnGeneraContrato').prop("disabled", false);
+                        $('#btnGeneraContrato').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+        });
+
+        //Boton que añade el id del contrato para su generacion
+        $(document).on('click', 'a.selectContrato', function(){
+            var contratoId = $(this).data('id');
+            $('#contratoId').val(contratoId);
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function deleteFichero(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_delete_file') }}",
+                data: {
+                    'id': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarFicheroContrato', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,1)
+                    }
+                }
+            });
+        });
+
+        function filtrar(fechaInicio, fechaFin, op){
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('renovacion_filtrar_renovaciones') }}',
+                dataType: 'JSON',
+                data: {
+                    ini: fechaInicio,
+                    fin: fechaFin,
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    var table = $('.datatable-export-excel').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+                            var array = [];
+
+                            var actions = '<div class="list-icons">';
+
+                            var id = item['id'];
+                            var ficheroId = item['fichero_id'];
+
+                            {% if app.session.get('privilegiosRol').editRenovacionSn is defined and app.session.get('privilegiosRol').editRenovacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editRenovacionSn %}
+                                    var url = '{{ path("renovacion_update", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+url+'" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').renovarRenovacionSn is defined and app.session.get('privilegiosRol').renovarRenovacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').renovarRenovacionSn %}
+                                    var url = '{{ path("renovacion_renovar", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+url+'" class="list-icons-item" data-popup="tooltip" title="Renovar" data-container="body"><i class="icon-copy4"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').printContratoSn is defined and app.session.get('privilegiosRol').printContratoSn is not null %}
+                                {% if app.session.get('privilegiosRol').printContratoSn %}
+                                    if(item['fichero_id'] != undefined){
+                                        var url = '{{ path("gdoc_open_file", {'fileId': 'fileId'}) }}';
+                                        url = url.replace("fileId", ficheroId);
+                                        actions += '<a href="'+url+'" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir" data-container="body"><i class="icon-printer2"></i></a>';
+
+                                        {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                            {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                                actions += '<a href="#" data-id="'+item['id']+'" class="list-icons-item eliminarFicheroContrato" data-popup="tooltip" title="Eliminar fichero" data-container="body"><i class="icon-file-minus"></i></a>';
+                                            {% endif %}
+                                        {% endif %}
+
+                                    }else{
+                                        actions += '<a href="#" data-id="'+item['id']+'" class="list-icons-item selectContrato" data-toggle="modal" data-target="#modal_generate_contrato" data-popup="tooltip" title="Generar fichero" data-container="body"><i class="icon-file-plus"></i></a>';
+                                    }
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').deleteRenovacionSn is defined and app.session.get('privilegiosRol').deleteRenovacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').deleteRenovacionSn %}
+                                    var url = '{{ path("renovacion_delete", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+url+'" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            actions += '</div>';
+
+                            var renovado = null;
+                            var documentoRenovacion = null;
+
+                            if(item['renovado'] == true){
+                                renovado ='<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                            }else{
+                                renovado ='<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                            }
+
+                            if(item['documento_renovacion'] != null){
+                                if(item['documento_renovacion'] == 1){
+                                    documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_1{% endtrans %}</span>';
+                                }else if(item['documento_renovacion'] == 2){
+                                    documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_2{% endtrans %}</span>';
+                                }else if(item['documento_renovacion'] == 3){
+                                    documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_3{% endtrans %}</span>';
+                                }else if(item['documento_renovacion'] == 4){
+                                    documentoRenovacion = '<span class="badge badge-info">{% trans %}TRANS_RENOVADO_OP_4{% endtrans %}</span>';
+                                }
+                            }
+
+                            // var input = '<div class="uniform-checker" id="uniform-"'+item['id']+'"><span><input type="checkbox" name="renovacion" id="'+item['id']+'" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+
+                            array.push(actions, '<span style="display:none;">'+item['fechainiciotimestamp']+'</span>'+item['fechainicio']+'', '<span style="display:none;">'+item['fechavencimientotimestamp']+'</span>'+item['fechavencimiento']+'', ''+item['empresa']+'', ''+item['contrato']+'', renovado, documentoRenovacion);
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            autoWidth: true,
+                            columnDefs: [{
+                                width: 100,
+                            }],
+                            ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+                    }else{
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            autoWidth: true,
+                            columnDefs: [{
+                                width: 100,
+                            }],
+                            ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        var arrayRenovaciones = [];
+        //Boton que añade la factura a la lista de facturas seleccionadas
+        $(document).on('click', 'input[name=\'renovacion\']', function(){
+            var renovacionId = $(this).attr('id');
+
+            if ($(this).prop('checked')) {
+                $('#uniform-'+renovacionId+' span').addClass('checked');
+                arrayRenovaciones.push(renovacionId);
+            }else{
+                $('#uniform-'+renovacionId+' span').removeClass('checked');
+                arrayRenovaciones.splice($.inArray(renovacionId, arrayRenovaciones),1);
+            }
+        });
+
+        //Boton que añade todas las facturas a la lista de facturas seleccionadas
+        $(document).on('click', 'input[name=\'renovacionesAll\']', function(){
+            //var cells = $('.datatable-export-excel').DataTable().cells( ).nodes();
+            //var checks = $(cells).find('input[name=\'factura\']');
+            var checks = $('.datatable-export-excel').find('input[name=\'renovacion\']');
+
+            if($(this).prop('checked')){
+                $(checks).each(function() {
+                    var renovacionId = $(this).attr('id');
+                    $('#uniform-'+renovacionId+' span').addClass('checked');
+                    arrayRenovaciones.push(renovacionId);
+                });
+            }else{
+                $(checks).each(function() {
+                    var renovacionId = $(this).attr('id');
+                    $('#uniform-'+renovacionId+' span').removeClass('checked');
+                });
+                arrayRenovaciones.splice(0, arrayRenovaciones.length);
+            }
+
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+{#                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select">#}
+{#                            <input type="checkbox" name="renovacionesAll" id="selectRenovacionesAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}#}
+{#                        </th>#}
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha" aria-sort="ascending">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Vencimiento">{% trans %}TRANS_VENCIMIENTO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Contrato">{% trans %}TRANS_CONTRATO{% endtrans %}
+                        </th>
+{#                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"#}
+{#                            aria-label="Tipo">{% trans %}TRANS_TIPO{% endtrans %}#}
+{#                        </th>#}
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Renovado">{% trans %}TRANS_RENOVADO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="RenovadoCon">{% trans %}TRANS_RENOVADO_CON{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generacion contrato -->
+    <div id="modal_generate_contrato" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'contratos' %}TRANS_IMPRIMIR_CONTRATO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasContratos is not empty %}
+                            {% for lpc in listPlantillasContratos %}
+                                <option value="{{ lpc.id }}">{{ lpc.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="contratoId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGeneraContrato">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion contrato -->
+{% endblock %}

@@ -1,0 +1,468 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_FACTURAS</source>
+                <target>Facturas</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVA_FACTURA</source>
+                <target>Nueva factura</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_FACTURA</source>
+                <target>Factura</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_IMPORTE_SIN_IVA</source>
+                <target>Imp. Sin IVA</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_IVA</source>
+                <target>IVA</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_TOTAL_FACTURA</source>
+                <target>Total factura</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_CONTRATO</source>
+                <target>Contrato</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_1</source>
+                <target>Datos generales</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_2</source>
+                <target>Detalle de la factura</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_DIRECCION</source>
+                <target>Dirección</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_CIF</source>
+                <target>C.I.F.</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_FACTURA_RENOVACION</source>
+                <target>Es una factura de renovación</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_COMISIONABLE_COL</source>
+                <target>Comisionable colaborador. Importe comisión</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_COMISIONABLE_TEC</source>
+                <target>Comisionable al técnico Importe comisión</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_COMISIONABLE_COM</source>
+                <target>Comisionable al comercial Importe comisión</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_COMISION_PAGADA_COL</source>
+                <target>Marcar esta factura como pagada la comisión al colaborador</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_COMISION_PAGADA_TEC</source>
+                <target>Marcar esta factura como pagada la comisión al técnico</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_COMISION_PAGADA_COM</source>
+                <target>Marcar esta factura como pagada la comisión al comercial</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_OBSERVACIONES</source>
+                <target>Observaciones</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_TIPO</source>
+                <target>Tipo</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_PAGADA</source>
+                <target>Pagada</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_RENOVADA</source>
+                <target>Renovada</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CANCELADA</source>
+                <target>Cancelada</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_PORCENTAJE</source>
+                <target>%</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_EXENTO_IVA</source>
+                <target>Exento de IVA</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SUJETO_IVA</source>
+                <target>Sujeto a IVA</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_IMPORTE_TOTAL</source>
+                <target>Importe total</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_CONCEPTO</source>
+                <target>Concepto</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_TOTAL</source>
+                <target>Total</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_PAGOS_FACTURADOS</source>
+                <target>Pagos incluidos en la factura</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_CONCEPTOS_FACTURADOS</source>
+                <target>Conceptos incluidos en la factura</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_IMPORTE</source>
+                <target>Importe</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_EDITAR_PAGO</source>
+                <target>Editar pago</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_PORCENTAJE_TEXT</source>
+                <target>Porcentaje</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_EDITAR_CONCEPTO</source>
+                <target>Editar concepto</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_ENVIAR_FACTURA</source>
+                <target>Enviar factura/as</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_AÑO</source>
+                <target>Año</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_MES</source>
+                <target>Mes</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_CODIGO</source>
+                <target>Código</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_DESCRIPCION</source>
+                <target>Descripción</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_PARTNER</source>
+                <target>Partner</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>IMPRIMIR_FACTURA</source>
+                <target>Imprimir factura</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_GENERA_VENCIMIENTO</source>
+                <target>Generar vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_GENERA_VENCIMIENTO</source>
+                <target>Generar vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_REALIZAR_ABONO</source>
+                <target>Realizar abono</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_ENVIADA</source>
+                <target>Enviada</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_FECHA_FACTURA_ABONO</source>
+                <target>Fecha abono</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_FECHA_REFERENCIA_VENCIMIENTO</source>
+                <target>Fecha de referencia para los vencimientos</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_FECHA_DOCUMENTO_VENCIMIENTO</source>
+                <target>Fecha de documento</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_SELECT_FECHA_VENCIMIENTO</source>
+                <target>Debes seleccionar una fecha para el vencimiento del cobro</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_MODO_GENERACION_VENCIMIENTO_COBRO</source>
+                <target>Modo de generación de los vencimientos de cobro</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_MODO_GENERACION_VENCIMIENTO_COBRO_1</source>
+                <target>Generar vencimientos según la forma de pago de la factura o empresa</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_MODO_GENERACION_VENCIMIENTO_COBRO_2</source>
+                <target>Generar vencimientos según el siguiente fraccionamiento</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_GENERAR_VENCIMIENTO_PERIODICO</source>
+                <target>Generar vencimientos periódicos</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_GENERAR_VENCIMIENTO_FORMA_PAGO</source>
+                <target>Generar vencimientos según forma de pago definida</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_SELECT_MODO_GENERACION_VENCIMIENTO</source>
+                <target>Debes seleccionar un modo de generación de los vencimiento de cobro</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_FORMA_PAGO</source>
+                <target>Forma de pago</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_NUMERO_COBROS</source>
+                <target>Número de cobros</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_GENERAR_UNO_CADA</source>
+                <target>Generar uno cada</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_DIAS</source>
+                <target>Días</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_MESES</source>
+                <target>Meses</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_AÑOS</source>
+                <target>Años</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_SELECT_GENERAR_VENCIMIENTO</source>
+                <target>Debes seleccionar una forma para generar el vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_SELECT_VENCIMIENTO_PERIODICO</source>
+                <target>Debes seleccionar todas las opciones para un vencimiento periódico</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_SELECT_CADA_CUANTOS_DIAS</source>
+                <target>Debes seleccionar la frecuencia de cobro</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_IGNORAR_DIA_PAGO</source>
+                <target>Ignorar día de pago habitual de la empresa</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_CONFIRMAR_COBRO</source>
+                <target>Confirmar el cobro de las entradas generadas</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_SELECT_FORMA_PAGO</source>
+                <target>Debes seleccionar la forma de pago</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_FICHEROS_ADJUNTOS</source>
+                <target>Ficheros adjuntos</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_FACTURAS_FACTURADAS</source>
+                <target>Facturas generadas</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_AVISO_GENERAR_VENCIMIENTO</source>
+                <target>Se van a generar los vencimientos de las facturas seleccionadas. Si está seguro pulse el botón Generar.</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_ERROR_GENERAR_VENCIMIENTO_MULTIPLE</source>
+                <target>Debes seleccionar como mínimo una factura para generar el vencimiento.</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_VENCIMIENTOS_GENERADOS</source>
+                <target>Vencimientos generados</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_ENVIAR_FACTURAS_CLIENTE</source>
+                <target>Generar fichero y enviar factura al cliente</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_AVISO_AVIO_CLIENTES_FACTURA</source>
+                <target>Se va a enviar a las empresas la factura de renovación. Si está seguro pulse el botón Enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_ERROR_GENVIAR_AVISO_FACTURA</source>
+                <target>Debes seleccionar como mínimo una factura para enviar el aviso.</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_NUMERO_FACTURAS</source>
+                <target>Núm. facturas:</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_TOTAL_FACTURAS</source>
+                <target>Total facturas:</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_BASE_IMP</source>
+                <target>Base Imp.:</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_CANTIDAD</source>
+                <target>Cantidad</target>
+            </trans-unit>
+			
+			 <trans-unit id="85">
+                <source>TRANS_FACTURA_NO_SERVICIOS</source>
+                <target>La factura no tiene servicios incluidos.</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_SERVICIOS_CONTRATO_INCLUIDO</source>
+                <target>Servicios incluidos en la factura</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_FACTURA_NO_SERVICIOS_1</source>
+                <target>La factura</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_FACTURA_NO_SERVICIOS_2</source>
+                <target>no tiene servicios incluidos.</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_NUMERO</source>
+                <target>Numero</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_HUECOS_FACTURAS</source>
+                <target>Huecos libres</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_SERIE</source>
+                <target>Serie</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_FACTURA_RECTIFICATIVA</source>
+                <target>Factura rectificativa</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

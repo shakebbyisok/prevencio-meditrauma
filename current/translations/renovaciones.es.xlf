@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_RENOVACIONES</source>
+                <target>Renovaciones</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVA_RENOVACION</source>
+                <target>Nueva renovación</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CONTRATO</source>
+                <target>Contrato</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_VENCIMIENTO</source>
+                <target>Vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_RENOVADO</source>
+                <target>Renovado</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_DOCUMENTO_RENOVACION</source>
+                <target>Documento de renovación a generar</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_RENOVACION_CON_CONTRATO</source>
+                <target>Renovación con contrato. Generar un contrato de renovación</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_RENOVACION_CON_FACTURA</source>
+                <target>Renovación con factura. Generar una factura de Renovación</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_RENOVACION_TACITAS</source>
+                <target>Renovaciones tácitas. No generar documento de renovación</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_RENOVACION_CON_PROGRAMA_ANUAL</source>
+                <target>Renovaciones con Programa Anual. Generar un Programa Anual de renovación</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_FECHA_RENOVACION</source>
+                <target>Fecha de renovación</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_MANTENER_FECHA_RENOVACION</source>
+                <target>Mantener la fecha de vencimiento de la renovación</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_UTILIZAR_SIGUIENTE_FECHA_RENOVACION</source>
+                <target>Utilizar la siguiente fecha como fecha de renovación</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_FRACCIONAMIENTO_PAGO</source>
+                <target>Fraccionamiento del pago</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_MANTENER_MISMO_NUMERO_PAGOS</source>
+                <target>Mantener el mismo número de pagos que el contrato inicial</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_UTILIZAR_FRACC_PAGOS</source>
+                <target>Utilizar el fraccionamiento de pagos según los rangos definidos en el mantenimiento</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_GENERAR_NUMERO_PAGOS</source>
+                <target>Generar el siguiente número de pagos</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_PLANIFIFCACIONES_VIGILANCIA_SALUD</source>
+                <target>Planificaciones de vigilancia de la salud</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_GENERAR_NUEVA_PLANIFICACION</source>
+                <target>Si el contrato es de salud o mixto con servicios de salud, generar una nueva planificación para los médicos</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_RENOVACION</source>
+                <target>Renovación</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_CNO</source>
+                <target>Certificación Nacional de Ocupación</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CATEGORIA_PROF</source>
+                <target>Categoría profesional</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_REGIMEN_SS</source>
+                <target>Régimen de cotización a la S.S</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_SITUACION_PROF</source>
+                <target>Situación profesional</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_AUTOMONO</source>
+                <target>Es un trabajado autónomo</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_ETT</source>
+                <target>Pertenece a E.T.T.</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_SUBVENCIONADO</source>
+                <target>Es un trabajador subvencionado</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_EXCLUSION_RATIOS</source>
+                <target>Exclusión en los ratios</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_EXCLUIR_RATIO</source>
+                <target>Excluir este trabajador para el cálculo de ratios.</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_NO_APLICABLE_VIG_SALUD</source>
+                <target>(No aplicable para contratos específicos de salud)</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_CANCELADA</source>
+                <target>Cancelada</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_RENOVADO_CON</source>
+                <target>Renovado con</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_RENOVADO_OP_1</source>
+                <target>Renovado mediante un contrato</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_RENOVADO_OP_2</source>
+                <target>Renovado mediante una factura</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_RENOVADO_OP_3</source>
+                <target>Renovación tácita</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_RENOVADO_OP_4</source>
+                <target>Renovación con programa anual</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_TIPO</source>
+                <target>Tipo</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_RENOVACION_MULTIPLE</source>
+                <target>Renovación múltiple</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

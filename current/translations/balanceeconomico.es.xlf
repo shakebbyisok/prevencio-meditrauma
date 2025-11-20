@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_BALANCE_ECONOMICO</source>
+                <target>Balance económico</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CONCEPTO</source>
+                <target>Concepto</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_DEBE</source>
+                <target>Debe</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_HABER</source>
+                <target>Haber</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_GIRO_NO_REMESADO</source>
+                <target>No remesado</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_ESTADO_GIRO</source>
+                <target>Estado</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_GIRO_REMESADO</source>
+                <target>Remesado</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_GENERAR_GIRO</source>
+                <target>Generar Giros Bancarios</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_BALANCE_INCLUYENDO_REMESAS_NO_GIRADAS</source>
+                <target>Balance incluyendo las remesas no giradas</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_BALANCE_EXLUYENDO_REMESAS_NO_GIRADAS</source>
+                <target>Balance excluyendo las remesas no giradas</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_AÑADIR_TRANSFERENCIA_BANCARIA</source>
+                <target>Añadir transferencia bancaria</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_AÑADIR_GIRO</source>
+                <target>Añadir giro bancario</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_NUMERO_FACTURA</source>
+                <target>Número de factura</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_FECHA_EXPEDICION</source>
+                <target>Fecha de expedición</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_AÑADIR_GIROS_PERIODICOS</source>
+                <target>Añadir giros periódicos</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRAN_FECHA_VENCIMIENTO</source>
+                <target>Fecha de vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_IMPORTE_GIRAR</source>
+                <target>Importe a girar</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_AÑADIR_GIRO</source>
+                <target>Añadir giro</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_IMPORTE_FACTURA</source>
+                <target>Importe de la factura</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_FECHA_INICIO</source>
+                <target>Fecha de inicio</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_REALIZAR</source>
+                <target>Realizar</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_GIROS</source>
+                <target>giros</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_UNO_CADA</source>
+                <target>Uno cada</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_DIAS</source>
+                <target>Días</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_MESES</source>
+                <target>Meses</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_AÑOS</source>
+                <target>Años</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_GIROS_PERIODICOS</source>
+                <target>Giros periódicos</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_GIRADO</source>
+                <target>Girado</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_MANUAL</source>
+                <target>Manual</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_COMISION</source>
+                <target>Comisión</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_DEVOLUCION</source>
+                <target>Devolución</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_ES_FACTURA</source>
+                <target>Es factura</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_PAGO_CONFIRMADO</source>
+                <target>Pago confirmado</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_PENDIENTE_GIRAR</source>
+                <target>Pendiente de girar</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_NUEVO_GIRO</source>
+                <target>Nuevo giro</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_NUEVO_TRANSFERENCIA</source>
+                <target>Nueva transferencia</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_FACTURA</source>
+                <target>Factura</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_REMESA</source>
+                <target>Remesa</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_EDIT_GIRO</source>
+                <target>Modificar giro</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_COBRO_CONFIRMADO</source>
+                <target>Confirmado</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_SALDO_INCLUYENDO_NO_GIRADAS</source>
+                <target>Saldo incluyendo las remesas no giradas</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_SALDO_EXCLUYENDO_NO_GIRADAS</source>
+                <target>Saldo excluyendo las remesas no giradas</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_OBS</source>
+                <target>Observaciones</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_NUEVA_ENTRADA_BALANCE</source>
+                <target>Nueva entrada</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_RECIBO_GENERADO</source>
+                <target>Recibo generado</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_FECHA_VENCIMIENTO</source>
+                <target>Fecha vencimiento</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

@@ -1,0 +1,225 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'citaciones' %}
+
+{% block title %} {% trans %}TRANS_CITACIONES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addCitacionSn is defined and app.session.get('privilegiosRol').addCitacionSn is not null %}
+        {% if app.session.get('privilegiosRol').addCitacionSn %}
+            <a href="{{ path('citacion_add') }}" class="btn btn-labeled btn-labeled-left bg-slate" style="margin-left: 5px;">{% trans %}TRANS_AÑADIR_CITACION{% endtrans %}<b><i class="icon-plus2"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <style>
+        .fc-title
+        {
+            color: #000000;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var ultimaFechaCita = '{{ ultimaFechaCita|date('Y-m-d') }}';
+
+            $('#citacion_show_agenda').select2({
+                width: 200,
+            });
+
+            //Seleccionamos la agenda en el desplegable
+            var agendaId = {{ agendaId }};
+            $('#citacion_show_agenda').val(agendaId).trigger('change');
+
+            //Evento que actualiza el calendario en función de la agenda seleccionada
+            $('#citacion_show_agenda').on('change', function(){
+                if($(this).val() != ""){
+                    $('form').submit();
+                }
+            });
+
+            var finDeSemana = {{ finSemanaSn }};
+
+            if (finDeSemana == "1") {
+                finDeSemana = true;
+            } else {
+                finDeSemana = false;
+            }
+
+            var currentRequest;
+            //Creamos el calendario
+            var calendar = document.querySelector('#citaciones');
+            var calendarInit = new FullCalendar.Calendar(calendar, {
+                plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    //right: 'dayGridMonth,dayGridWeek,dayGridDay,timeGridWeek,timeGridDay'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                locale: 'es',
+                editable: false,
+                //events: citacionesArray,
+                defaultDate: ultimaFechaCita,
+                eventLimit: true,
+                weekends: finDeSemana,
+                minTime: '{{ horaInicio }}',
+                maxTime: '{{ horaFin }}',
+                slotDuration: '{{ duracionTramo }}',
+                allDaySlot: false,
+                selectable: true,
+                selectHelper: true,
+                defaultView: 'timeGridWeek',
+                displayEventTime: false,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false
+                },
+                {% if app.session.get('privilegiosRol').editCitacionSn is defined and app.session.get('privilegiosRol').editCitacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editCitacionSn %}
+                        eventClick: function(info) {
+                            var route = "{{ path('citacion_update',{'id':'id'}) }}";
+                            var newUrl = route.replace('id', info.event.id);
+                            window.location.href = newUrl;
+                        },
+                    {% endif %}
+                {% endif %}
+                eventRender: function (info) {
+                    $(info.el).tooltip({ title: info.event.title });
+                    info.el.querySelector('.fc-title').innerHTML = info.event.title;
+                },
+                {% if app.session.get('privilegiosRol').addCitacionSn is defined and app.session.get('privilegiosRol').addCitacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').addCitacionSn %}
+                        dateClick: function(info) {
+                            var dateString = info.dateStr.toString();
+                            var del = dateString.substring(dateString.length -6);
+                            var date = dateString.replace(del, "");
+                            {% if app.session.get('empresa') is not null and app.session.get('empresa') is not empty %}
+                                bootbox.confirm({
+                                    title: "Programar",
+                                    message: "{% trans %}TRANS_CITACION_ALERT_PROGRAMAR{% endtrans %} <b>{{ app.session.get('empresa').empresa }}</b> ?",
+                                    buttons: {
+                                        confirm: {
+                                            label: 'Si',
+                                            className: 'btn-success'
+                                        },
+                                        cancel: {
+                                            label: 'No',
+                                            className: 'btn-danger'
+                                        }
+
+                                    },
+                                    callback: function (result) {
+                                        if (result) {
+                                            $(location).attr('href', '{{ path('citacion_add') }}?dtini=' + date);
+                                        } else {
+                                           $.ajax({
+                                                type: "POST",
+                                                url: '{{ path('citacion_deselect_empresa') }}',
+                                                data: {},
+                                                dataType: "JSON",
+                                                success: function (data) {
+                                                    $(location).attr('href', '{{ path('citacion_add') }}?dtini=' + date.format());
+                                                }
+                                            });
+                                        }
+                                    },
+                                });
+                            {% else %}
+                                $(location).attr('href', '{{ path('citacion_add') }}?dtini=' + date);
+                            {% endif %}
+                        },
+                    {% endif %}
+                {% endif %}
+
+                events: function(info, successCallback, failureCallback) {
+                    if(currentRequest){
+                        currentRequest.abort();
+                        currentRequest = null;
+                    }
+
+                    var dtiniString = info.startStr.toString();
+                    var delIni = dtiniString.substring(dtiniString.length - 6);
+                    var dtini = dtiniString.replace(delIni, "");
+
+                    var delIni2 = dtini.substring(dtini.length - 9);
+                    dtini = dtini.replace(delIni2, "");
+
+                    var dtfinString = info.endStr.toString();
+                    var delFin = dtfinString.substring(dtfinString.length - 6);
+                    var dtfin = dtfinString.replace(delFin, "");
+
+                    var delFin2 = dtfin.substring(dtfin.length - 9);
+                    dtfin = dtfin.replace(delFin2, "");
+
+                    currentRequest = $.ajax({
+                        type: "POST",
+                        url: '{{ path('citacion_busca_citas') }}',
+                        dataType: 'JSON',
+                        data: {
+                            start: dtini,
+                            end: dtfin
+                        },
+                        cache: true,
+                        success: function (data) {
+                            var events = [];
+                            $(JSON.parse(data)).each(function() {
+                                events.push({
+                                    id:  $(this).attr('id'),
+                                    title: $(this).attr('title'),
+                                    start: $(this).attr('start'),
+                                    end: $(this).attr('end'),
+                                    color: $(this).attr('color'),
+                                });
+                            });
+                           successCallback(events);
+                        }
+                    });
+                },
+            }).render();
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-header header-elements-inline">
+            <h2 class="card-title" style="text-align: center !important;">{% trans %}TRANS_AGENDA{% endtrans %} de {{ nombreAgenda }}</h2>
+            <div>
+                {% if estados is defined and estados is not empty %}
+                    {% for estado in estados %}
+                        <span style="background-color: {{ estado.color }}; color: white;" class="badge">{{ estado.descripcion }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="header-elements">
+                {{ form_start(form) }}
+                <label>{% trans %}TRANS_AGENDA{% endtrans %}:</label>
+                {{ form_widget(form.agenda) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="citaciones"></div>
+        </div>
+    </div>
+{% endblock %}

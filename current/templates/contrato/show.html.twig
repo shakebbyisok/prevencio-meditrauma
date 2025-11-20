@@ -1,0 +1,815 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'contratos' %}
+
+{% block title %} {% trans %}TRANS_CONTRATOS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addContratoSn is defined and app.session.get('privilegiosRol').addContratoSn is not null %}
+        {% if app.session.get('privilegiosRol').addContratoSn %}
+            <a href="{{ path('contrato_create') }}" class="btn btn-labeled btn-labeled-left bg-primary" style="margin-right: 10px;">{% trans %}TRANS_NUEVO_CONTRATO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').renovarContratoMultipleSn is defined and app.session.get('privilegiosRol').renovarContratoMultipleSn is not null %}
+        {% if app.session.get('privilegiosRol').renovarContratoMultipleSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-slate" data-toggle="modal" data-target="#modal_renovar_contrato_multiple">{% trans %}TRANS_RENOVAR_MULTIPLE{% endtrans %}<b><i class="icon-copy4"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for contrato in contratos %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editContratoSn is defined and app.session.get('privilegiosRol').editContratoSn is not null %}
+                    {% if app.session.get('privilegiosRol').editContratoSn %}
+                        actions += '<a href="{{ path('contrato_update', { "id": contrato.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+{#                {% if contrato.renovacionid is not null %}#}
+{#                    {% if contrato.renovado == false %}#}
+{#                        {% if app.session.get('privilegiosRol').renovarRenovacionSn is defined and app.session.get('privilegiosRol').renovarRenovacionSn is not null %}#}
+{#                            {% if app.session.get('privilegiosRol').renovarRenovacionSn %}#}
+{#                                actions += '<a href="{{ path('renovacion_renovar', { 'id': contrato.renovacionid }) }}" class="list-icons-item" data-popup="tooltip" title="Renovar" data-container="body"><i class="icon-copy4"></i></a>';#}
+{#                            {% endif %}#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+{#                {% endif %}#}
+
+                {% if app.session.get('privilegiosRol').printContratoSn is defined and app.session.get('privilegiosRol').printContratoSn is not null %}
+                    {% if app.session.get('privilegiosRol').printContratoSn %}
+                        {% if contrato.fichero_id is not null %}
+                            actions += '<a href="{{ path('gdoc_open_file', { "fileId": contrato.fichero_id, "tipo": "1" }) }}" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir" data-container="body"><i class="icon-printer2"></i></a>';
+                            {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                    actions += '<a href="#" data-id="{{ contrato.fichero_id }}" class="list-icons-item eliminarFichero" data-popup="tooltip" title="Eliminar fichero" data-container="body"><i class="icon-file-minus"></i></a>';
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            actions += '<a href="#" data-id="{{ contrato.id }}" class="list-icons-item selectContrato" data-popup="tooltip" title="Generar fichero" data-container="body" data-toggle="modal" data-target="#modal_generate_contrato"><i class="icon-file-plus"></i></a>';
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').deleteContratoSn is defined and app.session.get('privilegiosRol').deleteContratoSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteContratoSn %}
+                        actions += '<a href="{{ path('contrato_delete', { "id": contrato.id }) }}" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var renovado;
+                {% if contrato.renovado == true %}
+                    renovado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    renovado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var tipo = '';
+                {% if contrato.tipo is not empty %}
+                    {% if contrato.tipoid == 1 %}
+                        tipo = '<span class="badge badge-success">{{ contrato.tipo }}</span>';
+                    {% elseif contrato.tipoid == 2 %}
+                        tipo = '<span class="badge badge-primary">{{ contrato.tipo }}</span>';
+                    {% elseif contrato.tipoid == 3 %}
+                        tipo = '<span class="badge badge-danger">{{ contrato.tipo }}</span>';
+                    {% else %}
+                        tipo = '<span class="badge badge-info">{{ contrato.tipo }}</span>';
+                    {% endif %}
+                {% endif %}
+
+                var activa = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% if contrato.anulado == true %}
+                    activa = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var facturado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% if contrato.facturado == true %}
+                    facturado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% endif %}
+
+                var input = '<div class="uniform-checker" id="uniform-{{ contrato.id }}"><span><input type="checkbox" name="contrato" id="{{ contrato.id }}" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+
+                array.push(input, actions, '{{ contrato.contrato }}', facturado, activa, '{{ contrato.empresa }}', '{{ contrato.cnae }}', tipo, '{{ contrato.fechainicio }}', '{{ contrato.fechavencimiento }}', '{{ contrato.importe }}', '{{ contrato.tecnico }}', '{{ contrato.colaborador }}', '{{ contrato.agente }}', '{{ contrato.localidad_postal }}', '{{ contrato.provincia_postal }}', '{{ contrato.trabajadores }}','{{ contrato.vigilante_salud }}','{{ contrato.fecha_alta }}','{{ contrato.nombre_representante }}','{{ contrato.ccc }}','{{ contrato.codigo_empresa }}','{{ contrato.fecha_vencimiento_contrato }}','{{ contrato.cif }}','{{ contrato.codigo_postal }}','{{ contrato.correo }}','{{ contrato.gestor }}','{{ contrato.domicilio_fiscal }}','{{ contrato.municipio_serpa }}','{{ contrato.localidad_fiscal }}');
+
+                arrayData.push(array);
+
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportContratoSn is defined and app.session.get('privilegiosRol').exportContratoSn is not null %}
+                {% if app.session.get('privilegiosRol').exportContratoSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que genera el contrato
+            $('#btnGeneraContrato').click(function(){
+
+                $('#btnGeneraContrato').prop("disabled", true);
+                $('#btnGeneraContrato').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantilla').val(),
+                        'id': $('#contratoId').val(),
+                        'tipo': 1,
+                        'select2': 0
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnGeneraContrato').prop("disabled", false);
+                            $('#btnGeneraContrato').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnGeneraContrato').prop("disabled", false);
+                        $('#btnGeneraContrato').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+                var renovado = $('#renovado').val();
+                var tipo = $('#tipo').val();
+                var activa = $('#activa').val();
+                var facturado = $('#facturado').val();
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }
+
+                if(fechaFin != ""){
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }
+
+                if(dtInici != "" || dtFin != "" || renovado || tipo || activa || facturado){
+                    filtrar(dtInici, dtFin, 1, renovado, tipo, activa, facturado);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                filtrar(null, null, 2, null, null, null, null);
+            });
+
+            $('#btnRenovarMultiple').click(function () {
+                // Obtener el valor del número decimal
+                var numeroDecimal = $('#numeroDecimal').val();
+
+
+
+                if(arrayContratos.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_CONTRATOS_MULTIPLE{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('renovacion_contrato_multiple') }}?contratos=' + arrayContratos + '&numeroDecimal=' + numeroDecimal;
+            });
+
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(fechaInicio, fechaFin, op, renovado, tipo, activa, facturado){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('contrato_filtrar') }}',
+                dataType: 'JSON',
+                data: {
+                    'ini': fechaInicio,
+                    'fin': fechaFin,
+                    'renovado': renovado,
+                    'tipo': tipo,
+                    'activa': activa,
+                    'facturado': facturado
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    var table = $('.datatable-export-excel').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            var array = [];
+                            var actions = '<div class="list-icons">';
+
+                            var id = item['id'];
+
+                            {% if app.session.get('privilegiosRol').editContratoSn is defined and app.session.get('privilegiosRol').editContratoSn is not null %}
+                                {% if app.session.get('privilegiosRol').editContratoSn %}
+                                    var url = '{{ path("contrato_update", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+url+'" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').printContratoSn is defined and app.session.get('privilegiosRol').printContratoSn is not null %}
+                                {% if app.session.get('privilegiosRol').printContratoSn %}
+                                    if(item['fichero_id'] != null){
+                                        var url = '{{ path("gdoc_open_file", {'fileId': 'id'}) }}';
+                                        url = url.replace("id", item['fichero_id']);
+                                        actions += '<a href="'+url+'" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir" data-container="body"><i class="icon-printer2"></i></a>';
+                                        {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                            {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                                actions += '<a href="#" data-id="'+item['fichero_id']+'" class="list-icons-item eliminarFichero" data-popup="tooltip" title="Eliminar fichero" data-container="body"><i class="icon-file-minus"></i></a>';
+                                            {% endif %}
+                                        {% endif %}
+                                    }else{
+                                        actions += '<a href="#" data-id="'+id+'" class="list-icons-item selectContrato" data-popup="tooltip" title="Generar fichero" data-container="body" data-toggle="modal" data-target="#modal_generate_contrato"><i class="icon-file-plus"></i></a>';
+                                    }
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').deleteContratoSn is defined and app.session.get('privilegiosRol').deleteContratoSn is not null %}
+                                {% if app.session.get('privilegiosRol').deleteContratoSn %}
+                                    var url = '{{ path("contrato_delete", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+id+'" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            actions += '</div>';
+
+                            var renovado;
+                            if(item['renovado'] == true){
+                                renovado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                            }else{
+                                renovado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                            }
+
+                            var tipo = '';
+                            if(item['tipoid'] != ""){
+                                if(item['tipoid'] == '1'){
+                                    tipo = '<span class="badge badge-success">'+item['tipo']+'</span>';
+                                }else if(item['tipoid'] == '2'){
+                                    tipo = '<span class="badge badge-primary">'+item['tipo']+'</span>';
+                                }else if(item['tipoid'] == '3'){
+                                    tipo = '<span class="badge badge-danger">'+item['tipo']+'</span>';
+                                }else{
+                                    if(item['tipo'] != null){
+                                        tipo = '<span class="badge badge-info">'+item['tipo']+'</span>';
+                                    }else{
+                                        tipo = '';
+                                    }
+                                }
+                            }
+
+                            var importe = '';
+                            if(item['importe'] != undefined){
+                                importe = item["importe"].replace('.', ',');
+                                importe = parseFloat(item["importe"]).toFixed(2)+'';
+                                importe = importe.replace('.', ',');
+                            }else{
+                                importe = '0,00';
+                            }
+
+                            var activa = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                            if(item['anulado'] == true){
+                                activa = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                            }
+
+                            var facturadoContrato;
+                            if(item['facturado'] == true){
+                                facturadoContrato = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                            }else{
+                                facturadoContrato = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                            }
+
+                            var input = '<div class="uniform-checker" id="uniform-'+item['id']+'"><span><input type="checkbox" name="contrato" id="'+item['id']+'" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+
+                            array.push(input, actions, ''+item['contrato']+'', facturadoContrato, activa, ''+item['empresa']+'', ''+item['cnae']+'', tipo, ''+item['fechainicio']+'', ''+item['fechavencimiento']+'', ''+item["importe"]+'', ''+item['tecnico']+'', ''+item['colaborador']+'', ''+item['agente']+'', ''+item['localidad_postal']+'', ''+item['provincia_postal']+'', ''+item['trabajadores']+'', ''+item['vigilante_salud']+'', ''+item['fecha_alta']+'', ''+item['nombre_representante']+'', ''+item['ccc']+'', ''+item['codigo_empresa']+'', ''+item['fecha_vencimiento_contrato']+'', ''+item['cif']+'', ''+item['codigo_postal']+'', ''+item['correo']+'', ''+item['gestor']+'', ''+item['domicilio_fiscal']+'', ''+item['municipio_serpa']+'', ''+item['localidad_fiscal']+'');
+
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+                    }else{
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteFichero(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_delete_file') }}",
+                data: {
+                    'id': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que añade el id del contrato para su generacion
+        $(document).on('click', 'a.selectContrato', function(){
+            var contratoId = $(this).data('id');
+            $('#contratoId').val(contratoId);
+        });
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarFichero', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,1)
+                    }
+                }
+            });
+        });
+
+        var arrayContratos = [];
+        //Boton que añade el contrato a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'contrato\']', function(){
+            var contratoId = $(this).attr('id');
+            if ($(this).prop('checked')) {
+                $('#uniform-'+contratoId+' span').addClass('checked');
+                arrayContratos.push(contratoId);
+            }else{
+                $('#uniform-'+contratoId+' span').removeClass('checked');
+                arrayContratos.splice($.inArray(contratoId, arrayContratos),1);
+            }
+        });
+
+        //Boton que añade todas los contratos a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'contratosAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'contrato\']");
+                    var contratoId = $(check).attr('id');
+                    $('#uniform-'+contratoId+' span').addClass('checked');
+                    arrayContratos.push(contratoId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'contrato\']");
+                    var contratoId = $(check).attr('id');
+                    $('#uniform-'+contratoId+' span').removeClass('checked');
+                }
+                arrayContratos.splice(0, arrayContratos.length);
+            }
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+{#            <label>#}
+{#                <span>Renovado:</span>#}
+{#                <select id="renovado" class="form-control">#}
+{#                    <option value=""></option>#}
+{#                    <option value="1">Sí</option>#}
+{#                    <option value="0">No</option>#}
+{#                </select>#}
+{#            </label>#}
+
+            <label>
+                <span>Tipo empresa:</span>
+                <select id="tipo" multiple class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    {% if tipoEmpresa is defined and tipoEmpresa is not empty %}
+                        {% for tipo in tipoEmpresa %}
+                            <option value="{{ tipo.id }}">{{ tipo.codigo }} - {{ tipo.descripcion }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </label>
+
+            <label>
+                <span>Activa:</span>
+                <select id="activa" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                </select>
+            </label>
+
+            <label>
+                <span>Facturado:</span>
+                <select id="facturado" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                </select>
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="contratosAll" id="selectContratosAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="text-center" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Contrato" aria-sort="ascending">{% trans %}TRANS_CONTRATO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Facturado">{% trans %}TRANS_FACTURADO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Activa">{% trans from 'empresas' %}TRANS_ACTIVA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Cnae">CNAE
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="TipoEmpresa">{% trans from 'empresas' %}TRANS_TIPO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Vencimiento">{% trans %}TRANS_VENCIMIENTO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Importe">{% trans %}TRANS_IMPORTE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tecnico">{% trans from 'empresas' %}TRANS_TECNICO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Colaborador">{% trans from 'empresas' %}TRANS_COLABORADOR{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Agente">{% trans from 'empresas' %}TRANS_AGENTE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Poblacion">{% trans from 'empresas' %}TRANS_LOCALIDAD{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Provincia">{% trans from 'empresas' %}TRANS_PROVINCIA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Trabajadores">{% trans from 'empresas' %}TRANS_TRABAJADORES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Vigilante salud">Vigilante Salud
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha alta">Fecha alta administrativa
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Representante">Representante
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="ccc">CCC
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Codigo empresa">Codigo empresa
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha vencimiento contrato">Fecha vencimiento contrato
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Cif">CIF
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Codigo postal">Codigo postal
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Correo">Correo
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Gestor">Gestor
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Domicilio fiscal">Domicilio fiscal
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Municipio Serpa">Municipio Serpa
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Localidad fiscal">Localidad fiscal
+                        </th>
+{#                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"#}
+{#                            aria-label="Renovado">{% trans %}TRANS_RENOVADO{% endtrans %}#}
+{#                        </th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generacion contrato -->
+    <div id="modal_generate_contrato" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_CONTRATO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillas is not empty %}
+                            {% for lp in listPlantillas %}
+                                <option value="{{ lp.id }}">{{ lp.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="contratoId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGeneraContrato">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion contrato -->
+
+    <!-- Modal renovar contrato multiple -->
+    <div id="modal_renovar_contrato_multiple" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_RENOVAR_MULTIPLE{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                        {% trans %}TRANS_AVISO_CONTRATOS_A_RENOVAR{% endtrans %}
+                    </div>
+                    <!-- Agregar el input para números decimales -->
+                    <div class="form-group">
+                        <label for="numeroDecimal">Porcentaje incremento IPC</label>
+                        <input type="number" step="0.01" class="form-control" id="numeroDecimal" placeholder="Incremento IPC" value="0.5">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnRenovarMultiple">{% trans %}TRANS_RENOVAR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion contrato -->
+
+{% endblock %}

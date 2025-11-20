@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Admin;
+
+use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Form\FormMapper;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
+final class Concepto extends AbstractAdmin
+{
+    protected function configureFormFields(FormMapper $formMapper)
+    {
+        $formMapper
+	        ->add('descripcion', TextType::class, ['label' => 'Nombre'])
+	        ->add('codigo', TextType::class, ['label' => 'Código', 'required' => false])
+            ->add('iva', NumberType::class, ['label' => 'IVA', 'required' => false])
+        ;
+    }
+
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    {
+        $datagridMapper
+	        ->add('descripcion', null, ['label' => 'Nombre'])
+		    ->add('codigo', null, ['label' => 'Código']);
+    }
+
+    protected function configureListFields(ListMapper $listMapper)
+    {
+        $listMapper
+	        ->addIdentifier('descripcion', null, ['label' => 'Nombre'])
+            ->add('codigo', null, ['label' => 'Código'])
+	        ->add('_action', 'actions', array(
+		        'actions' => array(
+			        'edit' => array(),
+			        'delete' => array(),
+		        )
+	        ));
+    }
+}

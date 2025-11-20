@@ -1,0 +1,126 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'balanceeconomico' %}
+
+{% block arrow %}<a href="{{ path('empresa_update', { "id": app.session.get('empresa').id }) }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_BALANCE_ECONOMICO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% trans %}TRANS_EDIT_GIRO{% endtrans %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        - {{ app.session.get('empresa').empresa }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        });
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.empresa) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.facturacion) }}
+                </div>
+                {% if app.session.get('privilegiosRol').importeBalance is defined and app.session.get('privilegiosRol').importeBalance is not null %}
+                    {% if app.session.get('privilegiosRol').importeBalance %} 
+                            <div class="col-lg-6">
+                                {{ form_row(form.importe, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                    {% else %}
+                        {{ form_row(form.importe, {'attr': {'readonly': 'readonly', 'class': 'type_text_to_number'}}) }}
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.fecha) }}
+                </div>
+                <div class="col-lg-6">
+                    {{ form_row(form.vencimiento) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.cuenta) }}
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.girado) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.manual) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.comision) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.remesado) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.esFactura) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.devolucion) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.pagoConfirmado) }}
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.observaciones) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editGiroBalanceEconomicoSn is defined and app.session.get('privilegiosRol').editGiroBalanceEconomicoSn is not null %}
+                {% if app.session.get('privilegiosRol').editGiroBalanceEconomicoSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

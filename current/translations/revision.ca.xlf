@@ -1,0 +1,458 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_REVISIONES</source>
+                <target>Revisions</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_FECHA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_TRABAJADOR</source>
+                <target>Treballador</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Lloc de treball</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_AÑADIR_REVISION</source>
+                <target>Afegir revisió</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_REVISION</source>
+                <target>Revisió</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_DATOS_GENERALES</source>
+                <target>Dades generals</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_CERTIFICACION</source>
+                <target>Certificació</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_GENERAR_CUESTIONARIO</source>
+                <target>Generar qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_VER_RESUMEN</source>
+                <target>Veure resum</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_RECOMENDACIONES</source>
+                <target>Recomanacions</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_PROTOCOLOS</source>
+                <target>Protocols</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_PROTOCOLO</source>
+                <target>Protocol</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_FECHA_CERTIFICADO</source>
+                <target>Data certificat</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_CERTIFICADO</source>
+                <target>Certificat</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_INFORME</source>
+                <target>Informe</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_EQUIPO_MEDICO</source>
+                <target>Equip mèdic</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_NOTAS_INTERNAS</source>
+                <target>Notes internes</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_OBSERVACIONES</source>
+                <target>Observacions</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_CONCLUSIONES</source>
+                <target>Conclusions</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_RESTRICCIONES</source>
+                <target>Restriccions</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_CUESTIONARIO</source>
+                <target>Qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_CUESTIONARIOS</source>
+                <target>Qüestionaris</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_PREGUNTAS</source>
+                <target>Preguntes</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_PREGUNTA</source>
+                <target>Pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_IMPRIMIR_CUESTIONARIO</source>
+                <target>Imprimir qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_CONSEJOS_MEDICOS</source>
+                <target>Consell mèdics</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_CONSEJO</source>
+                <target>Consell</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_NO_INFORMADOS</source>
+                <target>No informats</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_INFORMADOS</source>
+                <target>Informats</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_TOTALES</source>
+                <target>Totals</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_RESUMEN</source>
+                <target>Resum</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_APTO</source>
+                <target>Apte</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_RESPUESTAS</source>
+                <target>Respostes</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_RESPUESTA</source>
+                <target>Resposta</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_GUARDAR_RESPUESTAS</source>
+                <target>Guardar respostes</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_ACTUALIZADO</source>
+                <target>Actualitzat</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_DATOS_ACTUALIZADOS</source>
+                <target>Les dades s\'han actualitzat correctament.</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_SELECT_CUESTIONARIO</source>
+                <target>Has de seleccionar un qüestionari a modificar.</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_CUESTIONARIO_NO_DATOS</source>
+                <target>El qüestionari no té preguntes a modificar.</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_PROTOCOLOS_PUESTO_TRABAJO</source>
+                <target>Protocols - Lloc de treball</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_MSG_NO_EVALUACION</source>
+                <target>El treballador no té cap avaluació realitzada.</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_IMPRIMIR_REVISION</source>
+                <target>Imprimir revisió</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_ENVIAR_CUESTIONARIO</source>
+                <target>Enviar qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_IMPRIMIR_APTITUD</source>
+                <target>Imprimir aptitut</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_CREAR_REVISION</source>
+                <target>Crear revisió</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_ESTADO</source>
+                <target>Estat</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_IMPRIMIR_RESUMEN_REVISION</source>
+                <target>Imprimir resum revisió</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_REVISIONES_PENDIENTES</source>
+                <target>Revisions pendents</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_ELECTRO</source>
+                <target>Electrocardiograma</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_ANALITICA</source>
+                <target>Analítica</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_IMPRIMIR_REVISION_MEDICA</source>
+                <target>Imprimir revisió mèdica</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_NUMERO_PETICION</source>
+                <target>Numero petició</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_FECHA_RECUPERACION_RESULTADO</source>
+                <target>Data recuperació resultat</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_ANALITICA</source>
+                <target>Analítica</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_MSG_NO_RECUPERAR_RESULTADO</source>
+                <target>El resultat no es pot recuperar perquè no està informat el numero de petició.</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_MSG_NO_RESULTADO</source>
+                <target>El resultat no està disponible.</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_MODIFICAR_REVISION</source>
+                <target>Modificar revisió</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_CUESTIONARIO_MEDICO</source>
+                <target>Qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_REVISION_MEDICA</source>
+                <target>Revisió mèdica</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_DOCUMENTOS_A_ENVIAR</source>
+                <target>Documents a enviar</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_BORRAR_FECHA_ANALITICA</source>
+                <target>Esborrar fecha analitica</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_MEDICO</source>
+                <target>Metge</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_APTITUD</source>
+                <target>Aptitut</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_IMPRIMIR_RESTRICCION</source>
+                <target>Imprimir restricció</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_TELEFONO_MOVIL</source>
+                <target>Telèfon mòbil</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_APTITUD_ENVIADA</source>
+                <target>Aptitu enviada</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_ELECTROCARDIOGRAMA</source>
+                <target>Electrocardiograma</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_REVISION_EXISTE</source>
+                <target>Ja existeix una revisió per aquest treballadir i dia</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_AVISO_ELECTRO_IMG</source>
+                <target>El fitxer de l'electrocardiograma ha de ser una imatge.</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_BORRAR_IMAGEN_ELECTRO</source>
+                <target>Esborrar imatge electrocardiograma</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_CODIGO_TRABAJADOR</source>
+                <target>Codi treballador</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_DOCUMENTOS_ADJUNTOS</source>
+                <target>Documents adjunts</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_DOCUMENTO</source>
+                <target>Document</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_ERROR_ESTADO_NO_VALIDO</source>
+                <target>No pots canviar la revisió a l'estat seleccionat.</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_FECHA_ENVIO</source>
+                <target>Data enviament</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_FECHA_FIRMA</source>
+                <target>Data firma</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_DNI_OBLIGATORIO</source>
+                <target>Has d'informar el DNI.</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_DTNAC_OBLIGATORIO</source>
+                <target>Has d'informar la data de naixement.</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_USUARIO_FIRMA</source>
+                <target>Usuari firma</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_DNI_VALIDO</source>
+                <target>Has d'informat un DNI/NIE vàlid.</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_RESTRICCION</source>
+                <target>Restricció</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>TRANS_NUMERO_PETICION_VERIFICACION</source>
+                <target>Numero petició verificació</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_NUMERO_PETICION_VERIFICACION_ERROR</source>
+                <target>Has de verificar el numero de petició</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_NUMERO_PETICION_VERIFICACION_ERROR_2</source>
+                <target>El numero de petició de verificació no coincideix</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_NUMERO_PETICION_LONGITUD</source>
+                <target>La longitud del número de petició no és correcta.</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_ESTADO_OBLIGATORIO</source>
+                <target>L'estat és obligatori.</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_VALIDEZ</source>
+                <target>Validesa</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

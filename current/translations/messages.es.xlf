@@ -1,0 +1,935 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_MENU_ADM</source>
+                <target>Administración</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_MENU_TEC</source>
+                <target>Técnico</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_MENU_MED</source>
+                <target>Médico</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_MENU_ADM_EMPRESAS</source>
+                <target>Empresas</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_MENU_ADM_CENTROS_TRABAJO</source>
+                <target>Centros de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_MENU_ADM_TRABAJADORES</source>
+                <target>Trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_MENU_ADM_CONTRATOS</source>
+                <target>Contratos</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_ADM_RENOVACIONES</source>
+                <target>Renovaciones</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_ADM_PAGOS_PENDIENTES</source>
+                <target>Pagos pendientes</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_ADM_FACTURACION</source>
+                <target>Facturación</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_ADM_BALANCE</source>
+                <target>Balance económico</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_ADM_BUSCADORES</source>
+                <target>Extracción de datos</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_CONFIGURACION</source>
+                <target>Configuración</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MENU_LOGOUT</source>
+                <target>Cerrar sesión</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MENU_CAMBIAR_IDIOMA</source>
+                <target>Cambiar idioma</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_MENU_SELECT_IDIOMA</source>
+                <target>Selecciona un idioma</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_MENU_SELECT_IDIOMA_ES</source>
+                <target>Español</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_MENU_SELECT_IDIOMA_CA</source>
+                <target>Catalán</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_EDITAR</source>
+                <target>Editar</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_ELIMINAR</source>
+                <target>Eliminar</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_ACCIONES</source>
+                <target>Acciones</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_CREATE_OK</source>
+                <target>El registro se ha creado correctamente</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_DELETE_OK</source>
+                <target>El registro se ha eliminado correctamente</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_UPDATE_OK</source>
+                <target>El registro se ha modificado correctamente</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_CONFIRM_DELETE_REGISTRO</source>
+                <target>¿Estás seguro que deseas eliminar el registro?</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_NUEVO</source>
+                <target>Nuevo</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_NUEVA</source>
+                <target>Nueva</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_AÑADIR_TARIFA</source>
+                <target>Añadir Tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_AÑADIR</source>
+                <target>Añadir</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SIN_REGISTROS</source>
+                <target>Sin registros.</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_AVISO_AÑADIDO</source>
+                <target>¡Añadido!</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_AVISO_MODIFICADO</source>
+                <target>¡Modificado!</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_AVISO_ELIMINADO</source>
+                <target>¡Eliminado!</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_AVISO_AÑADIDO_MSG</source>
+                <target>El registro se ha añadido con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_AVISO_MODIFICADO_MSG</source>
+                <target>El registro se ha modificado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_AVISO_ELIMINADO_MSG</source>
+                <target>El registro se ha eliminado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_AVISO_ERROR</source>
+                <target>Se ha producido un error. Contacte con soporte.</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_RENOVAR_OK</source>
+                <target>El registro se ha renovado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_AÑADIR_SERVICIO</source>
+                <target>Añadir servicio</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_ELIMINAR_SERVICIO</source>
+                <target>Eliminar servicio</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_AÑADIR_TECNICO</source>
+                <target>Añadir técnico</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_ELIMINAR_TECNICO</source>
+                <target>Eliminar técnico</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_AÑADIR_EMAIL</source>
+                <target>Añadir email</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_ELIMINAR_EMAIL</source>
+                <target>Eliminar email</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_ELIMINAR_TARIFA</source>
+                <target>Eliminar tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_AÑADIR_CNAE</source>
+                <target>Añadir CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_ELIMINAR_CNAE</source>
+                <target>Eliminar CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_ELIMINAR_PAGO</source>
+                <target>Eliminar pago</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_ELIMINAR_CONCEPTO</source>
+                <target>Eliminar concepto</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_AÑADIR_PAGO</source>
+                <target>Añadir pago</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_AÑADIR_CONCEPTO</source>
+                <target>Añadir concepto</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_MSG_GUARDAR_ANTES</source>
+                <target>Debes guardar los cambios antes de continuar</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_MENU_ADM_DATOS_BANCARIOS</source>
+                <target>Datos bancarios</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_ELIMINAR_GIRO</source>
+                <target>Eliminar giro</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_ELIMINAR_TRANSFERENCIA</source>
+                <target>Eliminar transferencia</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_AÑADIR_TRABAJADOR</source>
+                <target>Añadir trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_ELIMINAR_TRABAJADOR</source>
+                <target>Eliminar trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_ELIMINAR_CENTRO</source>
+                <target>Eliminar centro de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_MENU_ADM_REMESAS</source>
+                <target>Remesas bancarias</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_ATENCION</source>
+                <target>¡Atención!</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_MSG_OK_REMESA</source>
+                <target>El fichero de remesas se ha generado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_MENU_ADM_REMESAS_GENERADAS</source>
+                <target>Remesas generadas</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_MSG_NO_FICHERO_REMESA</source>
+                <target>No se ha encontrado el fichero.</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_ERROR</source>
+                <target>¡Error!</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_SELECT_EMPRESA</source>
+                <target>Debes seleccionar una empresa.</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_BUSCADOR_ERROR_REGISTROS</source>
+                <target>La consulta devuelve una cantidad de registros muy elevada, intente utilizar
+                    más filtros.</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_COPY_OK</source>
+                <target>El registro se ha copiado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_MENU_ADM_PLANTILLAS</source>
+                <target>Plantillas</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_DOWN</source>
+                <target>Descargar</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_OPEN</source>
+                <target>Abrir</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_ELIMINAR_MANDATO</source>
+                <target>Eliminar mandato</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_SELECT_ALL</source>
+                <target>Seleccionar todas</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_ERROR_EXTENSION</source>
+                <target>¡Error! La extensión del fichero no es válida.</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_IMPORTACION_OK</source>
+                <target>Los datos se han importado correctamente.</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_ELIMINAR_ALTA_BAJA</source>
+                <target>Eliminar alta/baja</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_NO_EMPRESA</source>
+                <target>¡Atención! Debes seleccionar una empresa.</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_MENU_MONITORAUDITORIA</source>
+                <target>Monitor auditoria</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_CONFIRM_RETURN</source>
+                <target>¿Estás seguro que deseas salir?</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_MENU_TEC_GRUPO_EMPRESAS</source>
+                <target>Grupos de empresas</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_MENU_TEC_PUESTOS_TRABAJO</source>
+                <target>Puestos de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_MENU_TEC_TRABAJADORES</source>
+                <target>Trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_MENU_TEC_EMPRESAS</source>
+                <target>Empresas</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_MENU_TEC_EVALUACIONES</source>
+                <target>Evaluaciones</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_ELIMINAR_FICHERO</source>
+                <target>Eliminar fichero</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>IMPRIMIR_FACTURA</source>
+                <target>Imprimir factura</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_PLANTILLA</source>
+                <target>Plantilla</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_IMPRIMIR</source>
+                <target>Imprimir</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_AVISO_FRACCIONADO</source>
+                <target>¡Fraccionado!</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_AVISO_FRACCIONADO_MSG</source>
+                <target>Los pagos se han fraccionado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_REALIZAR</source>
+                <target>Realizar</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_ENVIAR</source>
+                <target>Enviar</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_AVISO_NO_FACTURA</source>
+                <target>Debes seleccionar como mínimo una factura a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="93">
+                <source>TRANS_SEND_OK</source>
+                <target>El correo se ha enviado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="94">
+                <source>TRANS_VENCIMIENTO_GENERADO</source>
+                <target>El vencimiento se ha generado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="95">
+                <source>TRANS_VENCIMIENTO_ELIMINADO</source>
+                <target>El vencimiento se ha eliminado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="96">
+                <source>TRANS_ELIMINAR_VENCIMIENTO</source>
+                <target>Eliminar vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="97">
+                <source>TRANS_VENCIMIENTO_COBRO_CONFIRMADO</source>
+                <target>El cobro del vencimiento ha sido confirmado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="98">
+                <source>TRANS_MENU_MED_EMPRESAS</source>
+                <target>Empresas</target>
+            </trans-unit>
+
+            <trans-unit id="99">
+                <source>TRANS_MENU_MED_CITACIONES</source>
+                <target>Citaciones</target>
+            </trans-unit>
+
+            <trans-unit id="100">
+                <source>TRANS_MENU_MED_INVESTIGACIONES</source>
+                <target>Investigaciones</target>
+            </trans-unit>
+
+            <trans-unit id="101">
+                <source>TRANS_MENU_MED_REVISIONES</source>
+                <target>Revisiones</target>
+            </trans-unit>
+
+            <trans-unit id="102">
+                <source>TRANS_MENU_MED_ENFERMEDADES</source>
+                <target>Mantenimiento de enfermedades</target>
+            </trans-unit>
+
+            <trans-unit id="103">
+                <source>TRANS_MENU_MED_TRABAJADORES</source>
+                <target>Trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="104">
+                <source>TRANS_DELETE_EMPRESA_GRUPO_EMPRESA</source>
+                <target>Eliminar empresa del grupo</target>
+            </trans-unit>
+
+            <trans-unit id="105">
+                <source>TRANS_ERROR_FECHA_INI_FILTRO</source>
+                <target>La fecha de inicio no es válida.</target>
+            </trans-unit>
+
+            <trans-unit id="106">
+                <source>TRANS_ERROR_FECHA_FIN_FILTRO</source>
+                <target>La fecha de fin no es válida.</target>
+            </trans-unit>
+
+            <trans-unit id="107">
+                <source>TRANS_UPLOAD_IMG</source>
+                <target>Las imagenes se han subido con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="108">
+                <source>TRANS_ERROR_PRINT_EVALUACION</source>
+                <target>No se ha podido imprimir la evaluación.</target>
+            </trans-unit>
+
+            <trans-unit id="109">
+                <source>TRANS_ACEPTAR</source>
+                <target>Aceptar</target>
+            </trans-unit>
+
+            <trans-unit id="110">
+                <source>TRANS_FIRMAS_TECNICOS</source>
+                <target>Firmas técnicos</target>
+            </trans-unit>
+
+            <trans-unit id="111">
+                <source>TRANS_IMPRIMIENDO</source>
+                <target>Imprimiendo</target>
+            </trans-unit>
+
+            <trans-unit id="112">
+                <source>TRANS_ELIMINANDO</source>
+                <target>Eliminando</target>
+            </trans-unit>
+
+            <trans-unit id="113">
+                <source>TRANS_MENU_MED_MANTENIMIENTO_RECONOCIMIENTOS</source>
+                <target>Mantenimiento de reconocimientos</target>
+            </trans-unit>
+
+            <trans-unit id="114">
+                <source>TRANS_ELIMINAR_RESPUESTA</source>
+                <target>Eliminar respuesta</target>
+            </trans-unit>
+
+            <trans-unit id="115">
+                <source>TRANS_ELIMINAR_SERIE_RESPUESTA</source>
+                <target>Eliminar serie de respuesta</target>
+            </trans-unit>
+
+            <trans-unit id="116">
+                <source>TRANS_ELIMINAR_CONSEJO</source>
+                <target>Eliminar consejo médico</target>
+            </trans-unit>
+
+            <trans-unit id="117">
+                <source>TRANS_ELIMINAR_PREGUNTA</source>
+                <target>Eliminar pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="118">
+                <source>TRANS_ELIMINAR_FORMULA</source>
+                <target>Eliminar formula</target>
+            </trans-unit>
+
+            <trans-unit id="119">
+                <source>TRANS_ELIMINAR_VARIABLE</source>
+                <target>Eliminar variable</target>
+            </trans-unit>
+
+            <trans-unit id="120">
+                <source>TRANS_ELIMINAR_CUESTIONARIO</source>
+                <target>Eliminar cuestionario</target>
+            </trans-unit>
+
+            <trans-unit id="121">
+                <source>TRANS_ELIMINAR_SUBPREGUNTA</source>
+                <target>Eliminar subpregunta</target>
+            </trans-unit>
+
+            <trans-unit id="122">
+                <source>TRANS_MENU_MED_PUESTO_TRABAJO_PROTOCOLO_CUESTIONARIO</source>
+                <target>Puesto de trabajo - Protocolos - Cuestionarios</target>
+            </trans-unit>
+
+            <trans-unit id="123">
+                <source>TRANS_ELIMINAR_PROTOCOLO</source>
+                <target>Eliminar protocolo</target>
+            </trans-unit>
+
+            <trans-unit id="124">
+                <source>TRANS_ELIMINAR_PUESTO_TRABAJO_PROTOCOLO</source>
+                <target>Eliminar puesto trabajo - protocolo</target>
+            </trans-unit>
+
+            <trans-unit id="125">
+                <source>TRANS_ELIMINAR_EXPLORACION</source>
+                <target>Eliminar exploración</target>
+            </trans-unit>
+
+            <trans-unit id="126">
+                <source>TRANS_CANCELAR</source>
+                <target>Cancelar</target>
+            </trans-unit>
+
+            <trans-unit id="127">
+                <source>TRANS_ELIMINAR_REVISION</source>
+                <target>Eliminar revisión</target>
+            </trans-unit>
+
+            <trans-unit id="128">
+                <source>TRANS_BUSCANDO</source>
+                <target>Buscando</target>
+            </trans-unit>
+
+            <trans-unit id="129">
+                <source>TRANS_ELIMINAR_ENFERMEDAD</source>
+                <target>Eliminar enfermedad</target>
+            </trans-unit>
+
+            <trans-unit id="130">
+                <source>TRANS_ENVIAR_CORREO</source>
+                <target>Enviar correo</target>
+            </trans-unit>
+
+            <trans-unit id="131">
+                <source>TRANS_CORREO_MENSAJE</source>
+                <target>Mensaje</target>
+            </trans-unit>
+
+            <trans-unit id="132">
+                <source>TRANS_CORREO_PARA</source>
+                <target>Para</target>
+            </trans-unit>
+
+            <trans-unit id="133">
+                <source>TRANS_CORREO_ASUNTO</source>
+                <target>Asunto</target>
+            </trans-unit>
+
+            <trans-unit id="144">
+                <source>TRANS_AVISO_MULTIPLE_CORREO</source>
+                <target>Los correos electrónicos deben ir separados por:</target>
+            </trans-unit>
+
+            <trans-unit id="145">
+                <source>TRANS_AVISO_NO_NOTIFICACION</source>
+                <target>Debes seleccionar como mínimo una notificación a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="146">
+                <source>TRANS_CORREOS_ENVIADOS</source>
+                <target>Correos enviados</target>
+            </trans-unit>
+
+            <trans-unit id="147">
+                <source>TRANS_ELIMINAR_DEVOLUCION</source>
+                <target>Eliminar devolución</target>
+            </trans-unit>
+
+            <trans-unit id="148">
+                <source>TRANS_AGENDA_TECNICO</source>
+                <target>Agenda</target>
+            </trans-unit>
+
+            <trans-unit id="149">
+                <source>TRANS_COPIAR</source>
+                <target>Copiar</target>
+            </trans-unit>
+
+            <trans-unit id="150">
+                <source>TRANS_FACTURAR_OK</source>
+                <target>Las facturas se han enviado correctamente.</target>
+            </trans-unit>
+
+            <trans-unit id="151">
+                <source>TRANS_MENU_MED_REVISIONES_PENDIENTES</source>
+                <target>Revisiones pendientes</target>
+            </trans-unit>
+
+            <trans-unit id="152">
+                <source>TRANS_FIRMAS_MEDICOS</source>
+                <target>Firmas médicos</target>
+            </trans-unit>
+
+            <trans-unit id="153">
+                <source>TRANS_DAR_DE_BAJA_EMPRESA</source>
+                <target>Dar de baja</target>
+            </trans-unit>
+
+            <trans-unit id="154">
+                <source>TRANS_CONFIRM_ACTIVAR_EMPRESA</source>
+                <target>Está seguro que desea volver activar la empresa?</target>
+            </trans-unit>
+
+            <trans-unit id="155">
+                <source>TRANS_AVISO_NO_CONFIGURACION_CORREO</source>
+                <target>No se ha podido enviar el correo porque el usuario no tiene una cuenta de
+                    correo configurada.</target>
+            </trans-unit>
+
+            <trans-unit id="156">
+                <source>TRANS_AVISO_NO_TELEFONO</source>
+                <target>El trabajador no tiene un número de telefono definido.</target>
+            </trans-unit>
+
+            <trans-unit id="157">
+                <source>TRANS_AVISO_TELEFONO_NO_VALIDO</source>
+                <target>El trabajador no tiene un número de telefono válido.</target>
+            </trans-unit>
+
+            <trans-unit id="158">
+                <source>TRANS_MSG_KO_REMESA_1</source>
+                <target>La empresa</target>
+            </trans-unit>
+
+            <trans-unit id="159">
+                <source>TRANS_AVISO_NO_CERTIFICACION</source>
+                <target>Debes seleccionar como mínimo una certificación a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="160">
+                <source>TRANS_AVISO_NO_CONTRATO</source>
+                <target>Debes seleccionar como mínimo un contrato a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="161">
+                <source>TRANS_IMPORTACION_KO</source>
+                <target>Se ha producido un error al importar los datos.</target>
+            </trans-unit>
+
+            <trans-unit id="162">
+                <source>TRANS_RECIBO_GENERADO_OK</source>
+                <target>El recibo se ha generado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="163">
+                <source>TRANS_DELETE_ENTRADA_BALANCE_ECONOMICO</source>
+                <target>Eliminar entrada</target>
+            </trans-unit>
+
+            <trans-unit id="164">
+                <source>TRANS_SEND_KO</source>
+                <target>Se ha producido un error al enviar el correo.</target>
+            </trans-unit>
+
+            <trans-unit id="165">
+                <source>TRANS_CUENTA_NO_PRINCIPAL</source>
+                <target>Una empresa no tiene una cuenta bancaria marcada como principal.</target>
+            </trans-unit>
+
+            <trans-unit id="166">
+                <source>TRANS_MENU_ADM_PAGOS_POR_FACURAR</source>
+                <target>Pagos por facturar</target>
+            </trans-unit>
+
+            <trans-unit id="167">
+                <source>TRANS_MSG_KO_REMESA_2</source>
+                <target>no tiene un mandato generado.</target>
+            </trans-unit>
+
+            <trans-unit id="168">
+                <source>TRANS_REVISIONES_FACTURADAS</source>
+                <target>Las revisiones se han facturado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="169">
+                <source>TRANS_AVISO_TRABAJADOR_NO_DNI</source>
+                <target>El trabajador no tiene el DNI informado.</target>
+            </trans-unit>
+
+            <trans-unit id="170">
+                <source>TRANS_ENVIAR_CORREO_MASIVO</source>
+                <target>Enviar correo masivo</target>
+            </trans-unit>
+
+            <trans-unit id="171">
+                <source>TRANS_ERROR_EMPRESAS_CORREO_MASIVO</source>
+                <target>Debes seleccionar una empresa como mínimo</target>
+            </trans-unit>
+
+            <trans-unit id="172">
+                <source>TRANS_CORREO_MASIVO_OK</source>
+                <target>El correo masivo se ha enviado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="173">
+                <source>TRANS_VER_HUECOS_LIBRES_FACTURAS</source>
+                <target>Ver huecos libres factura</target>
+            </trans-unit>
+
+            <trans-unit id="174">
+                <source>TRANS_CONTRATO_FACTURADO_OK</source>
+                <target>El contrato se ha facturado con éxito</target>
+            </trans-unit>
+
+            <trans-unit id="175">
+                <source>TRANS_REMESA_DELETE_OK</source>
+                <target>La remesa se ha eliminado con éxito</target>
+            </trans-unit>
+
+            <trans-unit id="176">
+                <source>TRANS_MENU_CITACIONES_LISTA</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="177">
+                <source>TRANS_MENU_CITACIONES_CALENDARIO</source>
+                <target>Calendario</target>
+            </trans-unit>
+
+            <trans-unit id="178">
+                <source>TRANS_ELIMINAR_PUESTO_TRABAJO_TRABAJADOR</source>
+                <target>Eliminar Puesto trabajo - trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="179">
+                <source>TRANS_MSG_KO_REMESA_3</source>
+                <target>tiene un recibo con importe 0.</target>
+            </trans-unit>
+
+            <trans-unit id="180">
+                <source>TRANS_REVISIONES_INCLUIDAS</source>
+                <target>Las revisiones se han incluido con exíto</target>
+            </trans-unit>
+
+            <trans-unit id="181">
+                <source>TRANS_UPLOAD_DOCUMENT</source>
+                <target>Los documentos se han adjuntado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="182">
+                <source>TRANS_ELIMINAR_DOCUMENTO_ADJUNTO</source>
+                <target>Eliminar documento adjunto</target>
+            </trans-unit>
+
+            <trans-unit id="183">
+                <source>TRANS_TELEFONO_NO_VALIDO</source>
+                <target>El teléfono no es válido.</target>
+            </trans-unit>
+
+            <trans-unit id="184">
+                <source>TRANS_ELIMINAR_FACTURA</source>
+                <target>Eliminar factura</target>
+            </trans-unit>
+
+            <trans-unit id="185">
+                <source>TRANS_CORREO_EMPRESA_EXISTE</source>
+                <target>El correo ya existe para esta empresa</target>
+            </trans-unit>
+
+            <trans-unit id="186">
+                <source>TRANS_MSG_KO_REMESA</source>
+                <target>Se ha producido un error al generar la remesa.</target>
+            </trans-unit>
+
+            <trans-unit id="187">
+                <source>TRANS_ENVIAR_FACTURA_ERROR_EMPRESA</source>
+                <target>No se han podido enviar las facturas de las siguientes empresas:</target>
+            </trans-unit>
+
+            <trans-unit id="188">
+                <source>TRANS_AVISO_VENCIMIENTO_APTITUD</source>
+                <target>Aviso vencimiento aptitud</target>
+            </trans-unit>
+
+            <trans-unit id="189">
+                <source>TRANS_ERROR_AVISO_VENCIMIENTO_APTITUD</source>
+                <target>Debes seleccionar como mínimo una aptitud para avisar.</target>
+            </trans-unit>
+
+            <trans-unit id="190">
+                <source>TRANS_ENVIAR_RECORDATORIO</source>
+                <target>Enviar recordatorio</target>
+            </trans-unit>
+
+            <trans-unit id="191">
+                <source>TRANS_AVISO_VENCIMIENTO_APTITUD_OK</source>
+                <target>El recordatorio de vencimiento de aptitudes se ha enviado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="192">
+                <source>TRANS_ENVIAR_AVISO_VENCIMIENTO_APTITUD_ERROR_EMPRESA</source>
+                <target>No se han podido enviar la notificación del vencimiento a las siguientes
+                    empresas:</target>
+            </trans-unit>
+
+            <trans-unit id="193">
+                <source>TRANS_AVISO_NO_MODELO347</source>
+                <target>Debes seleccionar como mínimo un modelo 347 a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="194">
+                <source>TRANS_ENVIAR_CORREO_INTERNOS</source>
+                <target>Enviar correos internos</target>
+            </trans-unit>
+
+            <trans-unit id="195">
+                <source>TRANS_ENVIAR_CORREO_ERROR</source>
+                <target>Error al enviar: El email de este cliente está en una lista de supresión, fue marcado como spam o no existe.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

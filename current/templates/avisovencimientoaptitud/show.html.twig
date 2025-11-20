@@ -1,0 +1,391 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'revision' %}
+
+{% block title %} {% trans from 'messages' %}TRANS_AVISO_VENCIMIENTO_APTITUD{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').avisoVencimientoAptitud is defined and app.session.get('privilegiosRol').avisoVencimientoAptitud is not null %}
+        {% if app.session.get('privilegiosRol').avisoVencimientoAptitud %}
+            <a href="#" id="btnEnvioRecordatorio" class="btn btn-labeled btn-labeled-left bg-slate">{% trans from 'messages' %}TRANS_ENVIAR_RECORDATORIO{% endtrans %}<b><i class="icon-copy4"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('aviso_vencimiento_aptitud_data') }}',
+                    type: 'POST',
+                    dataSrc: 'data'
+                },
+                "columnDefs": [
+                    { "name": "input", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "a.fecha", "searchable":false, "targets": 1 },
+                    { "name": "e.descripcion",  "targets": 2 },
+                    { "name": "codigo", "searchable":false,  "targets": 3 },
+                    { "name": "b.nombre",  "targets": 4 },
+                    { "name": "b.dni",  "targets": 5 },
+                    { "name": "c.descripcion",  "targets": 6 },
+                    { "name": "d.empresa",  "targets": 7 },
+                    { "name": "f.nombre", "targets": 8 },
+                    { "name": "apto",  "searchable":false, "targets": 9 },
+                ],
+                order: [
+                    [1, "desc"]
+                ],
+                columns:[
+                    {data: "input"},
+                    {data: "fecha"},
+                    {data: "validez"},
+                    {data: "codigo"},
+                    {data: "trabajador"},
+                    {data: "dni"},
+                    {data: "puesto"},
+                    {data: "empresa"},
+                    {data: "gestor"},
+                    {data: "apto"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }
+
+                if(fechaFin != ""){
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }
+
+                if(dtInici != "" || dtFin != ""){
+                    filtrar(1, dtInici, dtFin);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                filtrar(2, null, null);
+
+                $('#fini').val("");
+                $('#ffin').val("");
+            });
+
+            //Boton que envia el recordatorio
+            $('#btnEnvioRecordatorio').click(function () {
+                if(arrayAptitudes.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans from 'messages' %}TRANS_ERROR_AVISO_VENCIMIENTO_APTITUD{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }else{
+                    $.ajax({
+                        type: "POST",
+                        url: '{{ path('aviso_vencimiento_aptitud_pre_enviar') }}',
+                        dataType: 'JSON',
+                        data: {
+                            aptitudes: arrayAptitudes
+                        },
+                        success: function (data) {
+                            if(data == 'OK'){
+                                var url = '{{ path('aviso_vencimiento_aptitud_enviar') }}';
+                                location.href = url;
+                            }
+                        },
+                        error: function(){
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(op, fechaInicio, fechaFin){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            var table = $('.datatable-export-excel').DataTable();
+            table.clear().destroy();
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('aviso_vencimiento_aptitud_filtrar') }}',
+                    type: 'POST',
+                    dataSrc: 'data',
+                    data: {
+                        'ini': fechaInicio,
+                        'fin': fechaFin
+                    },
+                },
+                "columnDefs": [
+                    { "name": "input", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "a.fecha", "searchable":false, "targets": 1 },
+                    { "name": "e.descripcion",  "targets": 2 },
+                    { "name": "codigo", "searchable":false,  "targets": 3 },
+                    { "name": "b.nombre",  "targets": 4 },
+                    { "name": "b.dni",  "targets": 5 },
+                    { "name": "c.descripcion",  "targets": 6 },
+                    { "name": "d.empresa",  "targets": 7 },
+                    { "name": "f.nombre",  "targets": 8 },
+                    { "name": "apto",  "searchable":false, "targets": 9 },
+                ],
+                order: [
+                    [1, "desc"]
+                ],
+                columns:[
+                    {data: "input"},
+                    {data: "fecha"},
+                    {data: "validez"},
+                    {data: "codigo"},
+                    {data: "trabajador"},
+                    {data: "dni"},
+                    {data: "puesto"},
+                    {data: "empresa"},
+                    {data: "gestor"},
+                    {data: "apto"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", false);
+                $('#btnFiltra').html("Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", false);
+                $('#btnReset').html("Reset");
+            }
+        }
+
+        var arrayAptitudes = [];
+        //Boton que añade el contrato a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'aptitud\']', function(){
+            var aptitudId = $(this).attr('id');
+
+            if ($(this).prop('checked')) {
+                $('#uniform-'+aptitudId+' span').addClass('checked');
+                arrayAptitudes.push(aptitudId);
+            }else{
+                $('#uniform-'+aptitudId+' span').removeClass('checked');
+                arrayAptitudes.splice($.inArray(aptitudId, arrayAptitudes),1);
+            }
+        });
+
+        //Boton que añade todas los contratos a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'aptitudesAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'aptitud\']");
+
+                    var aptitudId = $(check).attr('id');
+                    $('#uniform-'+aptitudId+' span').addClass('checked');
+                    arrayAptitudes.push(aptitudId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'aptitud\']");
+
+                    var aptitudId = $(check).attr('id');
+                    $('#uniform-'+aptitudId+' span').removeClass('checked');
+                }
+                arrayAptitudes.splice(0, arrayAptitudes.length);
+            }
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="aptitudesAll" id="selectAptitudesAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Validez">{% trans %}TRANS_VALIDEZ{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="CodigoTrabajador">{% trans %}TRANS_CODIGO_TRABAJADOR{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Trabajador">{% trans %}TRANS_TRABAJADOR{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="DNI">DNI</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Gestor">{% trans from 'empresas' %}TRANS_GESTOR_ADM{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Apto">{% trans %}TRANS_APTO{% endtrans %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

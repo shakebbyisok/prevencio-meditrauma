@@ -1,0 +1,1318 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'puestotrabajo' %}
+
+{% block arrow %}<a href="{{ path('tecnico_puesto_trabajo_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_PUESTOS_TRABAJO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {{ app.session.get('empresa').empresa }}
+{% endblock %}
+
+{% block card %}
+
+    <script src="{{ asset('jstree/jstree.min.js') }}"></script>
+    <link href="{{ asset('jstree/themes/default/style.min.css') }}" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var arrayDataMaquinasGenericasPuestoTrabajo = [];
+            var arrayDataMaquinasGenericasZonaTrabajo = [];
+            var arrayDataMaquinasEmpresaPuestoTrabajo = [];
+            var arrayDataMaquinasEmpresaZonaTrabajo = [];
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            {% for maquinaGenericaPuestoTrabajo in maquinasGenericasPuestoTrabajo %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn %}
+                        actions += '<a href="#" data-id="{{ maquinaGenericaPuestoTrabajo.id }}" target="_self" class="list-icons-item eliminarMaquinaGenerica"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                array.push('{{ maquinaGenericaPuestoTrabajo.puestoTrabajo.descripcion }}', '{{ maquinaGenericaPuestoTrabajo.maquinaGenerica.descripcion }}', actions);
+                arrayDataMaquinasGenericasPuestoTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-genericas-puesto-trabajo').DataTable({
+                data: arrayDataMaquinasGenericasPuestoTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').exportMaquinaEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn != true %}
+                    $('#datatable-maquinas-genericas-puesto-trabajo .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for maquinaGenericaZonaTrabajo in maquinasGenericasZonaTrabajo %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn %}
+                        actions += '<a href="#" data-id="{{ maquinaGenericaZonaTrabajo.id }}" target="_self" class="list-icons-item eliminarMaquinaGenericaZonaTrabajo"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                array.push('{{ maquinaGenericaZonaTrabajo.zonaTrabajo.descripcion }}', '{{ maquinaGenericaZonaTrabajo.maquinaGenerica.descripcion }}', actions);
+                arrayDataMaquinasGenericasZonaTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-genericas-zona-trabajo').DataTable({
+                data: arrayDataMaquinasGenericasZonaTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').exportMaquinaEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn != true %}
+                    $('#datatable-maquinas-genericas-zona-trabajo .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for maquinaEmpresaPuestoTrabajo in maquinasEmpresaPuestoTrabajo %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn %}
+                        actions += '<a href="#" data-id="{{ maquinaEmpresaPuestoTrabajo.id }}" target="_self" class="list-icons-item eliminarMaquinaEmpresa"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                array.push('{{ maquinaEmpresaPuestoTrabajo.puestoTrabajo.descripcion }}', '{{ maquinaEmpresaPuestoTrabajo.maquinaEmpresa.descripcion }}', actions);
+                arrayDataMaquinasEmpresaPuestoTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-empresa-puesto-trabajo').DataTable({
+                data: arrayDataMaquinasEmpresaPuestoTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').exportMaquinaEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn != true %}
+                    $('#datatable-maquinas-empresa-puesto-trabajo .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for maquinaEmpresaZonaTrabajo in maquinasEmpresaZonaTrabajo %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').deleteMaquinaEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteMaquinaEmpresaSn %}
+                        actions += '<a href="#" data-id="{{ maquinaEmpresaZonaTrabajo.id }}" target="_self" class="list-icons-item eliminarMaquinaEmpresaZonaTrabajo"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                array.push('{{ maquinaEmpresaZonaTrabajo.zonaTrabajo.descripcion }}', '{{ maquinaEmpresaZonaTrabajo.maquinaEmpresa.descripcion }}', actions);
+                arrayDataMaquinasEmpresaZonaTrabajo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-maquinas-empresa-zona-trabajo').DataTable({
+                data: arrayDataMaquinasEmpresaZonaTrabajo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').exportMaquinaEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportMaquinaEmpresaSn != true %}
+                    $('#datatable-maquinas-empresa-zona-trabajo .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            var xhr;
+            var json = {{ tree | raw }};
+            var selected_id;
+
+            function ControlViews() {
+                selected_id = $("#tree").find(".jstree-clicked").attr('id');
+                //Algun nodo selecionado.
+                if (typeof selected_id != 'undefined' && selected_id != '') {
+                    var remove = /_anchor$/;
+                    selected_id = selected_id.replace(remove, "");
+
+                    //Puesto de trabajo seleccionado
+                    if (selected_id.indexOf("puestoTrabajoId") == 0) {
+                        selected_id = selected_id.replace("puestoTrabajoId", "");
+                        puestoTrabajoAjaxRequest(selected_id);
+                    }
+                }
+            }
+
+            $(function () {
+                $("#tree")
+                    .jstree({
+                        'core': {
+                            'data': json,
+                            'check_callback': true
+                        },
+                        'plugins': ["search", "sort", "state"]
+                    })
+                    .on('changed.jstree', function (e, data) {
+                        if (xhr && xhr.readyState != 4) {
+                            xhr.abort();
+                        }
+
+                        ControlViews();
+                    })
+                    .on('ready.jstree', function (e, data) {
+                        var fileUploadedID = location.search.split('fileid=')[1];
+                        //console.log(fileUploadedID);
+                        if (typeof(fileUploadedID) != "undefined") {
+                            var node = "fileId" + fileUploadedID;
+                            $('#tree').jstree('deselect_all');
+                            setTimeout(function(){
+                                $('#tree').jstree('select_node', node);
+                            },300);
+
+                        }
+                    });
+            });
+
+            //Evento click zona trabajo
+            $('#tree').on("select_node.jstree", function (e, data) {
+                var zonaId = data.node['id'];
+
+                if(zonaId != "" && !isNaN(zonaId)){
+                    $("#zonaIdEdit").val('');
+                    $("#nombreZonaEdit").val('');
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ path('tecnico_puesto_trabajo_recuperate_zona_trabajo') }}',
+                        data: {
+                            'zonaId': zonaId,
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            $("#zonaIdEdit").val(response.id);
+                            $("#nombreZonaEdit").val(response.descripcion);
+                            $('#modal_editar_zona').modal('show');
+                        }
+                    });
+                }
+            });
+
+            function puestoTrabajoAjaxRequest(puestoTrabajoId){
+                $("#nombrePuestoEdit").val('');
+                $("#observacionesEdit").val('');
+                $("#codigoEdit").val('');
+                $("#zonaTrabajoEdit").val('');
+                $("#puestoTrabajoIdEdit").val('');
+
+                var url = '{{ path('tecnico_puesto_trabajo_recuperate_puesto_trabajo') }}';
+
+                $('#modal_editar_puesto_trabajo').modal('show');
+
+                xhr = $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'puestoTrabajoId': puestoTrabajoId,
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        $("#nombrePuestoEdit").val(response.descripcion);
+                        $("#observacionesEdit").val(response.observaciones);
+                        $("#codigoEdit").val(response.codigo);
+                        $("#zonaTrabajoEdit").val(response.zonaId).change();
+                        $("#puestoTrabajoIdEdit").val(response.id);
+                        $('#puestoGenericoEdit').val(response.puestoTrabajoGenericoId).change();
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+
+            //Boton que añade la zona de trabajo
+            $('#btnAddZonaTrabajo').click(function () {
+
+                if($('#nombreZona').val() == ''){
+                    $('#nombreZona').focus();
+                    return false;
+                }
+
+                $('#btnAddZonaTrabajo').prop("disabled", true);
+                $('#btnAddZonaTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_create_zona_trabajo') }}",
+                    data: {
+                        'descripcion': $('#nombreZona').val(),
+                        'empresaId': '{{ app.request.get('empresaId') }}'
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddZonaTrabajo').prop("disabled", false);
+                        $('#btnAddZonaTrabajo').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class=\"icon-plus3\"></i></b>");
+                    }
+                });
+            });
+
+            //Boton que modifica la zona de trabajo
+            $('#btnUpdateZonaTrabajo').click(function () {
+
+                if($('#nombreZonaEdit').val() == ''){
+                    $('#nombreZonaEdit').focus();
+                    return false;
+                }
+
+                $('#btnUpdateZonaTrabajo').prop("disabled", true);
+                $('#btnUpdateZonaTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_update_zona_trabajo') }}",
+                    data: {
+                        'descripcion': $('#nombreZonaEdit').val(),
+                        'zonaId': $('#zonaIdEdit').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateZonaTrabajo').prop("disabled", false);
+                        $('#btnUpdateZonaTrabajo').html("Guardar");
+                    }
+                });
+            });
+
+            //Boton que elimina la zona de trabajo
+            $('#btnDeleteZonaTrabajo').click(function () {
+
+                $('#btnDeleteZonaTrabajo').prop("disabled", true);
+                $('#btnDeleteZonaTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Eliminar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_delete_zona_trabajo') }}",
+                    data: {
+                        'zonaId': $('#zonaIdEdit').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnDeleteZonaTrabajo').prop("disabled", false);
+                        $('#btnDeleteZonaTrabajo').html("Guardar");
+                    }
+                });
+
+            });
+
+            //Boton que añade el puesto de trabajo
+            $('#btnAddPuestoTrabajo').click(function () {
+
+                if($('#nombrePuesto').val() == ''){
+                    $('#nombrePuesto').focus();
+                    return false;
+                }
+
+                /*if($('#zonaTrabajo').val() == ''){
+                    $('#zonaTrabajo').focus();
+                    return false;
+                }*/
+
+                $('#btnAddPuestoTrabajo').prop("disabled", true);
+                $('#btnAddPuestoTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_create_puesto_trabajo') }}",
+                    data: {
+                        'nombre': $('#nombrePuesto').val(),
+                        'codigo': $('#codigo').val(),
+                        'observaciones': $('#observaciones').val(),
+                        'zonaId': $('#zonaTrabajo').val(),
+                        'empresaId': '{{ app.request.get('empresaId') }}',
+                        'tipo': 1,
+                        'puestoTrabajoGenerico': $('#puestoGenerico').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddPuestoTrabajo').prop("disabled", false);
+                        $('#btnAddPuestoTrabajo').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que modifica el puesto de trabajo
+            $('#btnUpdatePuestoTrabajo').click(function () {
+
+                if($('#nombrePuestoEdit').val() == ''){
+                    $('#nombrePuestoEdit').focus();
+                    return false;
+                }
+
+                /*if($('#zonaTrabajoEdit').val() == ''){
+                    $('#zonaTrabajoEdit').focus();
+                    return false;
+                }*/
+
+                $('#btnUpdatePuestoTrabajo').prop("disabled", true);
+                $('#btnUpdatePuestoTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_update_puesto_trabajo') }}",
+                    data: {
+                        'descripcion': $('#nombrePuestoEdit').val(),
+                        'codigo': $('#codigoEdit').val(),
+                        'observaciones': $('#observacionesEdit').val(),
+                        'zonaId': $('#zonaTrabajoEdit').val(),
+                        'puestoTrabajoId': $('#puestoTrabajoIdEdit').val(),
+                        'puestoTrabajoGenerico': $('#puestoGenericoEdit').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdatePuestoTrabajo').prop("disabled", false);
+                        $('#btnUpdatePuestoTrabajo').html("Guardar");
+                    }
+                });
+            });
+
+            //Boton que elimina el puesto de trabajo
+            $('#btnDeletePuestoTrabajo').click(function () {
+
+                $('#btnDeletePuestoTrabajo').prop("disabled", true);
+                $('#btnDeletePuestoTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Eliminar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_delete_puesto_trabajo') }}",
+                    data: {
+                        'puestoTrabajoId': $('#puestoTrabajoIdEdit').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdatePuestoTrabajo').prop("disabled", false);
+                        $('#btnUpdatePuestoTrabajo').html("Guardar");
+                    }
+                });
+            });
+
+            //Boton que añade la maquina generica al puesto de trabajo
+            $('#btnAddMaquinaGenericaPuestoTrabajo').click(function () {
+
+                $('#btnAddMaquinaGenericaPuestoTrabajo').prop("disabled", true);
+                $('#btnAddMaquinaGenericaPuestoTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_add_maquina_generica') }}",
+                    data: {
+                        'puestoTrabajoId': $('#puestoTrabajoMaquinaGenerica').val(),
+                        'maquinaGenericaId': $('#maquinaGenericaPuestoTrabajo').val(),
+                        'empresaId': '{{ app.request.get('empresaId') }}',
+                        'tipo': 1
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddMaquinaGenericaPuestoTrabajo').prop("disabled", false);
+                        $('#btnAddMaquinaGenericaPuestoTrabajo').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que añade la maquina generica a la zona de trabajo
+            $('#btnAddMaquinaGenericaZonaTrabajo').click(function () {
+
+                $('#btnAddMaquinaGenericaZonaTrabajo').prop("disabled", true);
+                $('#btnAddMaquinaGenericaZonaTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_add_maquina_generica') }}",
+                    data: {
+                        'zonaTrabajoId': $('#zonaTrabajoMaquinaGenerica').val(),
+                        'maquinaGenericaId': $('#maquinaGenericaZonaTrabajo').val(),
+                        'empresaId': '{{ app.request.get('empresaId') }}',
+                        'tipo': 2
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddMaquinaGenericaZonaTrabajo').prop("disabled", false);
+                        $('#btnAddMaquinaGenericaZonaTrabajo').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que añade la maquina empresa al puesto de trabajo
+            $('#btnAddMaquinaEmpresaPuestoTrabajo').click(function () {
+
+                $('#btnAddMaquinaEmpresaPuestoTrabajo').prop("disabled", true);
+                $('#btnAddMaquinaEmpresaPuestoTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_add_maquina_generica') }}",
+                    data: {
+                        'puestoTrabajoId': $('#puestoTrabajoMaquinaEmpresa').val(),
+                        'maquinaEmpresaId': $('#maquinaEmpresaPuestoTrabajo').val(),
+                        'empresaId': '{{ app.request.get('empresaId') }}',
+                        'tipo': 3
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddMaquinaEmpresaPuestoTrabajo').prop("disabled", false);
+                        $('#btnAddMaquinaEmpresaPuestoTrabajo').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que añade la maquina empresa a la zona de trabajo
+            $('#btnAddMaquinaEmpresaZonaTrabajo').click(function () {
+
+                $('#btnAddMaquinaEmpresaZonaTrabajo').prop("disabled", true);
+                $('#btnAddMaquinaEmpresaZonaTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_puesto_trabajo_add_maquina_generica') }}",
+                    data: {
+                        'zonaTrabajoId': $('#zonaTrabajoMaquinaEmpresa').val(),
+                        'maquinaEmpresaId': $('#maquinaEmpresaZonaTrabajo').val(),
+                        'empresaId': '{{ app.request.get('empresaId') }}',
+                        'tipo': 4
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddMaquinaEmpresaZonaTrabajo').prop("disabled", false);
+                        $('#btnAddMaquinaEmpresaZonaTrabajo').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Evento cuando cambian el puesto de trabajo generico
+            $('#puestoGenerico').change(function () {
+                var val = $( "#puestoGenerico option:selected" ).text();
+                if(val != ""){
+                    $('#nombrePuesto').val(val);
+                }
+            });
+        });
+
+        function deleteMaquinaGenerica(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_puesto_trabajo_delete_maquina_generica') }}",
+                data: {
+                    'maquinaId': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la maquina del puesto de trabajo seleccionado
+        $(document).on('click', 'a.eliminarMaquinaGenerica', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'empresas' %}TRANS_DELETE_MAQUINARIA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteMaquinaGenerica(id, 1)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la maquina de la zona de trabajo seleccionada
+        $(document).on('click', 'a.eliminarMaquinaGenericaZonaTrabajo', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'empresas' %}TRANS_DELETE_MAQUINARIA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteMaquinaGenerica(id, 2)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la maquina del puesto de trabajo seleccionado
+        $(document).on('click', 'a.eliminarMaquinaEmpresa', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'empresas' %}TRANS_DELETE_MAQUINARIA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteMaquinaGenerica(id, 3)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la maquina de la zona de trabajo seleccionada
+        $(document).on('click', 'a.eliminarMaquinaEmpresaZonaTrabajo', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'empresas' %}TRANS_DELETE_MAQUINARIA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteMaquinaGenerica(id, 4)
+                    }
+                }
+            });
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+                <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_GENERAL{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans from 'empresas' %}TRANS_MAQUINARIA{% endtrans %}</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% trans %}TRANS_EMPRESA{% endtrans %}:
+                            <strong>{{ app.session.get('empresa').codigo }}</strong>
+                            -
+                            <strong>{{ app.session.get('empresa').empresa }}</strong>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="tree" style="border: 1px solid #DDD; border-radius: 5px; padding:20px; margin:0 auto;"></div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h4>{% trans %}TRANS_ZONAS_TRABAJO{% endtrans %}</h4>
+
+                            <div class="form-group">
+                                <label>{% trans %}TRANS_NOMBRE{% endtrans %}</label>
+                                <input type="text" id="nombreZona" class="form-control" />
+                            </div>
+
+                            <div class="form-group">
+                                {% if app.session.get('privilegiosRol').addPuestoTrabajoSn is defined and app.session.get('privilegiosRol').addPuestoTrabajoSn is not null %}
+                                    {% if app.session.get('privilegiosRol').addPuestoTrabajoSn %}
+                                        <button type="button" id="btnAddZonaTrabajo" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h4>{% trans %}TRANS_PUESTOS_TRABAJO{% endtrans %}</h4>
+
+                            <div class="form-group">
+                                <label>{% trans %}TRANS_PUESTO_TRABAJO_GENERICO{% endtrans %}</label>
+                                <select id="puestoGenerico" class="form-control select-search">
+                                    <option value=""></option>
+                                    {% if listPuestosGenericos is defined and listPuestosGenericos is not empty %}
+                                        {% for lpg in listPuestosGenericos %}
+                                            <option value="{{ lpg.id }}">{{ lpg.descripcion }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>{% trans %}TRANS_NOMBRE{% endtrans %}</label>
+                                <input type="text" id="nombrePuesto" class="form-control" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>{% trans %}TRANS_CODIGO{% endtrans %}</label>
+                                <input type="text" id="codigo" class="form-control" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>{% trans %}TRANS_ZONA_TRABAJO{% endtrans %}</label>
+                                <select id="zonaTrabajo" class="form-control">
+                                    <option value=""></option>
+                                    {% if zonasTrabajo is defined and zonasTrabajo is not empty %}
+                                        {% for zt in zonasTrabajo %}
+                                            <option value="{{ zt.id }}">{{ zt.descripcion }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>{% trans %}TRANS_OBSERVACIONES{% endtrans %}</label>
+                                <input type="text" id="observaciones" class="form-control" />
+                            </div>
+
+                            <div class="form-group">
+                                {% if app.session.get('privilegiosRol').addPuestoTrabajoSn is defined and app.session.get('privilegiosRol').addPuestoTrabajoSn is not null %}
+                                    {% if app.session.get('privilegiosRol').addPuestoTrabajoSn %}
+                                        <button type="button" id="btnAddPuestoTrabajo" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>{% trans from 'empresas' %}TRANS_MAQUINA_GENERICA{% endtrans %}</h4>
+                        </div>
+                    </div>
+
+                    {% if app.session.get('privilegiosRol').editPuestoTrabajoSn is defined and app.session.get('privilegiosRol').editPuestoTrabajoSn is not null %}
+                        {% if app.session.get('privilegiosRol').editPuestoTrabajoSn %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_maquina_generica_puesto_trabajo">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                </div>
+                                <div class="col-lg-6">
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_maquina_generica_zona_trabajo">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-genericas-puesto-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-genericas-puesto-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-genericas-zona-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-genericas-zona-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="ZonaTrabajo">{% trans %}TRANS_ZONA_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>{% trans from 'empresas' %}TRANS_MAQUINA_EMPRESA{% endtrans %}</h4>
+                        </div>
+                    </div>
+
+                    {% if app.session.get('privilegiosRol').editPuestoTrabajoSn is defined and app.session.get('privilegiosRol').editPuestoTrabajoSn is not null %}
+                        {% if app.session.get('privilegiosRol').editPuestoTrabajoSn %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_maquina_empresa_puesto_trabajo">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                </div>
+                                <div class="col-lg-6">
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_maquina_empresa_zona_trabajo">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-empresa-puesto-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-empresa-puesto-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div id="datatable-maquinas-empresa-zona-trabajo" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-maquinas-empresa-zona-trabajo dataTable no-footer" role="grid"
+                                           aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="ZonaTrabajo">{% trans %}TRANS_ZONA_TRABAJO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="MaquinaGenerica">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal modificar zona -->
+    <div id="modal_editar_zona" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MODIFICAR_ZONA_TRABAJO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'empresas' %}TRANS_NOMBRE{% endtrans %}</label>
+                    <input type="text" id="nombreZonaEdit" class="form-control" />
+                    <input type="hidden" id="zonaIdEdit" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').editPuestoTrabajoSn is defined and app.session.get('privilegiosRol').editPuestoTrabajoSn is not null %}
+                        {% if app.session.get('privilegiosRol').editPuestoTrabajoSn %}
+                            <button type="button" class="btn btn-labeled btn-labeled-left bg-primary" id="btnUpdateZonaTrabajo">Guardar<b><i class="icon-pencil7"></i></b></button>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').deletePuestoTrabajoSn is defined and app.session.get('privilegiosRol').deletePuestoTrabajoSn is not null %}
+                        {% if app.session.get('privilegiosRol').deletePuestoTrabajoSn %}
+                            <button type="button" class="btn btn-labeled btn-labeled-left bg-danger" id="btnDeleteZonaTrabajo">Eliminar<b><i class="icon-cross2"></i></b></button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal modificar zona -->
+
+    <!-- Modal modificar puesto de trabajo -->
+    <div id="modal_editar_puesto_trabajo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MODIFICAR_PUESTO_TRABAJO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>{% trans %}TRANS_PUESTO_TRABAJO_GENERICO{% endtrans %}</label>
+                        <select id="puestoGenericoEdit" class="form-control select-search">
+                            <option value=""></option>
+                            {% if listPuestosGenericos is defined and listPuestosGenericos is not empty %}
+                                {% for lpg in listPuestosGenericos %}
+                                    <option value="{{ lpg.id }}">{{ lpg.descripcion }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>{% trans %}TRANS_NOMBRE{% endtrans %}</label>
+                        <input type="text" id="nombrePuestoEdit" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>{% trans %}TRANS_CODIGO{% endtrans %}</label>
+                        <input type="text" id="codigoEdit" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>{% trans %}TRANS_ZONA_TRABAJO{% endtrans %}</label>
+                        <select id="zonaTrabajoEdit" class="form-control">
+                            <option value=""></option>
+                            {% if zonasTrabajo is defined and zonasTrabajo is not empty %}
+                                {% for zt in zonasTrabajo %}
+                                    <option value="{{ zt.id }}">{{ zt.descripcion }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>{% trans %}TRANS_OBSERVACIONES{% endtrans %}</label>
+                        <input type="text" id="observacionesEdit" class="form-control" />
+                    </div>
+
+                    <input type="hidden" id="puestoTrabajoIdEdit" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').editPuestoTrabajoSn is defined and app.session.get('privilegiosRol').editPuestoTrabajoSn is not null %}
+                        {% if app.session.get('privilegiosRol').editPuestoTrabajoSn %}
+                            <button type="button" class="btn btn-labeled btn-labeled-left bg-primary" id="btnUpdatePuestoTrabajo">Guardar<b><i class="icon-pencil7"></i></b></button>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').deletePuestoTrabajoSn is defined and app.session.get('privilegiosRol').deletePuestoTrabajoSn is not null %}
+                        {% if app.session.get('privilegiosRol').deletePuestoTrabajoSn %}
+                            <button type="button" class="btn btn-labeled btn-labeled-left bg-danger" id="btnDeletePuestoTrabajo">Eliminar<b><i class="icon-cross2"></i></b></button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal modificar puesto de trabajo -->
+
+    <!-- Modal añadir maquina generica puesto trabajo -->
+    <div id="modal_añadir_maquina_generica_puesto_trabajo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</label>
+                    <select id="puestoTrabajoMaquinaGenerica" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPuestosTrabajo is not empty %}
+                            {% for lpt in listPuestosTrabajo %}
+                                <option value="{{ lpt.id }}">{{ lpt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <br/>
+
+                    <label>{% trans from 'empresas' %}TRANS_MAQUINARIA_GENERICA{% endtrans %}</label>
+                    <select id="maquinaGenericaPuestoTrabajo" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listMaquinasGenericas is not empty %}
+                            {% for lmg in listMaquinasGenericas %}
+                                <option value="{{ lmg.id }}">{{ lmg.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddMaquinaGenericaPuestoTrabajo">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir maquina generica puesto trabajo -->
+
+    <!-- Modal añadir maquina generica zona trabajo -->
+    <div id="modal_añadir_maquina_generica_zona_trabajo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_ZONA_TRABAJO{% endtrans %}</label>
+                    <select id="zonaTrabajoMaquinaGenerica" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listZonasTrabajo is not empty %}
+                            {% for lzt in listZonasTrabajo %}
+                                <option value="{{ lzt.id }}">{{ lzt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <br/>
+
+                    <label>{% trans from 'empresas' %}TRANS_MAQUINARIA_GENERICA{% endtrans %}</label>
+                    <select id="maquinaGenericaZonaTrabajo" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listMaquinasGenericas is not empty %}
+                            {% for lmg in listMaquinasGenericas %}
+                                <option value="{{ lmg.id }}">{{ lmg.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddMaquinaGenericaZonaTrabajo">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir maquina generica zona trabajo -->
+
+    <!-- Modal añadir maquina empresa puesto trabajo -->
+    <div id="modal_añadir_maquina_empresa_puesto_trabajo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</label>
+                    <select id="puestoTrabajoMaquinaEmpresa" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPuestosTrabajo is not empty %}
+                            {% for lpt in listPuestosTrabajo %}
+                                <option value="{{ lpt.id }}">{{ lpt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <br/>
+
+                    <label>{% trans from 'empresas' %}TRANS_MAQUINA_EMPRESA{% endtrans %}</label>
+                    <select id="maquinaEmpresaPuestoTrabajo" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listMaquinasEmpresa is not empty %}
+                            {% for lme in listMaquinasEmpresa %}
+                                <option value="{{ lme.id }}">{{ lme.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddMaquinaEmpresaPuestoTrabajo">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir maquina empresa puesto trabajo -->
+
+    <!-- Modal añadir maquina empresa zona trabajo -->
+    <div id="modal_añadir_maquina_empresa_zona_trabajo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_ZONA_TRABAJO{% endtrans %}</label>
+                    <select id="zonaTrabajoMaquinaEmpresa" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listZonasTrabajo is not empty %}
+                            {% for lzt in listZonasTrabajo %}
+                                <option value="{{ lzt.id }}">{{ lzt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <br/>
+
+                    <label>{% trans from 'empresas' %}TRANS_MAQUINA_EMPRESA{% endtrans %}</label>
+                    <select id="maquinaEmpresaZonaTrabajo" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listMaquinasEmpresa is not empty %}
+                            {% for lme in listMaquinasEmpresa %}
+                                <option value="{{ lme.id }}">{{ lme.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddMaquinaEmpresaZonaTrabajo">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir maquina empresa zona trabajo -->
+
+{% endblock %}
+
+
+

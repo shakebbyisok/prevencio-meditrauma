@@ -1,0 +1,237 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'buscadores' %}
+
+{% block title %} {% trans %}TRANS_BUSCADORES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addBuscadorSn is defined and app.session.get('privilegiosRol').addBuscadorSn is not null %}
+        {% if app.session.get('privilegiosRol').addBuscadorSn %}
+            <a href="{{ path('buscadores_add') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVA_CONSULTA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayDataPropia = [];
+            var arrayDataCompartida = [];
+
+            {% for consultaPropia in consultasPropias %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editBuscadorSn is defined and app.session.get('privilegiosRol').editBuscadorSn is not null %}
+                    {% if app.session.get('privilegiosRol').editBuscadorSn %}
+                        actions += '<a href="{{ path('buscadores_update', { "id": consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').copyBuscadorSn is defined and app.session.get('privilegiosRol').copyBuscadorSn is not null %}
+                    {% if app.session.get('privilegiosRol').copyBuscadorSn %}
+                        actions += '<a href="{{ path('buscadores_copy', { "id": consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Copiar" data-container="body"><i class="icon-copy4"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').executeBuscadorSn is defined and app.session.get('privilegiosRol').executeBuscadorSn is not null %}
+                    {% if app.session.get('privilegiosRol').executeBuscadorSn %}
+                        actions += '<a href="{{ path('buscadores_condiciones', { "id": consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Ejecutar" data-container="body"><i class="icon-play4"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').deleteBuscadorSn is defined and app.session.get('privilegiosRol').deleteBuscadorSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteBuscadorSn %}
+                        actions += '<a href="{{ path('buscadores_delete', { "id": consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+
+                actions += '</div>';
+
+                array.push('{{ consultaPropia.nombre }}', actions);
+                arrayDataPropia.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel').DataTable({
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayDataPropia,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for consultaCompartida in consultasCompartidas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').copyBuscadorSn is defined and app.session.get('privilegiosRol').copyBuscadorSn is not null %}
+                    {% if app.session.get('privilegiosRol').copyBuscadorSn %}
+                        actions += '<a href="{{ path('buscadores_copy', { "id": consultaCompartida.id }) }}" class="list-icons-item" data-popup="tooltip" title="Copiar" data-container="body"><i class="icon-copy4"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').executeBuscadorSn is defined and app.session.get('privilegiosRol').executeBuscadorSn is not null %}
+                    {% if app.session.get('privilegiosRol').executeBuscadorSn %}
+                        actions += '<a href="{{ path('buscadores_condiciones', { "id": consultaCompartida.id }) }}" class="list-icons-item" data-popup="tooltip" title="Ejecutar" data-container="body"><i class="icon-play4"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ consultaCompartida.nombre }}', actions);
+                arrayDataCompartida.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-compartida').DataTable({
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayDataCompartida,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportBuscadorSn is defined and app.session.get('privilegiosRol').exportBuscadorSn is not null %}
+                {% if app.session.get('privilegiosRol').exportBuscadorSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h4>{% trans %}TRANS_CONSULTAS_PROPIAS{% endtrans %}</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Nombre">{% trans %}TRANS_NOMBRE_CONSULTA{% endtrans %}</th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for consultaPropia in consultasPropias %}
+                            <tr role="row" class="odd">
+                                <td>{{ consultaPropia.nombre }}</td>
+                                <td class="text-center">
+                                    <div class="list-icons">
+                                        {% if app.session.get('privilegiosRol').editBuscadorSn is defined and app.session.get('privilegiosRol').editBuscadorSn is not null %}
+                                            {% if app.session.get('privilegiosRol').editBuscadorSn %}
+                                                <a href="{{ path('buscadores_update', { 'id': consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if app.session.get('privilegiosRol').copyBuscadorSn is defined and app.session.get('privilegiosRol').copyBuscadorSn is not null %}
+                                            {% if app.session.get('privilegiosRol').copyBuscadorSn %}
+                                                <a href="{{ path('buscadores_copy', { 'id': consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Copiar" data-container="body"><i class="icon-copy4"></i></a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if app.session.get('privilegiosRol').executeBuscadorSn is defined and app.session.get('privilegiosRol').executeBuscadorSn is not null %}
+                                            {% if app.session.get('privilegiosRol').executeBuscadorSn %}
+                                                <a href="{{ path('buscadores_execute', { 'id': consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Ejecutar" data-container="body"><i class="icon-play4"></i></a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if app.session.get('privilegiosRol').deleteBuscadorSn is defined and app.session.get('privilegiosRol').deleteBuscadorSn is not null %}
+                                            {% if app.session.get('privilegiosRol').deleteBuscadorSn %}
+                                                <a href="{{ path('buscadores_delete', { 'id': consultaPropia.id }) }}" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm('{% trans from "messages" %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}');"><i class="icon-trash"></i></a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h4>{% trans %}TRANS_CONSULTAS_COMPARTIDAS{% endtrans %}</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel-compartida dataTable no-footer" id="prueba" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Nombre">{% trans %}TRANS_NOMBRE_CONSULTA{% endtrans %}</th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

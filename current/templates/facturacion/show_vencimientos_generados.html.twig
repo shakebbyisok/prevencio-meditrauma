@@ -1,0 +1,209 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'facturacion' %}
+
+{% block title %} {% trans %}TRANS_VENCIMIENTOS_GENERADOS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addVencimientoFacturacionSn is defined and app.session.get('privilegiosRol').addVencimientoFacturacionSn is not null %}
+        {% if app.session.get('privilegiosRol').addVencimientoFacturacionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-slate" data-toggle="modal" data-target="#modal_enviar_aviso_cliente">{% trans %}TRANS_ENVIAR_FACTURAS_CLIENTE{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for factura in facturas %}
+                var array = [];
+
+                var input = '<div class="uniform-checker" id="uniform-{{ factura.id }}"><span><input type="checkbox" name="factura" id="{{ factura.id }}" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+
+                array.push(input, '{{ factura.empresa }}', '{{ factura.num_fac }}', '<span style="display:none;">{{ factura.fechatimestamp }}</span>{{ factura.fecha }}', '{{ factura.mes }}', '{{ factura.any }}', '{{ factura.codigo }}', '{{ factura.importe_total|number_format(2, ",", ".") }} €');
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportFacturacionSn is defined and app.session.get('privilegiosRol').exportFacturacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportFacturacionSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que envia el aviso
+            $('#btnEnviarAviso').click(function(){
+                if(arrayFacturas.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_GENVIAR_AVISO_FACTURA{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('factura_enviar_aviso_factura') }}?facturas='+arrayFacturas;
+            });
+        });
+
+        var arrayFacturas = [];
+        //Boton que añade la factura a la lista de facturas seleccionadas
+        $(document).on('click', 'input[name=\'factura\']', function(){
+            var facturaId = $(this).attr('id');
+
+            if ($(this).prop('checked')) {
+                $('#uniform-'+facturaId+' span').addClass('checked');
+                arrayFacturas.push(facturaId);
+            }else{
+                $('#uniform-'+facturaId+' span').removeClass('checked');
+                arrayFacturas.splice($.inArray(facturaId, arrayFacturas),1);
+            }
+        });
+
+        //Boton que añade todas las facturas a la lista de facturas seleccionadas
+        $(document).on('click', 'input[name=\'facturasAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'factura\']");
+
+                    var facturaId = $(check).attr('id');
+                    $('#uniform-'+facturaId+' span').addClass('checked');
+                    arrayFacturas.push(facturaId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'factura\']");
+
+                    var facturaId = $(check).attr('id');
+                    $('#uniform-'+facturaId+' span').removeClass('checked');
+                }
+                arrayFacturas.splice(0, arrayFacturas.length);
+            }
+
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="facturasAll" id="selectFacturasAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Factura" aria-sort="descending">{% trans %}TRANS_FACTURA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Mes">{% trans %}TRANS_MES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Año">{% trans %}TRANS_AÑO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Codigo">{% trans %}TRANS_CODIGO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Importe">{% trans %}TRANS_IMPORTE{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal enviar aviso cliente -->
+    <div id="modal_enviar_aviso_cliente" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_ENVIAR_FACTURAS_CLIENTE{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                        {% trans %}TRANS_AVISO_AVIO_CLIENTES_FACTURA{% endtrans %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnEnviarAviso">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal enviar aviso cliente -->
+
+{% endblock %}

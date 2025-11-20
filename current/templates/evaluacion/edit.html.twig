@@ -1,0 +1,1909 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block arrow %}<a href="{{ path('tecnico_evaluaciones_show') }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_EVALUACION{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.empresa }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty) %}
+
+        {% if ficheroGenerado is defined and ficheroGenerado is empty %}
+            {% if app.session.get('privilegiosRol').printEvaluacionSn is defined and app.session.get('privilegiosRol').printEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').printEvaluacionSn %}
+                    <a href="#" id="btnImprimirEvaluacion" data-id="{{ app.request.get('id') }}" class="btn btn-labeled btn-labeled-left bg-slate selectEvaluacion" data-popup="tooltip" title="Imprimir" data-container="body" style="margin-right: 10px;">{% trans %}TRANS_IMPRIMIR_EVALUACION{% endtrans %}<b><i class="icon-printer"></i></b></a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if form.vars.value.fechaFin is null %}
+            {% if app.session.get('privilegiosRol').finalizarEvaluacionSn is defined and app.session.get('privilegiosRol').finalizarEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').finalizarEvaluacionSn %}
+                    <a href="#" class="btn btn-labeled btn-labeled-left bg-success" data-toggle="modal" data-target="#modal_finalizar">{% trans %}TRANS_FINALIZAR_EVALUACION{% endtrans %}<b><i class="icon-checkmark4"></i></b></a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $(document).on("click", "#editarZonas", function (event) {
+                // Evita que el enlace realice la acción predeterminada (navegar a una nueva página)
+                event.preventDefault();
+
+                // Realiza la acción deseada con el id (puedes hacer lo que necesites aquí)
+                localStorage.setItem('auxSemaforo', '3');
+
+                // Obtén la URL del enlace
+                var url = $(this).attr("href");
+
+                // Simula la apertura de una nueva pestaña con la URL
+                // (esto es solo un ejemplo y no funcionará en algunos navegadores)
+                window.location.href = url;
+            });
+            $(document).on("click", "#editarPuesto", function (event) {
+                // Evita que el enlace realice la acción predeterminada (navegar a una nueva página)
+                event.preventDefault();
+
+                // Realiza la acción deseada con el id (puedes hacer lo que necesites aquí)
+                localStorage.setItem('auxSemaforo', '2');
+
+                // Obtén la URL del enlace
+                var url = $(this).attr("href");
+
+                // Simula la apertura de una nueva pestaña con la URL
+                // (esto es solo un ejemplo y no funcionará en algunos navegadores)
+                window.location.href = url;
+            });
+            //Peticio 28/07/2023
+            // Obtener todos los checkboxes generados por form_row
+            var checkboxes = document.querySelectorAll('input[name="evaluacion[centro][]"]');
+
+            // Marcar todos los checkboxes y deshabilitarlos visualmente
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = true;
+                checkbox.disabled = true;
+            });
+            if(localStorage.getItem('auxSemaforo') === '2')
+            {
+                var liElement = document.querySelector('.nav-item a[href="#tab2"]');
+                liElement.click();
+            }
+            if(localStorage.getItem('auxSemaforo') === '3')
+            {
+                var liElement = document.querySelector('.nav-item a[href="#tab3"]');
+                liElement.click();
+            }
+            if(localStorage.getItem('auxSemaforo') === '4')
+            {
+                var liElement = document.querySelector('.nav-item a[href="#tab4"]');
+                liElement.click();
+            }
+
+
+            var arrayDataTecnicos = [];
+            var arrayDataPersonas = [];
+            var arrayDataPuestosEvaluar = [];
+            var arrayDataZonasEvaluar = [];
+            var arrayDataNormativas = [];
+            var arrayDataVisitas = [];
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            {% for tecnico in tecnicos %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="#" data-id="{{ tecnico.id }}" target="_self" class="list-icons-item eliminarTecnico"><i class="icon-trash"></i></a>\n';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ tecnico.tecnico.nombre }} {{ tecnico.tecnico.apellido1 }} {{ tecnico.tecnico.apellido2 }}', actions);
+                arrayDataTecnicos.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-tecnicos').DataTable({
+                data: arrayDataTecnicos,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+                    $('#datatable-tecnicos .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for persona in personas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="#" data-id="{{ persona.id }}" target="_self" class="list-icons-item eliminarPersona"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ persona.nombre }}', '{{ persona.apellido1 }}', '{{ persona.apellido2 }}', '{{ persona.documento }}', actions);
+                arrayDataPersonas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-acompañantes').DataTable({
+                data: arrayDataPersonas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+                    $('#datatable-acompañantes .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for puestoEvaluar in puestosEvaluar %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_evaluar', { "id": puestoEvaluar.id }) }}" id="editarPuesto" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="#" data-id="{{ puestoEvaluar.id }}" target="_self" class="list-icons-item eliminarPuestoTrabajoEvaluar"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ puestoEvaluar.puestoTrabajo.descripcion }}', '{{ puestoEvaluar.trabajadores }}', actions);
+                arrayDataPuestosEvaluar.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-puestos-evaluar').DataTable({
+                data: arrayDataPuestosEvaluar,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+                    $('#datatable-puestos-evaluar .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for zonaEvaluar in zonasEvaluar %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="{{ path('tecnico_evaluaciones_evaluacion_zona_trabajo_evaluar', { "id": zonaEvaluar.id }) }}" id="editarZonas" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="#" data-id="{{ zonaEvaluar.id }}" target="_self" class="list-icons-item eliminarZonaTrabajoEvaluar"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ zonaEvaluar.zonaTrabajo.descripcion }}', '{{ zonaEvaluar.trabajadores }}', actions);
+                arrayDataZonasEvaluar.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-zonas-evaluar').DataTable({
+                data: arrayDataZonasEvaluar,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+                    $('#datatable-zonas-evaluar .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for normativa in normativas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="#" data-id="{{ normativa.id }}" target="_self" class="list-icons-item eliminarNormativa"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push('{{ normativa.grupoNormativa.descripcion }}', actions);
+                arrayDataNormativas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-normativas').DataTable({
+                data: arrayDataNormativas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+                    $('#datatable-normativas .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for visita in visitas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        actions += '<a href="#" data-id="{{ visita.id }}" target="_self" class="list-icons-item eliminarVisita"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var tecnico = '';
+                var dtVisita = '';
+                var hinicio = '';
+                var hfin = '';
+
+                {% if visita.tecnico is not empty %}
+                    tecnico = '{{ visita.tecnico.nombre }} {{ visita.tecnico.apellido1 }} {{ visita.tecnico.apellido2 }}';
+                {% endif %}
+
+                {% if visita.dtVisita is not empty %}
+                    dtVisita = '{{ visita.dtVisita|date('d/m/Y') }}';
+                {% endif %}
+
+                {% if visita.hinicio is not empty %}
+                    hinicio = '{{ visita.hinicio|date('H:i') }}';
+                {% endif %}
+
+                {% if visita.hFin is not empty %}
+                    hfin = '{{ visita.hFin|date('H:i') }}';
+                {% endif %}
+
+                array.push(dtVisita, hinicio, hfin, tecnico, actions);
+                arrayDataVisitas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-visitas').DataTable({
+                data: arrayDataVisitas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+                    $('#datatable-visitas .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que añade un tecnico a la evaluacion
+            $('#btnAddTecnico').click(function(){
+
+                if($('#listTecnicos').val() == ""){
+                    $('#listTecnicos').focus();
+                    return false;
+                }
+
+                $('#btnAddTecnico').prop("disabled", true);
+                $('#btnAddTecnico').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_create_tecnico') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'tecnicoId': $('#listTecnicos').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            //Petició 28/07/2023
+                            localStorage.setItem('auxSemaforo', '4');
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddTecnico').prop("disabled", false);
+                        $('#btnAddTecnico').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Boton que añade un acompañante a la evaluacion
+            $('#btnAddAcompañante').click(function(){
+
+                if($('#apellido1Persona').val() == ""){
+                    $('#apellido1Persona').focus();
+                    return false;
+                }
+
+                $('#btnAddAcompañante').prop("disabled", true);
+                $('#btnAddAcompañante').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+
+                var nombreCompleto = $('#nombreCompleto').val();
+                // Dividir el nombre completo en palabras
+                var palabras = nombreCompleto.split(' ');
+
+                // Obtener el primer nombre
+                var nombre = palabras[0];
+
+                // Obtener el apellido 1 (si hay más de una palabra)
+                var apellido1 = palabras.length > 1 ? palabras[1] : '';
+
+                // Obtener el apellido 2 (si hay más de dos palabras)
+                var apellido2 = palabras.length > 2 ? palabras.slice(2).join(' ') : '';
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_add_persona') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'nombre': nombre,
+                        'apellido1': apellido1,
+                        'apellido2': apellido2,
+                        'documento': $('#documentoPersona').val(),
+                        'cargo': $('#cargoPersona').val(),
+                        'horario': $('#horarioPersona').val(),
+                        'sitio': $('#sitioPersona').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            //Petició 28/07/2023
+                            localStorage.setItem('auxSemaforo', '4');
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddAcompañante').prop("disabled", false);
+                        $('#btnAddAcompañante').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Boton que añade un puesto de trabajo a evaluar
+            $('#btnAddPuestoTrabajoEvaluar').click(function(){
+                // Antes de hacer el reload, establecer el indicador en localStorage
+                localStorage.setItem('reloadIndicator', 'true');
+                if($('#listPuestoTrabajoEvaluar').val() == ""){
+                    $('#listPuestoTrabajoEvaluar').focus();
+                    return false;
+                }
+
+                $('#btnAddPuestoTrabajoEvaluar').prop("disabled", true);
+                $('#btnAddPuestoTrabajoEvaluar').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_add_puesto_trabajo_evaluar') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'puestoId': $('#listPuestoTrabajoEvaluar').val(),
+                        'trabajadores': $('#trabajadoresPuesto').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            //Petició 28/07/2023
+                            localStorage.setItem('auxSemaforo', '2');
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddPuestoTrabajoEvaluar').prop("disabled", false);
+                        $('#btnAddPuestoTrabajoEvaluar').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+                //Seguir dema 12/07/2023
+                //window.addEventListener('load', function() {
+                    //var liElement = document.querySelector('.nav-item a[href="#tab2"]');
+                    //liElement.click();
+                //});
+            });
+
+            //Boton que añade una zona de trabajo a evaluar
+            $('#btnAddZonaTrabajoEvaluar').click(function(){
+
+                if($('#listZonaTrabajoEvaluar').val() == ""){
+                    $('#listZonaTrabajoEvaluar').focus();
+                    return false;
+                }
+
+                $('#btnAddZonaTrabajoEvaluar').prop("disabled", true);
+                $('#btnAddZonaTrabajoEvaluar').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_create_zona_trabajo_evaluar') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'zonaId': $('#listZonaTrabajoEvaluar').val(),
+                        'trabajadores': $('#trabajadoresZona').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            //Petició 28/07/2023
+                            localStorage.setItem('auxSemaforo', '3');
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddZonaTrabajoEvaluar').prop("disabled", false);
+                        $('#btnAddZonaTrabajoEvaluar').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Boton que añade una normativa a la evaluacion
+            $('#btnAddNormativa').click(function(){
+
+                if($('#listNormativa').val() == ""){
+                    $('#listNormativa').focus();
+                    return false;
+                }
+
+                $('#btnAddNormativa').prop("disabled", true);
+                $('#btnAddNormativa').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_create_normativa_evaluacion') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'grupoNormativaId': $('#listNormativa').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            //Petició 28/07/2023
+                            localStorage.setItem('auxSemaforo', '4');
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddNormativa').prop("disabled", false);
+                        $('#btnAddNormativa').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Boton que añade una visita a la evaluacion
+            $('#btnAddVisita').click(function(){
+
+                if($('#dtVisita').val() == ""){
+                    $('#dtVisita').focus();
+                    return false;
+                }
+
+                $('#btnAddVisita').prop("disabled", true);
+                $('#btnAddVisita').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_create_visita_evaluacion') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'fecha': $('#dtVisita').val(),
+                        'inicio': $('#hinicio').val(),
+                        'fin': $('#hfin').val(),
+                        'tecnico': $('#listTecnicosVisita').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            //Petició 28/07/2023
+                            localStorage.setItem('auxSemaforo', '4');
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddVisita').prop("disabled", false);
+                        $('#btnAddVisita').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Finalizar evaluación
+            {% if app.request.get('id') is defined and app.request.get('id') is not empty %}
+                $('#btnFinalizar').click(function(){
+                    if($('#finalizarAceptar').is(':checked')){
+                        location.href = '{{ path('tecnico_evaluaciones_evaluacion_finalizar', { "id": app.request.get('id') }) }}';
+                    }else{
+                        alert('{% trans %}TRANS_MSG_ACEPTAR_FINALIZAR{% endtrans %}');
+                    }
+                });
+            {% endif %}
+
+            // Format displayed data
+            function formatRepo (repo) {
+                if (repo.loading) return repo.text;
+
+                var markup = '<div class="clearfix">' +
+                    '<div>' + repo.descripcion + '</div>' +
+                    '</div>';
+
+                return markup;
+            }
+
+            // Format selection
+            function formatRepoSelection (repo) {
+                return repo.full_name || repo.text;
+            }
+            $('#riesgosCausas').hide();
+            $('#labelRiesgoCausa').hide();
+
+            // Initialize
+            $('.js_busca_ajax_puesto_trabajo').select2({
+                ajax: {
+                    url: "{{ path('busca_ajax_query',{ 'option': 'copiarRiesgosPuestoTrabajo' }) }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+
+                        var select2Data = $.map(JSON.parse(data), function (obj) {
+                            obj.id = parseInt(obj.id);
+                            obj.text = obj.descripcion;
+
+                            return obj;
+                        });
+
+                        return {
+                            results: select2Data
+                        };
+                        var riesgosCausas = $('#riesgosCausas');
+
+                        // Vacía todas las opciones existentes
+                        riesgosCausas.empty();
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 3,
+                templateResult: formatRepo, // omitted for brevity, see the source of this page
+                templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+            });
+            // Agrega un manejador de eventos para el cambio en el primer Select2
+            $('.js_busca_ajax_puesto_trabajo').on('change', function (e) {
+                var selectedOption = $(this).val();
+                if (selectedOption) {
+                    // Realiza una solicitud AJAX para obtener datos del segundo Select2
+                    $.ajax({
+                        url: "{{ path('riesgo_causas_select') }}",
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { selectedOption: selectedOption }, // Puedes enviar la opción seleccionada como parámetro
+                        success: function (data) {
+                            var riesgCaus = data;
+                            var riesgosCausas = $('#riesgosCausas');
+
+                            // Vacía todas las opciones existentes
+                            riesgosCausas.empty();
+
+                            // Agrega la opción "Todos los centros" al Select2
+                            riesgosCausas.append($('<option>', {
+                                value: '0', // Puedes asignar otro valor si lo prefieres
+                                text: 'Todos los riesgos/causas'
+                            }));
+                            // Inicializa el nuevo Select2
+                            $('#riesgosCausas').select2();
+                            // Llena el segundo Select2 (riesgosCausas) con los datos
+                            // Inicializa el Select2 con los centros
+                            $('#riesgosCausas').select2({
+                                data: riesgCaus.map(function (centro) {
+                                    return { id: centro.id, text: centro.text };
+                                })
+                            });
+                            $('#riesgosCausas').show();
+                            $('#labelRiesgoCausa').show();
+                        },
+                        error: function () {
+                            // Manejo de errores
+                        }
+                    });
+                }
+            });
+
+            // Initialize
+            $('.js_busca_ajax_zona_trabajo').select2({
+                ajax: {
+                    url: "{{ path('busca_ajax_query',{ 'option': 'copiarRiesgosZonaTrabajo' }) }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+
+                        var select2Data = $.map(JSON.parse(data), function (obj) {
+                            obj.id = parseInt(obj.id);
+                            obj.text = obj.descripcion;
+
+                            return obj;
+                        });
+
+                        return {
+                            results: select2Data
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 3,
+                templateResult: formatRepo, // omitted for brevity, see the source of this page
+                templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+            });
+
+            //Boton que copia los riesgos/causas/medidas
+            $('#btnCopyRiesgosMedidas').click(function () {
+                var seleccion = $('#riesgosCausas').val();
+                var puestoTrabajoOrigenId = $('#puestoTrabajo').val();
+                var puestoTrabajoDestinoId = $('#listPuestoTrabajoEvaluarCopiar').val();
+
+                if(puestoTrabajoOrigenId == ""){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                if(puestoTrabajoDestinoId == ""){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS_DESTINO{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                $('#btnCopyRiesgosMedidas').prop("disabled", true);
+                $('#btnCopyRiesgosMedidas').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_COPIAR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_copiar_riesgos_causas_medidas') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'puestoTrabajoEvaluacionId': puestoTrabajoOrigenId,
+                        'puestoTrabajoEvaluarId': puestoTrabajoDestinoId,
+                        'seleccion':seleccion
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data == "OK") {
+                            localStorage.setItem('auxSemaforo', '2');
+                            location.reload();
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnCopyRiesgosMedidas').prop("disabled", false);
+                        $('#btnCopyRiesgosMedidas').html("{% trans from 'messages' %}TRANS_COPIAR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que copia los riesgos/causas/medidas
+            $('#btnCopyRiesgosMedidasZonaTrabajo').click(function () {
+                var zonaTrabajoOrigenId = $('#zonaTrabajo').val();
+                var zonaTrabajoDestinoId = $('#listZonaTrabajoEvaluarCopiar').val();
+
+                if(zonaTrabajoOrigenId == ""){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS_ZONA_TRABAJO{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                if(zonaTrabajoDestinoId == ""){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS_DESTINO_ZONA_TRABAJO{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                $('#btnCopyRiesgosMedidasZonaTrabajo').prop("disabled", true);
+                $('#btnCopyRiesgosMedidasZonaTrabajo').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_COPIAR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_copiar_riesgos_causas_medidas_zona_trabajo') }}",
+                    data: {
+                        'evaluacionId': '{{ app.request.get('id') }}',
+                        'zonaTrabajoEvaluacionId': zonaTrabajoOrigenId,
+                        'zonaTrabajoEvaluarId': zonaTrabajoDestinoId
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data == "OK") {
+                            localStorage.setItem('auxSemaforo', '3');
+                            location.reload();
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnCopyRiesgosMedidasZonaTrabajo').prop("disabled", false);
+                        $('#btnCopyRiesgosMedidasZonaTrabajo').html("{% trans from 'messages' %}TRANS_COPIAR{% endtrans %}");
+                    }
+                });
+            });
+
+        });
+
+        //Boton que busca la id de la plantilla a través de la id de la evaluacion
+        $(document).on('click', 'a.selectEvaluacion', function(){
+            var evaluacionId = $(this).data('id');
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_busca_plantilla') }}",
+                data: {
+                    'id': evaluacionId,
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $('#btnImprimirEvaluacion').prop("disabled", true);
+                    $('#btnImprimirEvaluacion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIENDO{% endtrans %}");
+                },
+                success: function (data) {
+                    if(data != ""){
+                        if(data.success){
+                            if(data.plantillaId != ""){
+                                imprimeEvaluacion(evaluacionId, data.plantillaId, 7);
+                            }else{
+                                new PNotify({
+                                    title: 'Ops!',
+                                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                    icon: 'icon-blocked',
+                                    type: 'error'
+                                });
+                            }
+                        }else{
+                            location.reload();
+                        }
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        });
+
+        function imprimeEvaluacion(evaluacionId, plantillaId, tipo){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_generar_file') }}",
+                data: {
+                    'plantillaId': plantillaId,
+                    'id': evaluacionId,
+                    'tipo': tipo,
+                    'select2': 0
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if(data != ""){
+                        var w = window.open();
+                        w.location = data.url;
+                        location.reload();
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteTecnicoEvaluacion(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_tecnico') }}",
+                data: {
+                    'tecnicoEvaluacionId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deletePersonaEvaluacion(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_persona') }}",
+                data: {
+                    'personaEvaluacionId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deletePuestoTrabajoEvaluar(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_puesto_trabajo_evaluar') }}",
+                data: {
+                    'puestoTrabajoEvaluacionId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteZonaTrabajoEvaluar(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_zona_trabajo_evaluar') }}",
+                data: {
+                    'zonaTrabajoEvaluacionId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteNormativa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_normativa_evaluacion') }}",
+                data: {
+                    'grupoNormativaEvaluacionId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteVisita(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_visita_evaluacion') }}",
+                data: {
+                    'visitaEvaluacionId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el tecnico seleccionado
+        $(document).on('click', 'a.eliminarTecnico', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_TECNICO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        localStorage.setItem('auxSemaforo', '4');
+                        deleteTecnicoEvaluacion(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina el acompañante seleccionado
+        $(document).on('click', 'a.eliminarPersona', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_ACOMPAÑANTE{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        localStorage.setItem('auxSemaforo', '4');
+                        deletePersonaEvaluacion(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina el puesto de trabajo seleccionado
+        $(document).on('click', 'a.eliminarPuestoTrabajoEvaluar', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_PUESTO_TRABAJO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        localStorage.setItem('auxSemaforo', '2');
+                        deletePuestoTrabajoEvaluar(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la zona de trabajo seleccionada
+        $(document).on('click', 'a.eliminarZonaTrabajoEvaluar', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_ZONA_TRABAJO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        localStorage.setItem('auxSemaforo', '3');
+                        deleteZonaTrabajoEvaluar(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la normativa seleccionada
+        $(document).on('click', 'a.eliminarNormativa', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_NORMATIVA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        localStorage.setItem('auxSemaforo', '4');
+                        deleteNormativa(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la visita seleccionada
+        $(document).on('click', 'a.eliminarVisita', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_VISITA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        localStorage.setItem('auxSemaforo', '4');
+                        deleteVisita(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_DATOS_GENERALES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_PUESTOS_TRABAJO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans %}TRANS_ZONAS_TRABAJO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_TECNICOS{% endtrans %} / {% trans %}TRANS_ACOMPAÑANTES{% endtrans %} / {% trans %}TRANS_NORMATIVAS{% endtrans %} / {% trans %}TRANS_VISITAS{% endtrans %}</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_DATOS_GENERALES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_PUESTOS_TRABAJO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_ZONAS_TRABAJO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_TECNICOS{% endtrans %} / {% trans %}TRANS_ACOMPAÑANTES{% endtrans %} / {% trans %}TRANS_NORMATIVAS{% endtrans %} / {% trans %}TRANS_VISITAS{% endtrans %}</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.empresa) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.centro) }}
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{ form_row(form.fechaInicio) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.fechaProxima) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{ form_row(form.tipoEvaluacion) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.metodologia) }}
+                        </div>
+                    </div>
+
+                    <div class="row" hidden>
+                        <div class="col-lg-12">
+                            {{ form_row(form.descripcion) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                                        {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_puesto_evaluar">{% trans %}TRANS_AÑADIR_PUESTO_EVALUAR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                            <a href="#" class="btn btn-labeled btn-labeled-left bg-orange"  data-toggle="modal" data-target="#modal_copiar_riesgos_medidas">{% trans %}TRANS_COPIAR_RIESGOS_MEDIDAS{% endtrans %}<b><i class="icon-copy"></i></b></a>
+
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="datatable-puestos-evaluar" class="dataTables_wrapper no-footer">
+                                        <div class="datatable-scroll">
+                                            <table class="table datatable-export-excel-puestos-evaluar dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                                <thead>
+                                                <tr class="bg-grey-300" role="row">
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Puesto" aria-sort="ascending">{% trans %}TRANS_PUESTO{% endtrans %}
+                                                    </th>
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Trabajadores">{% trans %}TRANS_NUMERO_TRABAJADORES{% endtrans %}
+                                                    </th>
+                                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                        style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                                        {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_zona_evaluar">{% trans %}TRANS_AÑADIR_ZONA_TRABAJO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                            <a href="#" class="btn btn-labeled btn-labeled-left bg-orange"  data-toggle="modal" data-target="#modal_copiar_riesgos_medidas_zona_trabajo">{% trans %}TRANS_COPIAR_RIESGOS_MEDIDAS_ZONA_TRABAJO{% endtrans %}<b><i class="icon-copy"></i></b></a>
+
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="datatable-zonas-evaluar" class="dataTables_wrapper no-footer">
+                                        <div class="datatable-scroll">
+                                            <table class="table datatable-export-excel-zonas-evaluar dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                                <thead>
+                                                <tr class="bg-grey-300" role="row">
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Zona" aria-sort="ascending">{% trans %}TRANS_ZONA{% endtrans %}
+                                                    </th>
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Trabajadores">{% trans %}TRANS_NUMERO_TRABAJADORES{% endtrans %}
+                                                    </th>
+                                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                        style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_tecnico">{% trans %}TRANS_AÑADIR_TECNICO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-tecnicos" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-tecnicos dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Tecnico" aria-sort="ascending">{% trans %}TRANS_TECNICO{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_acompañante">{% trans %}TRANS_AÑADIR_ACOMPAÑANTE{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-acompañantes" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-acompañantes dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Nombre" aria-sort="ascending">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Apellido1">{% trans %}TRANS_APELLIDO1{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Apellido2">{% trans %}TRANS_APELLIDO2{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Documento">{% trans %}TRANS_DOCUMENTO{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_normativa">{% trans %}TRANS_AÑADIR_NORMATIVA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-normativas" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-normativas dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Normativa" aria-sort="ascending">{% trans %}TRANS_NORMATIVA{% endtrans %}
+                                            </th>
+                                            <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                                        {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_visita">{% trans %}TRANS_AÑADIR_VISITA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="datatable-visitas" class="dataTables_wrapper no-footer">
+                                        <div class="datatable-scroll">
+                                            <table class="table datatable-export-excel-visitas dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                                <thead>
+                                                <tr class="bg-grey-300" role="row">
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Fecha">{% trans %}TRANS_FECHA_VISITA{% endtrans %}
+                                                    </th>
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Llegada">{% trans %}TRANS_HORA_LLEGADA{% endtrans %}
+                                                    </th>
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Salida">{% trans %}TRANS_HORA_SALIDA{% endtrans %}
+                                                    </th>
+                                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                        aria-label="Tecnico">{% trans %}TRANS_TECNICO{% endtrans %}
+                                                    </th>
+                                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                                                        style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir tecnico -->
+    <div id="modal_añadir_tecnico" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_TECNICO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_TECNICO{% endtrans %}</label>
+                    <select id="listTecnicos" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listTecnicos is defined and listTecnicos is not empty %}
+                            {% for t in listTecnicos %}
+                                <option value="{{ t.id }}">{{ t.nombre }} {{ t.apellido1 }} {{ t.apellido2 }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddTecnico">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir tecnico -->
+
+    <!-- Modal añadir acompañante -->
+    <div id="modal_añadir_acompañante" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_ACOMPAÑANTE{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>Nombre completo</label>
+                    <input type="text" id="nombreCompleto" class="form-control" />
+
+                    <label>{% trans %}TRANS_DOCUMENTO{% endtrans %}</label>
+                    <input type="text" id="documentoPersona" class="form-control" />
+
+                    <label>{% trans %}TRANS_CARGO{% endtrans %}</label>
+                    <input type="text" id="cargoPersona" class="form-control" />
+
+                    <label>{% trans %}TRANS_HORARIO{% endtrans %}</label>
+                    <input type="text" id="horarioPersona" class="form-control" />
+
+                    <label>{% trans %}TRANS_SITIO{% endtrans %}</label>
+                    <input type="text" id="sitioPersona" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddAcompañante">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir acompañante -->
+
+    <!-- Modal añadir puesto trabajo a evaluar -->
+    <div id="modal_añadir_puesto_evaluar" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_PUESTO_EVALUAR{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_PUESTO{% endtrans %}</label>
+                    <select id="listPuestoTrabajoEvaluar" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listPuestoTrabajo is defined and listPuestoTrabajo is not empty %}
+                            {% for pt in listPuestoTrabajo %}
+                                <option value="{{ pt.id }}">{{ pt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <!--Petició 28/07/2023-->
+                    <!-- <label>{% trans %}TRANS_NUMERO_TRABAJADORES{% endtrans %}</label>-->
+                    <input hidden type="text" id="trabajadoresPuesto" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddPuestoTrabajoEvaluar">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir puesto trabajo a evaluar -->
+
+    <!-- Modal añadir zona trabajo a evaluar -->
+    <div id="modal_añadir_zona_evaluar" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_ZONA_TRABAJO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_ZONA{% endtrans %}</label>
+                    <select id="listZonaTrabajoEvaluar" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listZonaTrabajo is defined and listZonaTrabajo is not empty %}
+                            {% for zt in listZonaTrabajo %}
+                                <option value="{{ zt.id }}">{{ zt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <!--Petició 28/07/2023-->
+                    <!--<label>{% trans %}TRANS_NUMERO_TRABAJADORES{% endtrans %}</label>-->
+                    <input hidden type="text" id="trabajadoresZona" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddZonaTrabajoEvaluar">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir zona trabajo a evaluar -->
+
+    <!-- Modal añadir normativa -->
+    <div id="modal_añadir_normativa" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_NORMATIVA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_NORMATIVA{% endtrans %}</label>
+                    <select multiple id="listNormativa" class="form-control select select2-hidden-accessible">
+                        <option value=""></option>
+                        {% if listGrupoNormativa is defined and listGrupoNormativa is not empty %}
+                            {% for lgn in listGrupoNormativa %}
+                                <option value="{{ lgn.id }}">{{ lgn.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddNormativa">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir normativa -->
+
+    <!-- Modal añadir visita -->
+    <div id="modal_añadir_visita" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_VISITA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_FECHA_VISITA{% endtrans %}</label>
+                    <input type="date" id="dtVisita" placeholder="dd/mm/aaaa" class="form-control">
+
+                    <label>{% trans %}TRANS_HORA_LLEGADA{% endtrans %}</label>
+                    <input type="time" id="hinicio" placeholder="dd/mm/aaaa" class="form-control">
+
+                    <label>{% trans %}TRANS_HORA_SALIDA{% endtrans %}</label>
+                    <input type="time" id="hfin" placeholder="dd/mm/aaaa" class="form-control">
+
+                    <label>{% trans %}TRANS_TECNICO{% endtrans %}</label>
+                    <select id="listTecnicosVisita" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listTecnicos is defined and listTecnicos is not empty %}
+                            {% for t in listTecnicos %}
+                                <option value="{{ t.id }}">{{ t.nombre }} {{ t.apellido1 }} {{ t.apellido2 }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddVisita">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir visita -->
+
+    <!-- Modal finalizar evaluacion -->
+    <div id="modal_finalizar" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_FINALIZAR_EVALUACION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td><input type="checkbox" name="finalizarAceptar" id="finalizarAceptar" class="form-check-input-styled form-check-input" value="1" /></td>
+                            <td> {% trans from 'messages' %}TRANS_ACEPTAR{% endtrans %}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnFinalizar">{% trans %}TRANS_FINALIZAR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal finalizar evaluacion -->
+
+    <!-- Modal copiar riesgos / medidas preventivas -->
+    <div id="modal_copiar_riesgos_medidas" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_COPIAR_RIESGOS_MEDIDAS{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>{% trans %}TRANS_PUESTO_TRABAJO_ORIGEN{% endtrans %}</label>
+                    <select id="puestoTrabajo" class="form-control js_busca_ajax_puesto_trabajo" data-fouc>
+                    </select>
+
+                    <label id="labelRiesgoCausa">Riesgos-Causas</label>
+                    <select id="riesgosCausas" multiple class="form-control js_riesgo_causa" data-fouc >
+                    </select>
+
+                    <label>{% trans %}TRANS_PUESTO_TRABAJO_DESTINO{% endtrans %}</label>
+                    <select id="listPuestoTrabajoEvaluarCopiar" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listPuestoTrabajo is defined and listPuestoTrabajo is not empty %}
+                            {% for pt in listPuestoTrabajo %}
+                                <option value="{{ pt.id }}">{{ pt.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnCopyRiesgosMedidas">{% trans from 'messages' %}TRANS_COPIAR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal copiar riesgos / medidas preventivas -->
+
+    <!-- Modal copiar riesgos / medidas preventivas -->
+    <div id="modal_copiar_riesgos_medidas_zona_trabajo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_COPIAR_RIESGOS_MEDIDAS_ZONA_TRABAJO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>{% trans %}TRANS_ZONA_TRABAJO_ORIGEN{% endtrans %}</label>
+                    <select id="zonaTrabajo" class="form-control js_busca_ajax_zona_trabajo" data-fouc>
+                    </select>
+
+                    <label>{% trans %}TRANS_ZONA_TRABAJO_DESTINO{% endtrans %}</label>
+                    <select id="listZonaTrabajoEvaluarCopiar" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listZonaTrabajo is defined and listZonaTrabajo is not empty %}
+                            {% for pz in listZonaTrabajo %}
+                                <option value="{{ pz.id }}">{{ pz.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnCopyRiesgosMedidasZonaTrabajo">{% trans from 'messages' %}TRANS_COPIAR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal copiar riesgos / medidas preventivas -->
+
+{% endblock %}
+
+
+

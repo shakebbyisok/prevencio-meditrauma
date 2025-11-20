@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_PLANTILLAS</source>
+                <target>Plantillas</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_ADD_CARPETA</source>
+                <target>Añadir carpeta</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_NOMBRE_CARPETA</source>
+                <target>Carpeta</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_PADRE</source>
+                <target>Padre</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_NOMBRE_FICHERO</source>
+                <target>Nombre del fichero</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_FECHA_FICHERO</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_NOMBRE_USUARIO_FICHERO</source>
+                <target>Creado por</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_TIPO_FICHERO</source>
+                <target>Tipo de fichero</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MIDA_FICHERO</source>
+                <target>Tamaño</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_DATOS_FICHERO</source>
+                <target>Datos del fichero</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_AÑADIR_FICHERO</source>
+                <target>Subir fichero</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_FICHERO</source>
+                <target>Fichero</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_EDIT_CARPETA</source>
+                <target>Modificar carpeta</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

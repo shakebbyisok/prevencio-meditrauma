@@ -1,0 +1,444 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'pagopendiente' %}
+
+{% block title %} {% trans %}TRANS_PAGOS_PENDIENTES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{#    {% if app.session.get('privilegiosRol').addPagoPendienteSn is defined and app.session.get('privilegiosRol').addPagoPendienteSn is not null %}#}
+{#        {% if app.session.get('privilegiosRol').addPagoPendienteSn %}#}
+{#            <a href="{{ path('pago_pendiente_create') }}" class="btn btn-labeled btn-labeled-left bg-primary" style="margin-right: 10px;">{% trans %}TRANS_NUEVO_PAGO{% endtrans %}<b><i class="icon-plus3"></i></b></a>#}
+{#        {% endif %}#}
+{#    {% endif %}#}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for pago in pagos %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editPagoPendienteSn is defined and app.session.get('privilegiosRol').editPagoPendienteSn is not null %}
+                    {% if app.session.get('privilegiosRol').editPagoPendienteSn %}
+                        actions += '<a href="{{ path('pago_pendiente_update', { "id": pago.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').deletePagoPendienteSn is defined and app.session.get('privilegiosRol').deletePagoPendienteSn is not null %}
+                        {% if app.session.get('privilegiosRol').deletePagoPendienteSn %}
+                        actions += '<a href="{{ path('pago_pendiente_delete', { "id": pago.id }) }}" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var facturado = null;
+                var saldo = 0;
+
+                {% if pago.saldo is not null %}
+                    saldo = '{{ pago.saldo }}';
+                {% endif %}
+
+                {% if pago.facturado == true %}
+                    facturado = '<span class="badge badge-success">{% trans %}TRANS_FACTURADO{% endtrans %}</span>';
+                {% else %}
+                    facturado = '<span class="badge badge-secondary">{% trans %}TRANS_PENDIENTE{% endtrans %}</span>';
+                {% endif %}
+
+                array.push(actions, '{{ pago.empresa }}', '{{ pago.num_fac }}', '{{ pago.formapago }}', facturado, '{{ pago.vencimiento }}', '{{ pago.importe_sin_iva }}', '{{ pago.importe_iva }}', '{{ pago.importe_total}}', saldo, '{{ pago.tecnico }}', '{{ pago.comercial }}', '{{ pago.colaborador }}');
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportPagoPendienteSn is defined and app.session.get('privilegiosRol').exportPagoPendienteSn is not null %}
+                {% if app.session.get('privilegiosRol').exportPagoPendienteSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+                var renovado = $('#renovado').val();
+                var tipo = $('#tipo').val();
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }
+
+                if(fechaFin != ""){
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }
+
+                if(dtInici != "" || dtFin != ""){
+                    var url  = window.location.href;
+                    if (url.indexOf("pendientes") >= 0){
+                        filtrar(dtInici, dtFin, 1, 1);
+                    }else if(url.indexOf("pagosPendientes") >= 0){
+                        filtrar(dtInici, dtFin, 1, 1);
+                    }else if(url.indexOf("pagados") >= 0){
+                        filtrar(dtInici, dtFin, 1, 2);
+                    }else{
+                        filtrar(dtInici, dtFin, 1, null);
+                    }
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                var url  = window.location.href;
+                if (url.indexOf("pendientes") >= 0) {
+                    filtrar(null, null, 2, 1);
+                }else if(url.indexOf("pagosPendientes") >= 0){
+                        filtrar(null, null, 2, 1);
+                }else if(url.indexOf("pagados") >= 0){
+                    filtrar(null, null, 2, 2);
+                }else{
+                    filtrar(null, null, 2, null);
+                }
+            });
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(fechaInicio, fechaFin, op, tipo){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('pago_pendiente_filtro_pendientes') }}',
+                dataType: 'JSON',
+                data: {
+                    'ini': fechaInicio,
+                    'fin': fechaFin,
+                    'tipo': tipo,
+                    'pagosFacturarSn': false
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    var table = $('.datatable-export-excel').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+                            var array = [];
+
+                            var actions = '<div class="list-icons">';
+
+                            var id = item['id'];
+
+                            {% if app.session.get('privilegiosRol').editPagoPendienteSn is defined and app.session.get('privilegiosRol').editPagoPendienteSn is not null %}
+                                {% if app.session.get('privilegiosRol').editPagoPendienteSn %}
+                                    var url = '{{ path("pago_pendiente_update", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="' + url + '" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').deletePagoPendienteSn is defined and app.session.get('privilegiosRol').deletePagoPendienteSn is not null %}
+                                {% if app.session.get('privilegiosRol').deletePagoPendienteSn %}
+                                    var url = '{{ path("pago_pendiente_delete", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+url+'" class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\');"><i class="icon-trash"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            actions += '</div>';
+
+                            var facturado = 0;
+
+                            if(item['facturado'] == true){
+                                facturado = '<span class="badge badge-success">{% trans %}TRANS_FACTURADO{% endtrans %}</span>';
+                            }else{
+                                facturado = '<span class="badge badge-secondary">{% trans %}TRANS_PENDIENTE{% endtrans %}</span>';
+                            }
+
+                            var saldo = "";
+                            if(item['saldo'] != "null"){
+                                saldo = item['saldo'];
+                            }
+
+                            var formapago = "";
+                            if(item['formapago'] != "null"){
+                                formapago = item['formapago'];
+                            }
+
+                            array.push(actions, ''+item['empresa']+'', ''+item['num_fac']+'', formapago, facturado, ''+item['vencimiento']+'', item["importe_sin_iva"], item["importe_iva"], item["importe_total"], saldo, ''+item['tecnico']+'', ''+item['comercial']+'', ''+item['colaborador']+'');
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            autoWidth: true,
+                            columnDefs: [{
+                                width: 100,
+                            }],
+                            ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+                    }else{
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            autoWidth: true,
+                            columnDefs: [{
+                                width: 100,
+                            }],
+                            ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa" aria-sort="ascending">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Factura">{% trans from 'facturacion' %}TRANS_FACTURA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="FormaPago">{% trans from 'facturacion' %}TRANS_FORMA_PAGO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Estado">{% trans %}TRANS_ESTADO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Vencimiento">{% trans %}TRANS_VENCIMIENTO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Base">{% trans %}TRANS_BASE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Iva">{% trans %}TRANS_IVA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Total">{% trans %}TRANS_TOTAL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Saldo">{% trans %}TRANS_SALDO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tecnico">{% trans %}TRANS_TECNICO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Comercial">{% trans %}TRANS_COMERCIAL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Colaborador">{% trans %}TRANS_COLABORADOR{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal facturar pago multiple -->
+    <div id="modal_facturar_pago_multiple" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_FACTURAR_MULTIPLE{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                        {% trans %}TRANS_AVISO_PAGOS_A_RENOVAR{% endtrans %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnFacturarMultiple">{% trans %}TRANS_FACTURAR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal facturar pago multiple -->
+{% endblock %}

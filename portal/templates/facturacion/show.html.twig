@@ -1,0 +1,156 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'facturacion' %}
+
+{% block title %} {% trans %}TRANS_FACTURAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    <a href="#" class="btn btn-labeled btn-labeled-left bg-blue" id="btnDescargarFactura" style="margin-left: 10px;">{% trans %}TRANS_DESCARGAR_FACTURA{% endtrans %}<b><i class="icon-download"></i></b></a>
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+            var arrayNewData = [];
+
+            {% for factura in facturas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                var input = '';
+                {% if factura.fichero_id is not null %}
+                    input = '<div class="uniform-checker" id="uniform-{{ factura.id }}"><span><input type="checkbox" name="factura" id="{{ factura.id }}" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+                    actions += '<a href="{{ path('gdoc_down_file', { "fileId": factura.fichero_id, "tipo": "2" }) }}" class="list-icons-item"><img src="{{ asset('images/down_pdf.png') }}" title="Imprimir" width="25px;" /></a>';
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push(input, actions, '{{ factura.num_fac }}', '{{ factura.fecha|date('d/m/Y') }}', '{{ factura.importe_total|number_format(2, ",", ".") }} €');
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('.dt-buttons').css('display', 'none');
+
+            //Boton que descarga las facturas seleccionadas
+            $('#btnDescargarFactura').click(function () {
+                if(arrayFacturas.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_DESCARGAR_FACTURA{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('gdoc_down_facturas') }}?facturas='+arrayFacturas;
+            });
+        });
+
+        var arrayFacturas = [];
+        $(document).on('click', 'input[name=\'factura\']', function(){
+            var facturaId = $(this).attr('id');
+            if ($(this).prop('checked')) {
+                $('#uniform-'+facturaId+' span').addClass('checked');
+                arrayFacturas.push(facturaId);
+            }else{
+                $('#uniform-'+facturaId+' span').removeClass('checked');
+                arrayFacturas.splice($.inArray(facturaId, arrayFacturas),1);
+            }
+        });
+
+        $(document).on('click', 'input[name=\'facturasAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'factura\']");
+                    var facturaId = $(check).attr('id');
+                    $('#uniform-'+facturaId+' span').addClass('checked');
+                    arrayFacturas.push(facturaId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'factura\']");
+                    var facturaId = $(check).attr('id');
+                    $('#uniform-'+facturaId+' span').removeClass('checked');
+                }
+                arrayFacturas.splice(0, arrayFacturas.length);
+            }
+        });
+
+    </script>
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="facturasAll" id="selectFacturasAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Factura" aria-sort="descending">{% trans %}TRANS_FACTURA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Importe">{% trans %}TRANS_IMPORTE{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+dashboard:
+    path: /
+    controller: App\Controller\HomeController::index
+
+#CAMBIO IDIOMA
+cambio_idioma:
+  path: /cambioIdioma
+  controller: App\Controller\QueryController::cambioIdioma
+
+#RECUPERAR EMPRESAS
+recuperar_empresas:
+  path: /recuperarEmpresas
+  controller: App\Controller\QueryController::recuperarEmpresas
+
+#CAMBIAR EMPRESA ACTIVA
+cambiar_empresa:
+  path: /cambiarEmpresa
+  controller: App\Controller\QueryController::cambiarEmpresa
+
+#CONTRATOS
+certificaciones_show:
+  path: /certificaciones
+  controller: App\Controller\HomeController::showCertificaciones
+
+#FACTURAS
+factura_show:
+  path: /facturas
+  controller: App\Controller\HomeController::showFacturas
+
+#CONTRATOS
+contrato_show:
+  path: /contratos
+  controller: App\Controller\HomeController::showContratos
+
+#MANUAL VS
+manualvs_show:
+  path: /manualvs
+  controller: App\Controller\HomeController::showManualVs
+
+#FORMACION
+formacion_show:
+  path: /formacion
+  controller: App\Controller\HomeController::showDocumentosFormacion
+
+#DOCUMENTOS ADICIONALES
+documentos_adicionales_show:
+  path: /documentosAdicionales
+  controller: App\Controller\HomeController::showDocumentosAdicionales
+
+#GODC
+gdoc_open_file:
+  path: /openFile
+  controller: App\Controller\GdocController::openFile
+
+gdoc_down_file:
+  path: /downFile
+  controller: App\Controller\GdocController::downFile
+
+gdoc_down_aptitudes:
+  path: /downAptitudes
+  controller: App\Controller\GdocController::downAptitudes
+
+gdoc_down_facturas:
+  path: /downFacturas
+  controller: App\Controller\GdocController::downFacturas
+
+#EVALUACIONES
+evaluacion_show:
+  path: /evaluaciones
+  controller: App\Controller\HomeController::showEvaluaciones
+
+#REVISIONES
+revision_show:
+  path: /revisiones
+  controller: App\Controller\HomeController::showRevisiones
+
+#ERROR403
+error_403:
+  path: /sinAcceso
+  controller: App\Controller\ErrorController::error403
+
+#LOGOUT
+ulogout:
+  path: /ulogout
+  controller: App\Controller\ULogoutController::index
+
+#CAMBIAR PASSOWRD
+change_password_otic:
+  path: /change-password
+  controller: App\Controller\ChangePasswordController::changePasswordAction

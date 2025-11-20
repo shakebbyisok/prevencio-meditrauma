@@ -1,0 +1,663 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_NIF</source>
+                <target>NIF</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRNAS_NOMBRE_COMERCIAL</source>
+                <target>Nombre comercial</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_EVALUACIONES</source>
+                <target>Evaluaciones</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_CENTRO</source>
+                <target>Centro</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_FECHA_INICIO</source>
+                <target>Fecha inicio</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_FECHA_FIN</source>
+                <target>Fecha fin</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_EVALUACION</source>
+                <target>Evaluación</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_TIPO</source>
+                <target>Tipo</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_DESCRIPCION</source>
+                <target>Descripcion</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_NUEVA_EVALUACION</source>
+                <target>Nueva evaluación</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_METODOLOGIA</source>
+                <target>Metodologia</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_OBS</source>
+                <target>Observaciones</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_EVALUACION_INICIAL</source>
+                <target>Evaluación inicial</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_DATOS_GENERALES</source>
+                <target>Datos generales</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_PUESTOS_TRABAJO</source>
+                <target>Puestos de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_TECNICOS</source>
+                <target>Técnicos</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_TECNICO</source>
+                <target>Técnico</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_AÑADIR_TECNICO</source>
+                <target>Añadir técnico</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_ACOMPAÑANTES</source>
+                <target>Acompañantes</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_AÑADIR_ACOMPAÑANTE</source>
+                <target>Añadir acompañante</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_NOMBRE</source>
+                <target>Nombre</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_APELLIDO1</source>
+                <target>Apellido1</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_APELLIDO2</source>
+                <target>Apellido2</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_DOCUMENTO</source>
+                <target>Documento</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_CARGO</source>
+                <target>Cargo</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_HORARIO</source>
+                <target>Horario</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SITIO</source>
+                <target>Sitio</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_ELIMINAR_ACOMPAÑANTE</source>
+                <target>Eliminar acompañante</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_AÑADIR_PUESTO_EVALUAR</source>
+                <target>Añadir puesto a evaluar</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_PUESTO</source>
+                <target>Puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_ELIMINAR_PUESTO_TRABAJO</source>
+                <target>Eliminar puesto trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_NUMERO_TRABAJADORES</source>
+                <target>Nº trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_MOTIVO_EVALUACION</source>
+                <target>Motivo evaluación</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_RIESGOS_CAUSAS</source>
+                <target>Riesgo - Causa</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_AÑADIR_RIESGO_CAUSA</source>
+                <target>Añadir Riesgo - Causa</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_ELIMINAR_RIESGO_CAUSA</source>
+                <target>Eliminar Riesgo - Causa</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_SEVERIDAD</source>
+                <target>Severidad</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_PROBABILIDAD</source>
+                <target>Probabilidad</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_VALORACION</source>
+                <target>Valoración</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_VALOR_RIESGO</source>
+                <target>Valor riesgo</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_OBSERVACION_CAUSA</source>
+                <target>Observ. Causa</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_PREVENTIVA_EMPRESA</source>
+                <target>Prev. Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_PREVENTIVA_TRABAJADOR</source>
+                <target>Prev. Trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_AÑADIR_ACCION_PREVENTIVA</source>
+                <target>Añadir acción preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_ACCION_PREVENTIVA</source>
+                <target>Acción preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_FECHA_PREVISTA</source>
+                <target>Fecha prevista</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_COSTE_PREVISTO</source>
+                <target>Coste previsto</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_RESPONSABLE_INTERNO</source>
+                <target>Responsable interno</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_EMPRESA_EXTERNA</source>
+                <target>Empresa externa</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_RESPONSABLE_EXTERNO</source>
+                <target>Responsable externo</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_ELIMINAR_ACCION_PREVENTIVA</source>
+                <target>Eliminar acción preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_FINALIZAR_EVALUACION</source>
+                <target>Finalizar evaluación</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_MSG_FINALIZAR_EVALUACION</source>
+                <target>Está seguro de finalizar la evaluación?</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_FINALIZAR</source>
+                <target>Finalizar</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_MSG_EVALUACION_FINALIZADA</source>
+                <target>Finalizar</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_FINALIZAR_EVALUACION_OK</source>
+                <target>La evaluación se ha finalizado con éxito.</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_EVALUACION_FINALIZADA_ERROR_PUESTOS</source>
+                <target>La evaluación no se ha podido finalizar debido a que no tiene ningún puestos de trabajo a evaluar.</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_EVALUACION_FINALIZADA_ERROR_RIESGOS</source>
+                <target>La evaluación no se ha podido finalizar debido a que algún puesto de trabajo no tiene un riesgo-causa asignado.</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_EVALUACION_FINALIZADA_ERROR_RIESGOS_NO_EVALUADOS</source>
+                <target>La evaluación no se ha podido finalizar debido a que algún riesgo-causa está pendiente de evaluar.</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_FINALIZADA</source>
+                <target>Finalizada</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_GRUPO</source>
+                <target>Grupo</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_RIESGO</source>
+                <target>Riesgo</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_CAUSA</source>
+                <target>Causa</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_ELIMINAR_EPC</source>
+                <target>Eliminar EPC</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_ELIMINAR_EPI</source>
+                <target>Eliminar EPI</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_FECHA_PROXIMA</source>
+                <target>Fecha próxima evaluación</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_ZONAS_TRABAJO</source>
+                <target>Zonas de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_AÑADIR_ZONA_TRABAJO</source>
+                <target>Añadir zona de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_ZONA</source>
+                <target>Zona</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_ELIMINAR_ZONA_TRABAJO</source>
+                <target>Eliminar zona de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_ACTIVIDAD</source>
+                <target>Actividad</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_CONSECUENCIA</source>
+                <target>Consecuencia</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_DAÑO</source>
+                <target>Daño</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_EXPOSICION</source>
+                <target>Exposición</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_FACTOR_COSTE</source>
+                <target>Factor de coste</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_GRADO_CORRECCION</source>
+                <target>Grado de corrección</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_NORMATIVAS</source>
+                <target>Normativas</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_NORMATIVA</source>
+                <target>Normativa</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_AÑADIR_NORMATIVA</source>
+                <target>Añadir normativa</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_ELIMINAR_NORMATIVA</source>
+                <target>Eliminar normativa</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_EVALUACION_REVISION</source>
+                <target>Revisión</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>TRANS_AÑADIR_OTRO_RIESGO_CAUSA</source>
+                <target>Añadir otro Riesgo - Causa</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_VISITAS</source>
+                <target>Visitas</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_AÑADIR_VISITA</source>
+                <target>Añadir visita</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_FECHA_VISITA</source>
+                <target>Fecha visita</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_HORA_LLEGADA</source>
+                <target>Hora llegada</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_HORA_SALIDA</source>
+                <target>Hora salida</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_ELIMINAR_VISITA</source>
+                <target>Eliminar visita</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_TIPO_PLANIFICACION</source>
+                <target>Tipo de planificación</target>
+            </trans-unit>
+
+            <trans-unit id="93">
+                <source>TRANS_FECHA_REALIZACION</source>
+                <target>Fecha de realización</target>
+            </trans-unit>
+
+            <trans-unit id="94">
+                <source>TRANS_IMAGENES</source>
+                <target>Imagenes</target>
+            </trans-unit>
+
+            <trans-unit id="95">
+                <source>TRANS_AÑADIR_IMAGEN</source>
+                <target>Añadir imagen</target>
+            </trans-unit>
+
+            <trans-unit id="96">
+                <source>TRANS_IMAGEN</source>
+                <target>Imagen</target>
+            </trans-unit>
+
+            <trans-unit id="97">
+                <source>TRANS_ELIMINAR_IMAGEN</source>
+                <target>Eliminar imagen</target>
+            </trans-unit>
+
+            <trans-unit id="98">
+                <source>TRANS_PLANIFICACION_PREVENTIVA</source>
+                <target>Planificación preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="99">
+                <source>TRANS_TRABAJADORES</source>
+                <target>Trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="100">
+                <source>TRANS_DELEGADO_PREVENCION</source>
+                <target>Delegado de prevención</target>
+            </trans-unit>
+
+            <trans-unit id="101">
+                <source>TRANS_DELEGADO_PERSONAL</source>
+                <target>Delegado de personal</target>
+            </trans-unit>
+
+            <trans-unit id="102">
+                <source>TRANS_DELEGADO_COMITE</source>
+                <target>Delegado de comité</target>
+            </trans-unit>
+
+            <trans-unit id="103">
+                <source>TRANS_AÑADIR_TRABAJADOR</source>
+                <target>Añadir trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="104">
+                <source>TRANS_DEDICACION</source>
+                <target>Dedicación</target>
+            </trans-unit>
+
+            <trans-unit id="105">
+                <source>TRANS_RESPONSABLE</source>
+                <target>Responsable</target>
+            </trans-unit>
+
+            <trans-unit id="106">
+                <source>TRANS_PLANIFICACION_PREVENTIVA</source>
+                <target>Planificación preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="107">
+                <source>TRANS_IMPRIMIR_EVALUACION</source>
+                <target>Imprimir evaluación</target>
+            </trans-unit>
+
+            <trans-unit id="108">
+                <source>TRANS_MSG_ACEPTAR_FINALIZAR</source>
+                <target>Debes aceptar finalizar la evaluación.</target>
+            </trans-unit>
+
+            <trans-unit id="109">
+                <source>TRANS_MEDIDAS_PREVENTIVAS_CORRECTORAS</source>
+                <target>Medidas preventivas y/o correctoras</target>
+            </trans-unit>
+
+            <trans-unit id="110">
+                <source>TRANS_TAREAS</source>
+                <target>Tareas</target>
+            </trans-unit>
+
+            <trans-unit id="111">
+                <source>TRANS_AÑADIR_OTRA_ACCION_PREVENTIVA</source>
+                <target>Añadir otra accion preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="112">
+                <source>TRANS_PRODUCTOS_QUIMICOS</source>
+                <target>Productos químicos</target>
+            </trans-unit>
+
+            <trans-unit id="113">
+                <source>TRANS_AÑADIR_PRODUCTO_QUIMICO</source>
+                <target>Añadir producto químico</target>
+            </trans-unit>
+
+            <trans-unit id="114">
+                <source>TRANS_COMPOSICION</source>
+                <target>Composición</target>
+            </trans-unit>
+
+            <trans-unit id="115">
+                <source>TRANS_AÑADIR_OTRO_PRODUCTO_QUIMICO</source>
+                <target>Añadir otro producto químico</target>
+            </trans-unit>
+
+            <trans-unit id="116">
+                <source>TRANS_NOMBRE_PRODUCTO</source>
+                <target>Nombre producto</target>
+            </trans-unit>
+
+            <trans-unit id="117">
+                <source>TRANS_NUMERO</source>
+                <target>Número</target>
+            </trans-unit>
+
+            <trans-unit id="118">
+                <source>TRANS_TIPO_RESPONSABLE</source>
+                <target>Tipo de responsable</target>
+            </trans-unit>
+
+            <trans-unit id="119">
+                <source>TRANS_TIPO_ACTUACION</source>
+                <target>Tipo de actuación</target>
+            </trans-unit>
+
+            <trans-unit id="120">
+                <source>TRANS_IMPRIMIR_FICHA_DE_RIESGOS</source>
+                <target>Imprimir ficha de riesgos</target>
+            </trans-unit>
+
+            <trans-unit id="121">
+                <source>TRANS_COPIAR_RIESGOS_MEDIDAS</source>
+                <target>Copiar riesgos/causas/medidas a puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="122">
+                <source>TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS</source>
+                <target>Debes seleccionar un puesto de trabajo a copiar.</target>
+            </trans-unit>
+
+            <trans-unit id="123">
+                <source>TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS_DESTINO</source>
+                <target>Debes seleccionar un puesto de trabajo de destino.</target>
+            </trans-unit>
+
+            <trans-unit id="124">
+                <source>TRANS_PUESTO_TRABAJO_ORIGEN</source>
+                <target>Puesto de trabajo de origen</target>
+            </trans-unit>
+
+            <trans-unit id="125">
+                <source>TRANS_PUESTO_TRABAJO_DESTINO</source>
+                <target>Puesto de trabajo de destino</target>
+            </trans-unit>
+
+            <trans-unit id="126">
+                <source>TRANS_ZONA_TRABAJO_ORIGEN</source>
+                <target>Zona de trabajo de origen</target>
+            </trans-unit>
+
+            <trans-unit id="127">
+                <source>TRANS_ZONA_TRABAJO_DESTINO</source>
+                <target>Zona de trabajo de destino</target>
+            </trans-unit>
+
+            <trans-unit id="128">
+                <source>TRANS_COPIAR_RIESGOS_MEDIDAS_ZONA_TRABAJO</source>
+                <target>Copiar riesgos/causas/medidas a zona de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="129">
+                <source>TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS_ZONA_TRABAJO</source>
+                <target>Debes seleccionar unz zona de trabajo a copiar.</target>
+            </trans-unit>
+
+            <trans-unit id="130">
+                <source>TRANS_ERROR_COPIAR_RIESGOS_MEDIDAS_DESTINO_ZONA_TRABAJO</source>
+                <target>Debes seleccionar una zona de trabajo de destino.</target>
+            </trans-unit>
+
+            <trans-unit id="131">
+                <source>TRANS_FINALIZADO</source>
+                <target>Finalizado</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

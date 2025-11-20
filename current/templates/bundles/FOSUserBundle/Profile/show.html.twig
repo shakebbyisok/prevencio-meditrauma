@@ -1,0 +1,26 @@
+{% include 'theme/header.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+<body class="bg-slate-300">
+    <!-- Page content -->
+    <div class="page-content">
+        <!-- Main content -->
+        <div class="content-wrapper">
+            <!-- Content area -->
+            <div class="content d-flex justify-content-center align-items-center">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <i class="icon-check2 icon-2x text-success border-success border-3 rounded-round p-3 mb-3 mt-1"></i>
+                            <h5 class="mb-0">¡La contraseña se ha cambiado con éxito!</h5>
+
+                            <a href="{{ path('fos_user_security_logout') }}" class="btn bg-blue btn-block"><i class="icon-switch2"></i> Salir</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

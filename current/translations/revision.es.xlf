@@ -1,0 +1,458 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_REVISIONES</source>
+                <target>Revisiones</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_TRABAJADOR</source>
+                <target>Trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_AÑADIR_REVISION</source>
+                <target>Añadir revisión</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_REVISION</source>
+                <target>Revisión</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_DATOS_GENERALES</source>
+                <target>Datos generales</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_CERTIFICACION</source>
+                <target>Certificación</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_GENERAR_CUESTIONARIO</source>
+                <target>Generar cuestionario</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_VER_RESUMEN</source>
+                <target>Ver resumen</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_RECOMENDACIONES</source>
+                <target>Recomendaciones</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_PROTOCOLOS</source>
+                <target>Protocolos</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_PROTOCOLO</source>
+                <target>Protocolo</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_FECHA_CERTIFICADO</source>
+                <target>Fecha certificado</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_CERTIFICADO</source>
+                <target>Certificado</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_INFORME</source>
+                <target>Informe</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_EQUIPO_MEDICO</source>
+                <target>Equipo médico</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_NOTAS_INTERNAS</source>
+                <target>Notas internas</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_OBSERVACIONES</source>
+                <target>Observaciones</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_CONCLUSIONES</source>
+                <target>Conclusiones</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_RESTRICCIONES</source>
+                <target>Restricciones</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_CUESTIONARIO</source>
+                <target>Cuestionario</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_CUESTIONARIOS</source>
+                <target>Cuestionarios</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_PREGUNTAS</source>
+                <target>Preguntas</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_PREGUNTA</source>
+                <target>Pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_IMPRIMIR_CUESTIONARIO</source>
+                <target>Imprimir cuestionario</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_CONSEJOS_MEDICOS</source>
+                <target>Consejos médicos</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_CONSEJO</source>
+                <target>Consejo</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_NO_INFORMADOS</source>
+                <target>No informados</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_INFORMADOS</source>
+                <target>Informados</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_TOTALES</source>
+                <target>Totales</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_RESUMEN</source>
+                <target>Resumen</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_APTO</source>
+                <target>Apto</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_RESPUESTAS</source>
+                <target>Respuestas</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_RESPUESTA</source>
+                <target>Respuesta</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_GUARDAR_RESPUESTAS</source>
+                <target>Guardar respuestas</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_ACTUALIZADO</source>
+                <target>Actualizado</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_DATOS_ACTUALIZADOS</source>
+                <target>Los datos se han actualizado correctamente.</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_SELECT_CUESTIONARIO</source>
+                <target>Debes seleccionar un cuestionario a modificar.</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_CUESTIONARIO_NO_DATOS</source>
+                <target>El cuestionario no tiene preguntas a modificar.</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_PROTOCOLOS_PUESTO_TRABAJO</source>
+                <target>Protocolos - Puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_MSG_NO_EVALUACION</source>
+                <target>El trabajador no tiene ninguna evaluación realizada.</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_IMPRIMIR_REVISION</source>
+                <target>Imprimir revisión</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_ENVIAR_CUESTIONARIO</source>
+                <target>Enviar cuestionario</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_IMPRIMIR_APTITUD</source>
+                <target>Imprimir aptitud</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_CREAR_REVISION</source>
+                <target>Crear revisión</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_ESTADO</source>
+                <target>Estado</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_IMPRIMIR_RESUMEN_REVISION</source>
+                <target>Imprimir resumen revisión</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_REVISIONES_PENDIENTES</source>
+                <target>Revisiones pendientes</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_ELECTRO</source>
+                <target>Electrocardiograma</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_ANALITICA</source>
+                <target>Analítica</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_IMPRIMIR_REVISION_MEDICA</source>
+                <target>Imprimir revisión médica</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_NUMERO_PETICION</source>
+                <target>Número petición</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_FECHA_RECUPERACION_RESULTADO</source>
+                <target>Fecha recuperación resultado</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_ANALITICA</source>
+                <target>Analítica</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_MSG_NO_RECUPERAR_RESULTADO</source>
+                <target>El resultado no se puede recuperar porque no está informado el número de la petición.</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_MSG_NO_RESULTADO</source>
+                <target>El resultado no está disponible.</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_MODIFICAR_REVISION</source>
+                <target>Modificar revisión</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_CUESTIONARIO_MEDICO</source>
+                <target>Cuestionario</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_REVISION_MEDICA</source>
+                <target>Revisión médica</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_DOCUMENTOS_A_ENVIAR</source>
+                <target>Documentos a enviar</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_BORRAR_FECHA_ANALITICA</source>
+                <target>Borrar fecha analitica</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_MEDICO</source>
+                <target>Médico</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_APTITUD</source>
+                <target>Aptitud</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_IMPRIMIR_RESTRICCION</source>
+                <target>Imprimir restricción</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_TELEFONO_MOVIL</source>
+                <target>Telefono móvil</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_APTITUD_ENVIADA</source>
+                <target>Aptitud enviada</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_ELECTROCARDIOGRAMA</source>
+                <target>Electrocardiograma</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_REVISION_EXISTE</source>
+                <target>Ya existe una revisión para este trabajador y día</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_AVISO_ELECTRO_IMG</source>
+                <target>El fichero del electrocardiograma debe ser una imagen.</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_BORRAR_IMAGEN_ELECTRO</source>
+                <target>Borrar imagén electrocardiograma</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_CODIGO_TRABAJADOR</source>
+                <target>Código trabajador</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_DOCUMENTOS_ADJUNTOS</source>
+                <target>Documentos adjuntos</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_DOCUMENTO</source>
+                <target>Documento</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_ERROR_ESTADO_NO_VALIDO</source>
+                <target>No puedes cambiar la revisión al estado seleccionado.</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_FECHA_ENVIO</source>
+                <target>Fecha envío</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_FECHA_FIRMA</source>
+                <target>Fecha firma</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_DNI_OBLIGATORIO</source>
+                <target>Debes informar el DNI.</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_DTNAC_OBLIGATORIO</source>
+                <target>Debes informar la fecha de nacimiento.</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_USUARIO_FIRMA</source>
+                <target>Usuario firma</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_DNI_VALIDO</source>
+                <target>Debes informar un DNI/NIE válido.</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_RESTRICCION</source>
+                <target>Restricción</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>TRANS_NUMERO_PETICION_VERIFICACION</source>
+                <target>Número petición verificación</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_NUMERO_PETICION_VERIFICACION_ERROR</source>
+                <target>Debes verificar el número de petición</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_NUMERO_PETICION_VERIFICACION_ERROR_2</source>
+                <target>El número de petición de verificación no coincide</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_NUMERO_PETICION_LONGITUD</source>
+                <target>La longitud del número de petición no es correcta.</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_ESTADO_OBLIGATORIO</source>
+                <target>El estado es obligatorio.</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_VALIDEZ</source>
+                <target>Validez</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

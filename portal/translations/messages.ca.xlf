@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_MENU_ADM</source>
+                <target>Administració</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_CONTRATOS</source>
+                <target>Contractes</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_FACTURAS</source>
+                <target>Factures</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_MENU_SELECT_IDIOMA_ES</source>
+                <target>Castellà</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_MENU_SELECT_IDIOMA_CA</source>
+                <target>Català</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_MENU_CONFIGURACION</source>
+                <target>Configuració</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_MENU_LOGOUT</source>
+                <target>Tancar sessió</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_ACCIONES</source>
+                <target>Accions</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_CAMBIAR_EMPRESA</source>
+                <target>Canviar empresa</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_CERTIFICACIONES</source>
+                <target>Certificacions</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_REVISIONES</source>
+                <target>Revisions</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_EVALUACIONES</source>
+                <target>Avaluacions</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_SELECT_ALL</source>
+                <target>Seleccionar totes</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_ATENCION</source>
+                <target>¡Atenció!</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MANUAL_VS</source>
+                <target>Manual VS</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_FORMACION</source>
+                <target>Formació</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_DOCUMENTOS_ADDICIONALES</source>
+                <target>Documents adicionals</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

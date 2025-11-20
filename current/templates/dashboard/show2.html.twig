@@ -1,0 +1,369 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'empresas' %}
+
+{% block title %} Listado mensajes internos {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').enviarCorreoMasivoSn is defined and app.session.get('privilegiosRol').enviarCorreoMasivoSn is not null %}
+        {% if app.session.get('privilegiosRol').enviarCorreoMasivoSn %}
+            <!--<a href="#" id="btnEnvioCorreoMasivo2" class="btn btn-labeled btn-labeled-left bg-slate">Enviar correos internos<b><i class="icon-copy4"></i></b></a>
+            --><button id="marcarLeidoBtn" class="btn btn-primary">Marcar como leído</button>
+
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for empresa in personal %}
+            var array = [];
+            {% if empresa.leido == false %}
+                var input = '<div class="uniform-checker" id="uniform-{{ empresa.id }}"><span><input type="checkbox" name="empresa" id="{{ empresa.id }}" class="form-check-input-styled form-check-input" value="{{ empresa.id }}" /></span></div>';
+
+                array.push(input,'{{ empresa.fecha }}', '{{ empresa.remitente }}','{{ empresa.mensaje }}');
+
+            {% endif %}
+            {% if empresa.leido == true %}
+
+            var input = 'Leido<div class="uniform-checker" id="uniform-{{ empresa.id }}"><span><input type="checkbox" name="empresa" id="{{ empresa.id }}" class="form-check-input-styled form-check-input" value="{{ empresa.id }}" style="visibility: hidden; width: 0; height: 0;" /></span></div>';
+            array.push(input,'<span style="font-weight: bold; font-style: italic;">{{ empresa.fecha }}</span>', '<span style="font-weight: bold; font-style: italic;">{{ empresa.remitente }}</span>','<span style="font-weight: bold; font-style: italic;">{{ empresa.mensaje }}</span>');
+
+            {% endif %}
+            arrayData.push(array);
+            {% endfor %}
+            //Petició 28/07/2023
+            $(document).on('click', '#marcarLeidoBtn', function() {
+                var selectedRows = [];
+
+                // Obtener todas las filas seleccionadas en la tabla
+                $('input[name=\'empresa\']:checked').each(function() {
+                    selectedRows.push($(this).val());
+                });
+
+                if (selectedRows.length > 0) {
+                    // Realizar la petición AJAX utilizando jQuery
+                    $.ajax({
+                        type: "POST",
+                        url: "marcar_mensaje_leido",
+                        data: { selectedRows: selectedRows }, // Envía los IDs seleccionados
+                        success: function(response) {
+                            // Procesar la respuesta del servidor si es necesario
+
+                            location.reload();
+                        },
+                        error: function() {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    alert("Selecciona al menos una fila para marcar como leído.");
+                }
+            });
+
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('.dt-buttons').css('display', 'none');
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var tipo = $('#tipo').val();
+                if(tipo != ""){
+                    filtrar(1, tipo);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                $('#tipo').select2().val(null).trigger("change");
+                filtrar(2, null);
+            });
+
+            //Boton que envia los contratos a renovar
+            $('#btnEnvioCorreoMasivo2').click(function () {
+                if(arrayEmpresas.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: 'Tienes que seleccionar a una persona mínimo.',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }else{
+                    $.ajax({
+                        type: "POST",
+                        url: '{{ path('envio_masivo_pre_correo_enviar2') }}',
+                        dataType: 'JSON',
+                        data: {
+                            personal: arrayEmpresas
+                        },
+                        success: function (data) {
+                            if(data == 'OK'){
+                                var url = '{{ path('envio_masivo_correo_enviar2') }}';
+                                location.href = url;
+                            }
+                        },
+                        error: function(){
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(op, tipo){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('envio_masivo_correo_filtra_empresas') }}',
+                dataType: 'JSON',
+                data: {
+                    'tipo': tipo
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    var table = $('.datatable-export-excel').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+                            var array = [];
+                            var input = '<div class="uniform-checker" id="uniform-' + item.id + '"><span><input type="checkbox" name="empresa" id="' + item.id + '" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+                            array.push(input, '' + item.username + '', '' + item.email + '');
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+                    }else{
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        var arrayEmpresas = [];
+        //Boton que añade el contrato a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'empresa\']', function(){
+            var empresaId = $(this).attr('id');
+            if ($(this).prop('checked')) {
+                $('#uniform-'+empresaId+' span').addClass('checked');
+                arrayEmpresas.push(empresaId);
+            }else{
+                $('#uniform-'+empresaId+' span').removeClass('checked');
+                arrayEmpresas.splice($.inArray(empresaId, arrayEmpresas),1);
+            }
+        });
+
+        //Boton que añade todas los contratos a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'empresaAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'empresa\']");
+                    var empresaId = $(check).attr('id');
+                    $('#uniform-'+empresaId+' span').addClass('checked');
+                    arrayEmpresas.push(empresaId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'empresa\']");
+                    var empresaId = $(check).attr('id');
+                    $('#uniform-'+empresaId+' span').removeClass('checked');
+                }
+                arrayEmpresas.splice(0, arrayEmpresas.length);
+            }
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+
+            <!--<button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>-->
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">Selecciona
+                            <!--<input type="checkbox" name="empresaAll" id="selectEmpresaAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        --></th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha">Fecha mensaje
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Remitente">Remitente
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Mensaje">Mensaje
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

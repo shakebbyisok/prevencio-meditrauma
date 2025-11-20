@@ -1,0 +1,181 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'mantenimientoreconocimientos' %}
+
+{% block arrow %}<a href="{{ path('mantenimiento_reconocimientos') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_SERIES_DE_RESPUESTA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.codigo }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        });
+
+        function deleteRespuesta(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_respuesta_delete') }}",
+                data: {
+                    'respuestaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la respuesta seleccionada
+        $(document).on('click', 'a.eliminarRespuesta', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_RESPUESTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteRespuesta(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.codigo) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.indicador) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 style="font-weight: bolder;">{% trans %}TRANS_RESPUESTAS{% endtrans %}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                            {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                                <a href="{{ path('mantenimiento_reconocimientos_respuesta_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                <br/>
+                                <br/>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-bordered">
+                        <table class="table" id="respuestas">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>Sub</th>
+                                <th>{% trans %}TRANS_RESPUESTA{% endtrans %}</th>
+                                <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if respuestas is defined and respuestas is not empty %}
+                                {% for r in respuestas %}
+                                    <tr>
+                                        <td>{{ r.sub }}</td>
+                                        <td>{{ r.descripcion }}</td>
+                                        <td>
+                                            <div class="list-icons">
+                                                {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                                                        <a href="{{ path('mantenimiento_reconocimientos_respuesta_update', { "id": r.id }) }}" target="_self" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                                                        <a href="#" data-id="{{ r.id }}" target="_self" class="list-icons-item eliminarRespuesta"><i class="icon-trash"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is defined and app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is not null %}
+                {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+
+{% endblock %}
+
+
+

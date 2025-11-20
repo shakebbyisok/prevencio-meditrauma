@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" />
+    <title>MDT Prevención</title>
+
+    <!-- Global stylesheets -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/icons/icomoon/styles.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/icons/fontawesome/styles.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/icons/summernote/summernote.woff') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/icons/summernote/summernote.eot') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/icons/summernote/summernote.ttf') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/bootstrap_limitless.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/layout.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/components.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/colors.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- Core JS files -->
+    <script src="{{ asset('js/main/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/main/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/loaders/blockui.min.js') }}"></script>
+
+    <!-- Theme JS files -->
+    <script src="{{ asset('js/plugins/tables/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/tables/datatables/extensions/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/tables/datatables/extensions/pdfmake/vfs_fonts.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/tables/datatables/extensions/buttons.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/forms/styling/uniform.min.js') }}"></script>
+    {#<script src="{{ asset('js/plugins/forms/styling/switchery.min.js') }}"></script>#}
+    <script src="{{ asset('js/plugins/forms/styling/switch.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/forms/selects/select2.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/forms/inputs/inputmask.js') }}"></script>
+    <script src="{{ asset('js/plugins/extensions/jquery_ui/interactions.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/notifications/pnotify.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/loaders/progressbar.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/notifications/bootbox.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/visualization/c3/c3.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/visualization/d3/d3.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/uploaders/plupload/plupload.full.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/uploaders/plupload/plupload.queue.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/ui/fullcalendar/core/main.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/ui/fullcalendar/core/locales-all.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/ui/fullcalendar/daygrid/main.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/ui/fullcalendar/timegrid/main.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/ui/fullcalendar/list/main.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/ui/fullcalendar/interaction/main.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/editors/summernote/summernote.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    {#<script src="{{ asset('js/datatables/datatables_basic.js') }}"></script>#}
+    <script src="{{ asset('js/datatables_extension_buttons_html5.js') }}"></script>
+    <script src="{{ asset('js/form_checkboxes_radios.js') }}"></script>
+    <script src="{{ asset('js/form_select2.js') }}"></script>
+    <script src="{{ asset('js/extra_pnotify.js') }}"></script>
+    <script src="{{ asset('js/components_progress.js') }}"></script>
+    <script src="{{ asset('js/components_modals.js') }}"></script>
+    <script src="{{ asset('js/pie_basic.js') }}"></script>
+    {#<script src="{{ asset('js/datatables_definition.js') }}"></script>#}
+
+    <!-- /theme JS files -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.type_text_to_number').each(function() {
+                var $tmp =  parseFloat($(this).val().replace(",","."));
+                $(this).attr('type', 'number');
+                $(this).val($tmp);
+                $(this).attr('lang', 'en');
+            });
+
+            $('ul').find('li.active,a.active').parent().parent().parent().addClass('nav-item-expanded nav-item-open');
+
+            {% if app.session.get('rol') is defined and app.session.get('rol') is not null %}
+                {% if app.session.get('rol') == 1 or app.session.get('rol') == 5 %}
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('contador_dashboard_admin') }}",
+                        data: {
+                        },
+                        dataType: "JSON",
+                        success: function (data) {
+                            $('#contadorDashboardAdmin').html(data.count);
+                        }
+                    });
+                {% endif %}
+            {% endif %}
+
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contador_dashboard_admin2') }}",
+                data: {
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    $('#contadorDashboardAdmin2').html(data.count);
+                }
+            });
+
+            //Marcamos el idioma en el desplegable
+            var locale = '{{ app.session.get('_locale') }}';
+
+            $('#selectIdioma').val(locale).change();
+
+            $("#btnCambioIdioma").click(function () {
+                var error = null;
+
+                $('#btnCambioIdioma').prop("disabled", true);
+                $('#btnCambioIdioma').html("...");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('cambio_idioma') }}",
+                    data: {
+                        'idioma': $('#selectIdioma').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        $.each(data, function (i, item) {
+                            if (item == "OK") {
+                                location.reload();
+                            } else {
+                                error = error + item;
+                            }
+                        });
+                        if (error != null) {
+                            alert(error);
+                        }
+                    }
+                });
+            });
+            $('#toggleNav').click(function () {
+                var toggle = $('body').hasClass("sidebar-xs");
+                localStorage.setItem('toggleMenu', toggle);
+            });
+            var toggleMenu = localStorage.getItem('toggleMenu');
+
+            if(toggleMenu === "true"){
+                $('body').addClass("sidebar-xs");
+            }
+            else {
+                $('body').removeClass("sidebar-xs");
+            }
+        });
+
+        function cambioIdioma(idioma){
+            var error = null;
+
+            $.ajax({
+                type: "POST",
+                url: "{{ path('cambio_idioma') }}",
+                data: {
+                    'idioma': idioma
+                },
+                dataType: "JSON",
+                success: function (data) {
+
+                    $.each(data, function (i, item) {
+                        if (item == "OK") {
+                            location.reload();
+                        } else {
+                            error = error + item;
+                        }
+                    });
+                    if (error != null) {
+                        alert(error);
+                    }
+                }
+            });
+        }
+    </script>
+</head>

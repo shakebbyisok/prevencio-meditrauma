@@ -1,0 +1,120 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'empresas' %}
+
+{% block arrow %}
+    {% if app.session.get('puestoTrabajoEvaluacionId') is defined and app.session.get('puestoTrabajoEvaluacionId') is not empty %}
+        <a href="{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_evaluar', { "id": app.session.get('puestoTrabajoEvaluacionId') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% else %}
+        <a href="{{ path('tecnico_empresa_update', { "id": app.session.get('empresa').id }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+{% endblock %}
+{% block title %} {% trans %}TRANS_MAQUINA_EMPRESA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.descripcion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.centro) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.codigo) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.grupoMaquina) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.maquinaGenerica) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.fabricante) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.modelo) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.numSerie) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.anyoFabricacion) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.anyoCompra) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.placaCaracteristica) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.marcadoCE) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.conformidad) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.manualInstrucciones) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.observaciones) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editMaquinaEmpresaSn is defined and app.session.get('privilegiosRol').editMaquinaEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').editMaquinaEmpresaSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

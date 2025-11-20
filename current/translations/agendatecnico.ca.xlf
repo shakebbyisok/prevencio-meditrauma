@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_TAREAS</source>
+                <target>Tasques</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_AGENDA</source>
+                <target>Agenda</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_AÑADIR_TAREA</source>
+                <target>Afegir tasca</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_FECHA_INICIO</source>
+                <target>Data inici</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_FECHA_FIN</source>
+                <target>Data fi</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_TAREA</source>
+                <target>Tasca</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_DATOS_TAREA</source>
+                <target>Tasca</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_DESCRIPCION</source>
+                <target>Descripció</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_DURACION</source>
+                <target>Duració</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

@@ -1,0 +1,1994 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'empresas' %}
+
+{% block arrow %}<a href="{{ path('empresa_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_EMPRESA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.empresa }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script src="{{ asset('jstree/jstree.min.js') }}"></script>
+    <link href="{{ asset('jstree/themes/default/style.min.css') }}" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('.summernote').summernote();
+            $(".note-editable").attr("contenteditable","false");
+
+            var arrayDataTrabajadores = [];
+            var arrayDataContratos = [];
+            var arrayDataContratosCancelados = [];
+            var arrayDataRenovaciones = [];
+            var arrayDataPagos = [];
+            var arrayDataFacturacion = [];
+            var arrayDataDatosBancarios = [];
+            var arrayDataNotificaciones = [];
+            var arrayDataCertificaciones = [];
+            var arrayDataTarifasPrl = [];
+            var arrayDataTarifasRevisionesMedicas = [];
+            var arrayDataModelo347 = [];
+            var arrayDataManualVs = [];
+
+            {% for te in trabajadoresEmpresa %}
+                var array = [];
+
+                var trabajadorNombre = '';
+                var trabajadorDni = '';
+                {% if te.trabajador is not empty %}
+                trabajadorNombre = '{{ te.trabajador.nombre }}';
+                trabajadorDni = '{{ te.trabajador.dni }}';
+                {% endif %}
+
+                array.push(trabajadorNombre, trabajadorDni);
+                arrayDataTrabajadores.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel-trabajadores').DataTable({
+                data: arrayDataTrabajadores,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportTrabajadorSn is defined and app.session.get('privilegiosRol').exportTrabajadorSn is not null %}
+                {% if app.session.get('privilegiosRol').exportTrabajadorSn != true %}
+                    $('#datatable-trabajadores .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for contrato in contratos %}
+                var array = [];
+
+                var renovado;
+                {% if contrato.renovado == true %}
+                    renovado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    renovado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var tipo = '';
+                {% if contrato.tipo is not empty %}
+                    {% if contrato.tipoid == 1 %}
+                        tipo = '<span class="badge badge-success">{{ contrato.tipo }}</span>';
+                    {% elseif contrato.tipoid == 2 %}
+                        tipo = '<span class="badge badge-primary">{{ contrato.tipo }}</span>';
+                    {% elseif contrato.tipoid == 3 %}
+                        tipo = '<span class="badge badge-danger">{{ contrato.tipo }}</span>';
+                    {% else %}
+                        tipo = '<span class="badge badge-info">{{ contrato.tipo }}</span>';
+                    {% endif %}
+                {% endif %}
+
+                var enviado = '';
+                {% if contrato.enviado == true %}
+                    enviado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    enviado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var facturado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% if contrato.facturado == true %}
+                    facturado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% endif %}
+
+                array.push('{{ contrato.contrato }}', tipo, '{{ contrato.fechainicio }}', '{{ contrato.fechavencimiento }}', '{{ contrato.importe|number_format(2, ",", ".") }} €', facturado, enviado, '{{ contrato.fechaenvio }}');
+
+                {% if contrato.cancelado == true %}
+                    arrayDataContratosCancelados.push(array);
+                {% else %}
+                    arrayDataContratos.push(array);
+                {% endif %}
+            {% endfor %}
+
+            $('.datatable-export-excel-contratos').DataTable({
+                data: arrayDataContratos,
+                order: [[2, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('.datatable-export-excel-contratos-cancelados').DataTable({
+                data: arrayDataContratosCancelados,
+                order: [[2, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportContratoSn is defined and app.session.get('privilegiosRol').exportContratoSn is not null %}
+                {% if app.session.get('privilegiosRol').exportContratoSn != true %}
+                    $('#datatable-contratos .dt-buttons').css('display', 'none');
+                    $('#datatable-contratos .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for renovacion in renovaciones %}
+                var array = [];
+
+                var renovado = null;
+                var documentoRenovacion = null;
+
+                {% if renovacion.renovado == true %}
+                    renovado ='<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    renovado ='<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                {% endif %}
+
+                {% if renovacion.documento_renovacion is not null %}
+                    {% if renovacion.documento_renovacion == 1 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans from 'renovaciones' %}TRANS_RENOVADO_OP_1{% endtrans %}</span>';
+                    {% elseif renovacion.documento_renovacion == 2 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans from 'renovaciones' %}TRANS_RENOVADO_OP_2{% endtrans %}</span>';
+                    {% elseif renovacion.documento_renovacion == 3 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans from 'renovaciones' %}TRANS_RENOVADO_OP_3{% endtrans %}</span>';
+                    {% elseif renovacion.documento_renovacion == 4 %}
+                        documentoRenovacion = '<span class="badge badge-info">{% trans from 'renovaciones' %}TRANS_RENOVADO_OP_4{% endtrans %}</span>';
+                    {% endif %}
+                {% endif %}
+
+                array.push('{{ renovacion.fechainicio|date('d/m/Y') }}', '{{ renovacion.fechavencimiento|date('d/m/Y') }}', '{{ renovacion.contrato }}', renovado, documentoRenovacion);
+                arrayDataRenovaciones.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-renovaciones').DataTable({
+                data: arrayDataRenovaciones,
+                order: [[0, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportRenovacionSn is defined and app.session.get('privilegiosRol').exportRenovacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportRenovacionSn != true %}
+                    $('#datatable-renovaciones .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for pago in pagos %}
+                var array = [];
+
+                var facturado = null;
+                var vencimiento = null;
+
+                {% if pago.facturado == true %}
+                    facturado = '<span class="badge badge-success">{% trans from 'pagopendiente' %}TRANS_FACTURADO{% endtrans %}</span>';
+                {% else %}
+                    {% if date("now"|date('Y-m-d')) > date(pago.vencimiento|date('Y-m-d')) %}
+                        facturado = '<span class="badge badge-danger">{% trans from 'pagopendiente' %}TRANS_VENCIDO{% endtrans %}</span>';
+                    {% else %}
+                        facturado = '<span class="badge badge-secondary">{% trans from 'pagopendiente' %}TRANS_PENDIENTE{% endtrans %}</span>';
+                    {% endif %}
+                {% endif %}
+
+                {% if pago.vencimiento is not null %}
+                    vencimiento = '{{ pago.vencimiento|date('d/m/Y') }}';
+                {% endif %}
+
+                array.push('{{ pago.contrato }}', facturado, vencimiento, '{{ pago.importe_iva|number_format(2, ",", ".") }} €', '{{ pago.importe_total|number_format(2, ",", ".") }} €');
+                arrayDataPagos.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-pagos').DataTable({
+                data: arrayDataPagos,
+                order: [[2, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportPagoPendienteSn is defined and app.session.get('privilegiosRol').exportPagoPendienteSn is not null %}
+                {% if app.session.get('privilegiosRol').exportPagoPendienteSn != true %}
+                    $('#datatable-pagos .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for factura in facturas %}
+                var array = [];
+
+                var enviada = null;
+
+                {% if factura.enviada == true %}
+                    enviada = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    enviada = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var tipo = '';
+                {% if factura.revision == true %}
+                    tipo = '<span class="badge" style="color: #fff; background-color: #F7DC6F;"><br/></span>';
+                {% endif %}
+
+                {% if factura.renovacion == true %}
+                    tipo = '<span class="badge badge-danger"><br/></span>';
+                {% endif %}
+
+                {% if factura.revision == false and factura.renovacion == false %}
+                    tipo = '';
+                {% endif %}
+
+                array.push(tipo, '<span style="display:none;">{{ factura.fechatimestamp }}</span>{{ factura.fecha }}', '{{ factura.factura }}', '{{ factura.facturaRectificativa }}', '{{ factura.formapago }}', '{{ factura.importe|number_format(2, ",", ".") }} €', enviada, '{{ factura.fechaenvio }}');
+                arrayDataFacturacion.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-facturas').DataTable({
+                data: arrayDataFacturacion,
+                order: [[1, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportFacturacionSn is defined and app.session.get('privilegiosRol').exportFacturacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportFacturacionSn != true %}
+                    $('#datatable-facturas .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for datosbancario in datosBancarios %}
+                var array = [];
+
+                var entidad = null;
+                var principal = null;
+
+                {% if datosbancario.entidadBancaria is not null %}
+                    entidad = '{{ datosbancario.entidadBancaria.descripcion }}';
+                {% endif %}
+
+                {% if datosbancario.principal == true %}
+                    principal = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    principal = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                array.push(entidad, principal);
+                arrayDataDatosBancarios.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-datos-bancarios').DataTable({
+                data: arrayDataDatosBancarios,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportDatosBancariosSn is defined and app.session.get('privilegiosRol').exportDatosBancariosSn is not null %}
+                {% if app.session.get('privilegiosRol').exportDatosBancariosSn != true %}
+                    $('#datatable-datos-bancarios .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for notificacion in notificaciones %}
+                var array = [];
+
+                {% if notificacion.enviada == true %}
+                    enviada = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    enviada = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var fechaEnvio = '';
+                {% if notificacion.fechaEnvio is not null %}
+                    fechaEnvio = '{{ notificacion.fechaEnvio|date('d/m/Y') }}';
+                {% endif %}
+
+                array.push('{{ notificacion.fichero.plantilla.nombre }}', enviada, fechaEnvio);
+                arrayDataNotificaciones.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-notificaciones').DataTable({
+                data: arrayDataNotificaciones,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportNotificacionSn is defined and app.session.get('privilegiosRol').exportNotificacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportNotificacionSn != true %}
+                    $('#datatable-notificaciones .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for certificacion in certificaciones %}
+                var array = [];
+
+                {% if certificacion.enviada == true %}
+                    enviada = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    enviada = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var fechaEnvio = '';
+                {% if certificacion.fechaEnvio is not null %}
+                    fechaEnvio = '{{ certificacion.fechaEnvio|date('d/m/Y') }}';
+                {% endif %}
+
+                array.push('{{ certificacion.fichero.plantilla.nombre }}', enviada, fechaEnvio);
+                arrayDataCertificaciones.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-certificaciones').DataTable({
+                data: arrayDataCertificaciones,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportCertificacionSn is defined and app.session.get('privilegiosRol').exportCertificacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportCertificacionSn != true %}
+                    $('#datatable-certificaciones .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for tarifaPrl in tarifasPrl %}
+                var array = [];
+
+                array.push('{{ tarifaPrl.concepto.descripcion }}', '{{ tarifaPrl.iva|number_format(2, ",", ".") }} €', '{{ tarifaPrl.importe|number_format(2, ",", ".") }} €');
+                arrayDataTarifasPrl.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-tarifas-prl').DataTable({
+                data: arrayDataTarifasPrl,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportTarifaSn is defined and app.session.get('privilegiosRol').exportTarifaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportTarifaSn != true %}
+                    $('#datatable-tarifas-prl .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for tarifaRevisionesMedicas in tarifasRevisionesMedicas %}
+                var array = [];
+
+                array.push('{{ tarifaRevisionesMedicas.concepto.descripcion }}', '{{ tarifaRevisionesMedicas.iva|number_format(2, ",", ".") }} €', '{{ tarifaRevisionesMedicas.importe|number_format(2, ",", ".") }} €');
+                arrayDataTarifasRevisionesMedicas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-tarifas-revisiones').DataTable({
+                data: arrayDataTarifasRevisionesMedicas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportTarifaSn is defined and app.session.get('privilegiosRol').exportTarifaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportTarifaSn != true %}
+                    $('#datatable-tarifas-revisiones .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for m347 in modelo347Empresa %}
+                var array = [];
+
+                {% if m347.enviada == true %}
+                    enviada = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    enviada = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var fechaEnvio = '';
+                {% if m347.fechaEnvio is not null %}
+                    fechaEnvio = '{{ m347.fechaEnvio|date('d/m/Y') }}';
+                {% endif %}
+
+                array.push('{{ m347.fichero.dtcrea|date('d/m/Y') }}', enviada, fechaEnvio);
+                arrayDataModelo347.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-modelo-347').DataTable({
+                data: arrayDataModelo347,
+                order: [[0, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportModelo347Sn is defined and app.session.get('privilegiosRol').exportModelo347Sn is not null %}
+                {% if app.session.get('privilegiosRol').exportModelo347Sn != true %}
+                    $('#datatable-modelo-347.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            {% for mvs in manualVsEmpresa %}
+                var array = [];
+
+                array.push('{{ mvs.fecha|date('d/m/Y') }}');
+                arrayDataManualVs.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-manualvs').DataTable({
+                data: arrayDataManualVs,
+                order: [[0, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportModelo347Sn is defined and app.session.get('privilegiosRol').exportModelo347Sn is not null and impagadaSn is defined and impagadaSn == false %}
+                {% if app.session.get('privilegiosRol').exportModelo347Sn != true %}
+                    $('#datatable-manualvs .dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            $('.form-check-input-switch').bootstrapSwitch();
+
+            var xhr;
+            var json = {{ tree | raw }};
+            var selected_id;
+
+            function ControlViews() {
+                selected_id = $("#tree").find(".jstree-clicked").attr('id');
+                //Algun nodo selecionado.
+                if (typeof selected_id != 'undefined' && selected_id != '') {
+                    var remove = /_anchor$/;
+                    selected_id = selected_id.replace(remove, "");
+                    //FICHERO
+                    if (selected_id.indexOf("fileId") == 0) {
+                        selected_id = selected_id.replace("fileId", "");
+                        plantillaAjaxRequest(selected_id);
+                    }
+                }
+            }
+
+            $(function () {
+                $("#tree")
+                    .jstree({
+                        'core': {
+                            'data': json,
+                            'check_callback': true
+                        },
+
+                        'plugins': ["search", "sort", "state"]
+
+                    })
+                    .on('changed.jstree', function (e, data) {
+                        if (xhr && xhr.readyState != 4) {
+                            xhr.abort();
+                        }
+                        ControlViews();
+                    })
+                    .on('ready.jstree', function (e, data) {
+                        var fileUploadedID = location.search.split('fileid=')[1];
+                        //console.log(fileUploadedID);
+                        if (typeof(fileUploadedID) != "undefined") {
+                            var node = "fileId" + fileUploadedID;
+                            $('#tree').jstree('deselect_all');
+                            setTimeout(function(){
+                                $('#tree').jstree('select_node', node);
+                            },300);
+
+                        }
+                    });
+            });
+
+            ControlViews();
+
+            function plantillaAjaxRequest(plantillaId) {
+
+                $("#nombreFichero").val("");
+                $("#fechaFichero").val("");
+                $("#usuarioFichero").val("");
+                $("#tipoFichero").val("");
+                $("#midaFichero").val("");
+                $("#idFichero").val("");
+                $("#btnDownPlantilla").attr('href', "");
+                $("#btnOpenPlantilla").attr('href', "");
+
+                $('#modal_view_fichero').modal('show');
+
+                var url = '{{ path('gdoc_plantilla_view') }}';
+
+                $("#btnOpenPlantilla").hide();
+                $("#btnDownPlantilla").hide();
+                $('#btnDeletePlantilla').hide();
+
+                var empresaId = '{{ app.request.get('id') }}';
+
+                xhr = $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'id': plantillaId,
+                        'tipo': 3,
+                        'empresaId': '{{ app.request.get('id') }}'
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        $("#nombreFichero").val(response.name);
+                        $("#fechaFichero").val(response.fecha);
+                        $("#usuarioFichero").val(response.usuario);
+                        $("#tipoFichero").val(response.tipo);
+                        $("#midaFichero").val(response.mida);
+                        $("#idFichero").val(response.id);
+                        $("#btnDownPlantilla").attr('href', '{{ path('gdoc_down_plantilla') }}?plantillaId='+response.down+'&tipo=3&empresaId='+empresaId);
+                        $("#btnDownPlantilla").show();
+                    }
+                });
+            }
+
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+
+                <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_3{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_4{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab5" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_5{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab6" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_6{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab7" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_7{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab8" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_8{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab9" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_9{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab10" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_10{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab11" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_ADM_CONTRATOS{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab12" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_ADM_RENOVACIONES{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab13" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_ADM_PAGOS_PENDIENTES{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab14" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_ADM_FACTURACION{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab15" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_ADM_DATOS_BANCARIOS{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab16" class="nav-link" data-toggle="tab">{% trans from 'messages' %}TRANS_MENU_ADM_BALANCE{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab17" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_11{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab18" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_12{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab19" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_13{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab20" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_14{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab21" class="nav-link" data-toggle="tab">{% trans %}TRANS_GESTION_DOCUMENTAL{% endtrans %}</a></li>
+                <li class="nav-item"><a href="#tab22" class="nav-link" data-toggle="tab">{% trans %}TRANS_MANUAL_VS{% endtrans %}</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% trans %}TRANS_ESTADO{% endtrans %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.anulado) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.pruebasEspeciales) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.codigo) }}
+                        </div>
+                        <div class="col-lg-6">
+                            {{ form_row(form.codigoEmpresa) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.cif) }}
+                            {{ form_row(form.empresa) }}
+                            {{ form_row(form.marcaComercial) }}
+                        </div>
+                        <div class="col-lg-6">
+                            {{ form_row(form.grupoEmpresa) }}
+                            {{ form_row(form.tipoEmpresa) }}
+                            {{ form_row(form.trabajadores) }}
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_USUARIOS_RESPONSABLES{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-12">
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="tecnicos">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_TECNICO{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if tecnicos is not empty %}
+                                            {% for t in tecnicos %}
+                                                <tr>
+                                                    {% if t.tecnico is not null %}
+                                                        <td>{{ t.tecnico.nombre }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                    <td></td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.agente) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.vigilanciaSalud) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.gestorAdministrativo) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_SEGURIDAD_SOCIAL{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.regimen) }}
+                                {{ form_row(form.ccc) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_OTROS_DATOS_INTERES{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.colaborador) }}
+                                {{ form_row(form.mutua) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.spa) }}
+                                {{ form_row(form.prescriptor) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.modalidadPreventiva) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5>{% trans %}TRAMS_CENTRO_MEDICO_ASIGNADO{% endtrans %}</h5>
+                                {{ form_row(form.centroMedico) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5>{% trans %}TRANS_CONSENTIMIENTO_CESION_DATOS{% endtrans %}</h5>
+                                {{ form_row(form.consentimientoCesionDatos) }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DIRECCION_POSTAL{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                {{ form_row(form.domicilioPostal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.localidadPostal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.codigoPostalPostal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.provinciaPostal) }}
+                            </div>
+                        </div>
+
+                        <h5>{% trans %}TRANS_CODIGO_SERPA{% endtrans %}</h5>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.provinciaPostalSerpa) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.municipioPostalSerpa) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DIRECCION_FISCAL{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                {{ form_row(form.domicilioFiscal) }}
+                                {{ form_row(form.paisFiscal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.localidadFiscal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.codigoPostalFiscal) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.provinciaFiscal) }}
+                            </div>
+                        </div>
+
+                        <h5>{% trans %}TRANS_CODIGO_SERPA{% endtrans %}</h5>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.provinciaFiscalSerpa) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.municipioFiscalSerpa) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_TELEFONO_EMAIL{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.telefono1) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.telefono2) }}
+                            </div>
+{#                            <div class="col-lg-4">#}
+{#                                {{ form_row(form.fax) }}#}
+{#                            </div>#}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-12">
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="correos">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_EMAIL{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_FUNCION_EMAIL{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if correos is not empty %}
+                                            {% for c in correos %}
+                                                <tr>
+                                                    <td>{{ c.correo }}</td>
+                                                    {% if c.funcion is not null %}
+                                                        <td>{{ c.funcion.descripcion }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                    <td></td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_RESPONSABLE_EMPRESA{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.nombreRepresentante) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.dniRepresentante) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.cargoRepresentante) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PERSONAS_CONTACTO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.personaContacto) }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_ESTADOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.estadoAdministrativoPrevencion) }}
+                                {{ form_row(form.estadoAreaAdministracion) }}
+                                {{ form_row(form.estadoAreaVigilanciaSalud) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.estadoAdministrativoVigilanciaSalud) }}
+                                {{ form_row(form.estadoAreaTecnica) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_FECHAS_ALTA_BAJA{% endtrans %}</legend>
+                        <h5>{% trans %}TRANS_PREVENCION{% endtrans %}</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.fechaAlta) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.fechaBaja) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.motivoBaja) }}
+                            </div>
+                        </div>
+
+                        <h5>{% trans %}TRANS_VIG_SALUD{% endtrans %}</h5>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.fechaAltaVigilanciaSalud) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.fechaBajaVigilanciaSalud) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.motivoBajaVigilanciaSalud) }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_ACTIVIDAD_EMPRESA{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.actividad) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                {{ form_row(form.sectorEmpresarial) }}
+                                {{ form_row(form.grupoActividad) }}
+                            </div>
+                            <div class="col-lg-6">
+                                {{ form_row(form.actividadPreventiva) }}
+                                {{ form_row(form.especialidadPreventiva) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.actividadIncluidaAnexo) }}
+                                {{ form_row(form.empresaEtt) }}
+                                {{ form_row(form.noAplicarIpc) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_NIVEL_RIESGO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.nivelRiesgoSubjetivoInterno) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_NIVEL_SEGUIMIENTO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.nivelSeguimientoEmpresa) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CNAE{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="cnae">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_PRINCIPAL_CNAE{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_CODIGO_CNAE{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_DESCRIPCION_CNAE{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if cnae is not empty %}
+                                            {% for c in cnae %}
+                                                <tr>
+                                                    {% if c.principal == true %}
+                                                        <td><span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span></td>
+                                                    {% else %}
+                                                        <td><span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>
+                                                    {% endif %}
+                                                    {% if c.cnae is not null %}
+                                                        <td>{{ c.cnae.cnae }}</td>
+                                                        <td>{{ c.cnae.descripcion }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                        <td></td>
+                                                    {% endif %}
+                                                    <td></td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <h5>{% trans %}TRANS_COTIZACION_SS{% endtrans %}</h5>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.excluirCalculoRatios) }}
+                                {{ form_row(form.excluirMemorialAnual) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="tab-pane fade" id="tab5">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.observacionesGenerales) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.observacionesAreaMedicina) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.observacionesAreaTecnica) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.centroTrabajoDeslocalizado) }}
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <table class="table" id="centroTrabajoEmpresa">
+                                    <thead>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans %}TRANS_DIRECCION{% endtrans %}</th>
+                                        <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if centroTrabajoEmpresa is not empty %}
+                                        {% for cte in centroTrabajoEmpresa %}
+                                            <tr>
+                                                <td>{{ cte.centro.direccion }}</td>
+                                                <td></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab7">
+                    <div class="row">
+                        <div class="col-lg-12">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-trabajadores dataTable no-footer" id="trabajadoresEmpresa" role="grid"
+                                           aria-describedby="DataTables_Table_0_info">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Nombre" aria-sort="ascending">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="DNI">{% trans %}TRANS_DNI_RESPONSABLE_EMPRESA{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.actuaciones) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab9">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.avisosControl) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab10">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.estructuraDepartamental) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab11">
+                    <div class="d-lg-flex">
+                        <ul class="nav nav-tabs nav-tabs-vertical flex-column mr-lg-3 wmin-lg-200 mb-lg-0 border-bottom-0">
+                            <li class="nav-item"><a href="#activos" class="nav-link active" data-toggle="tab"><i class="icon-check mr-2"></i> {% trans from 'contratos' %}TRANS_ACTIVOS{% endtrans %}</a></li>
+                            <li class="nav-item"><a href="#cancelados" class="nav-link" data-toggle="tab"><i class="icon-cross mr-2"></i> {% trans from 'contratos' %}TRANS_CANCELADOS{% endtrans %}</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane fade active show" id="activos">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div id="datatable-contratos" class="dataTables_wrapper no-footer">
+                                            <div class="datatable-scroll">
+                                                <table class="table datatable-export-excel-contratos dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                                    <thead>
+                                                    <tr class="bg-grey-300" role="row">
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Contrato">{% trans from 'contratos' %}TRANS_CONTRATO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="TipoEmpresa">{% trans %}TRANS_TIPO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Fecha" aria-sort="descending">{% trans from 'contratos' %}TRANS_FECHA{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Vencimiento">{% trans from 'contratos' %}TRANS_VENCIMIENTO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Importe">{% trans from 'contratos' %}TRANS_IMPORTE{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Facturado">{% trans from 'contratos' %}TRANS_FACTURADO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Enviado">{% trans from 'contratos' %}TRANS_ENVIADO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="FechaEnvio">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="cancelados">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div id="datatable-contratos-cancelados" class="dataTables_wrapper no-footer">
+                                            <div class="datatable-scroll">
+                                                <table class="table datatable-export-excel-contratos-cancelados dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                                    <thead>
+                                                    <tr class="bg-grey-300" role="row">
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Contrato">{% trans from 'contratos' %}TRANS_CONTRATO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="TipoEmpresa">{% trans %}TRANS_TIPO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Fecha" aria-sort="descending">{% trans from 'contratos' %}TRANS_FECHA{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Vencimiento">{% trans from 'contratos' %}TRANS_VENCIMIENTO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Importe">{% trans from 'contratos' %}TRANS_IMPORTE{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Facturado">{% trans from 'contratos' %}TRANS_FACTURADO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="Enviado">{% trans from 'contratos' %}TRANS_ENVIADO{% endtrans %}
+                                                        </th>
+                                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                            aria-label="FechaEnvio">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab12">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-renovaciones" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-renovaciones dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha" aria-sort="descending">{% trans from 'renovaciones' %}TRANS_FECHA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Vencimiento">{% trans from 'renovaciones' %}TRANS_VENCIMIENTO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Contrato">{% trans from 'renovaciones' %}TRANS_CONTRATO{% endtrans %}
+                                            </th>
+                                            {#                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"#}
+                                            {#                            aria-label="Tipo">{% trans %}TRANS_TIPO{% endtrans %}#}
+                                            {#                        </th>#}
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Renovado">{% trans from 'renovaciones' %}TRANS_RENOVADO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="RenovadoCon">{% trans from 'renovaciones' %}TRANS_RENOVADO_CON{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab13">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-pagos" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-pagos dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Contrato">{% trans from 'contratos' %}TRANS_CONTRATO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Estado">{% trans from 'pagopendiente' %}TRANS_ESTADO{% endtrans %}
+                                            </th>
+                                            <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Vencimiento" aria-sort="descending">{% trans from 'pagopendiente' %}TRANS_VENCIMIENTO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Iva">{% trans from 'pagopendiente' %}TRANS_IVA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Total">{% trans from 'pagopendiente' %}TRANS_TOTAL{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab14">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-facturas" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-facturas dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Tipo">{% trans from 'facturacion' %}TRANS_TIPO{% endtrans %}
+                                            </th>
+                                            <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha" aria-sort="descending">{% trans from 'facturacion' %}TRANS_FECHA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Factura">{% trans from 'facturacion' %}TRANS_FACTURA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="FacturaRectificativa">{% trans from 'facturacion' %}TRANS_FACTURA_RECTIFICATIVA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="FormaPago">{% trans from 'facturacion' %}TRANS_FORMA_PAGO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Importe">{% trans from 'facturacion' %}TRANS_IMPORTE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Enviada">{% trans from 'facturacion' %}TRANS_ENVIADA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="FechaEnvio">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab15">
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.formaPago) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.diaPago) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-datos-bancarios" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-datos-bancarios dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Banco" aria-sort="ascending">{% trans from 'datosbancarios' %}TRANS_BANCO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Principal">{% trans from 'datosbancarios' %}TRANS_PRINCIPAL{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab16">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <table class="table" id="balanceEconomico">
+                                    <thead>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans from 'balanceeconomico' %}TRANS_ESTADO_GIRO{% endtrans %}</th>
+                                        <th>{% trans from 'balanceeconomico' %}TRANS_FECHA{% endtrans %}</th>
+                                        <th>{% trans from 'balanceeconomico' %}TRANS_CONCEPTO{% endtrans %}</th>
+                                        <th>{% trans from 'balanceeconomico' %}TRANS_DEBE{% endtrans %}</th>
+                                        <th>{% trans from 'balanceeconomico' %}TRANS_HABER{% endtrans %}</th>
+                                        <th>{% trans from 'balanceeconomico' %}TRANS_COBRO_CONFIRMADO{% endtrans %}</th>
+                                        <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set total = 0 %}
+                                    {% if balanceEconomico is not empty %}
+                                        {% set debe = 0 %}
+                                        {% set haber = 0 %}
+                                        {% for be in balanceEconomico %}
+                                            <tr>
+                                                <td></td>
+                                                <td>{{ be.fecha }}</td>
+                                                <td>{{ be.concepto }}</td>
+                                                {% if be.debe is not null %}
+                                                    <td>{{ be.debe|number_format(2, ',', '.') }} €</td>
+                                                {% else %}
+                                                    <td></td>
+                                                {% endif %}
+                                                {% if be.haber is not null %}
+                                                    <td>{{ be.haber|number_format(2, ',', '.') }} €</td>
+                                                {% else %}
+                                                    <td></td>
+                                                {% endif %}
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            {% if be.pagos is defined and be.pagos is not empty %}
+                                                {% for p in be.pagos %}
+                                                    <tr>
+                                                        {% if p.remesado is not empty %}
+                                                            <td>
+                                                                <span class="badge badge-success">{% trans from 'balanceeconomico' %}TRANS_GIRO_REMESADO{% endtrans %}</span>
+                                                                |
+                                                                {% if p.girado == true %}
+                                                                    <span class="badge badge-success">{% trans from 'balanceeconomico' %}TRANS_GIRADO{% endtrans %}</span>
+                                                                {% else %}
+                                                                    <span class="badge badge-danger">{% trans from 'balanceeconomico' %}TRANS_PENDIENTE_GIRAR{% endtrans %}</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            {% set haber = haber + p.haber|abs %}
+                                                        {% else %}
+                                                            {% if p.es_factura == false %}
+                                                                <td>
+                                                                    <span class="badge badge-danger">{% trans from 'balanceeconomico' %}TRANS_GIRO_NO_REMESADO{% endtrans %}</span>
+                                                                    |
+                                                                    {% if p.girado == true %}
+                                                                        <span class="badge badge-success">{% trans from 'balanceeconomico' %}TRANS_GIRADO{% endtrans %}</span>
+                                                                        {% set haber = haber + p.haber|abs %}
+                                                                    {% else %}
+                                                                        <span class="badge badge-danger">{% trans from 'balanceeconomico' %}TRANS_PENDIENTE_GIRAR{% endtrans %}</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                            {% else %}
+                                                                <td></td>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        <td>{{ p.fecha }}</td>
+                                                        <td>{{ p.concepto }}</td>
+                                                        <td></td>
+                                                        {% if p.haber is not null %}
+                                                            <td>{{ p.haber|number_format(2, ',', '.') }} €</td>
+                                                        {% else %}
+                                                            <td></td>
+                                                        {% endif %}
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    {% if p.devolucion is defined and p.devolucion is not empty %}
+                                                        {% for pd in p.devolucion %}
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>{{ pd.fecha }}</td>
+                                                                <td>{{ pd.concepto }}</td>
+                                                                {% if pd.debe is not null %}
+                                                                    <td>{{ pd.debe|number_format(2, ',', '.') }} €</td>
+                                                                {% else %}
+                                                                    <td></td>
+                                                                {% endif %}
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                {% set debe = debe + pd.debe %}
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% if be.abonos is defined and be.abonos is not empty %}
+                                                {% for a in be.abonos %}
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>{{ a.fecha }}</td>
+                                                        <td>{{ a.concepto }}</td>
+                                                        {% if a.debe is not null %}
+                                                            <td style="color: red;">{{ a.debe|number_format(2, ',', '.') }} €</td>
+                                                        {% else %}
+                                                            <td></td>
+                                                        {% endif %}
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    {% set debe = debe + a.debe %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% if be.vencimiento is defined and be.vencimiento is not empty %}
+                                                {% for v in be.vencimiento %}
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>{{ v.fecha }}</td>
+                                                        <td>{{ v.concepto }}</td>
+                                                        <td></td>
+                                                        {% if v.haber is not null %}
+                                                            <td>{{ v.haber|number_format(2, ',', '.') }} €</td>
+                                                        {% else %}
+                                                            <td></td>
+                                                        {% endif %}
+                                                        <td>
+                                                            {% if v.confirmado == true %}
+                                                                <span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>
+                                                                {% set haber = haber + v.haber|abs %}
+                                                            {% else %}
+                                                                <span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>
+{#                                                                {% set haber = haber - v.haber %}#}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% if be.entradas is defined and be.entradas is not empty %}
+                                                {% for a in be.entradas %}
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>{{ a.fecha }}</td>
+                                                        <td>{{ a.concepto }}</td>
+                                                        {% if a.debe is defined and a.debe is not null %}
+                                                            <td>{{ a.debe|number_format(2, ',', '.') }} €</td>
+                                                            {% set debe = debe + a.debe %}
+                                                        {% else %}
+                                                            <td></td>
+                                                        {% endif %}
+                                                        {% if a.haber is defined and a.haber is not null %}
+                                                            <td>{{ a.haber|number_format(2, ',', '.') }} €</td>
+                                                            {% if a.confirmado == true %}
+                                                                {% set haber = haber + a.haber %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <td></td>
+                                                        {% endif %}
+                                                        <td>
+                                                            {% if a.confirmado == true %}
+                                                                <span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>
+                                                            {% else %}
+                                                                <span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% if be.rectificativa is defined and be.rectificativa is not empty %}
+                                                {% for r in be.rectificativa %}
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>{{ r.fecha }}</td>
+                                                        <td>{{ r.concepto }}</td>
+                                                        {% if r.debe is not null %}
+                                                            <td style="color: red;">{{ r.debe|number_format(2, ',', '.') }} €</td>
+                                                        {% else %}
+                                                            <td></td>
+                                                        {% endif %}
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    {% set debe = debe + r.debe %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% set debe = debe + be.debe|abs %}
+                                            {% set haber = haber + be.haber|abs %}
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        {% endfor %}
+                                        {% set total = haber|abs - debe %}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td>Balance</td>
+                                            <td style="color: red; font-weight: bolder;">{{ debe|number_format(2, ',', '.') }} €</td>
+                                            <td style="color: blue; font-weight: bolder;">{{ haber|number_format(2, ',', '.') }} €</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="color: red; font-weight: bolder;"></td>
+                                            <td style="color: blue; font-weight: bolder;"></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if total < 0 %}
+                                <h3>Saldo: <strong style="color: red;">{{ total|number_format(2, ',', '.') }} €</strong></h3>
+                            {% else %}
+                                <h3>Saldo: <strong style="color: green;">{{ total|number_format(2, ',', '.') }} €</strong></h3>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane fade" id="tab17">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-notificaciones" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-notificaciones dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Nombre" aria-sort="ascending">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Enviada">{% trans from 'facturacion' %}TRANS_ENVIADA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="FechaEnvio">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab18">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-certificaciones" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-certificaciones dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Nombre" aria-sort="ascending">{% trans %}TRANS_NOMBRE{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Enviada">{% trans from 'facturacion' %}TRANS_ENVIADA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="FechaEnviada">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab19">
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.formaPagoRml) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="text-center">{% trans %}TRANS_PRL{% endtrans %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-tarifas-prl" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-tarifas-prl dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Concepto" aria-sort="ascending">{% trans from 'facturacion' %}TRANS_CONCEPTO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Iva" >{% trans from 'facturacion' %}TRANS_IVA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Importe" >{% trans from 'facturacion' %}TRANS_IMPORTE_TOTAL{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="text-center">{% trans %}TRANS_REVISIONES_MEDICAS{% endtrans %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-tarifas-revisiones" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-tarifas-revisiones dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Concepto" aria-sort="ascending">{% trans from 'facturacion' %}TRANS_CONCEPTO{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Iva" >{% trans from 'facturacion' %}TRANS_IVA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Importe" >{% trans from 'facturacion' %}TRANS_IMPORTE_TOTAL{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab20">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-modelo-347" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-modelo-347 dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha" aria-sort="descending">{% trans %}TRANS_FECHA_MODELO_347{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Enviada">{% trans from 'facturacion' %}TRANS_ENVIADA{% endtrans %}
+                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="FechaEnviada">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab21">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="tree" style="border: 1px solid #DDD; border-radius: 5px; padding:20px; margin:0 auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab22">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="datatable-manualvs" class="dataTables_wrapper no-footer">
+                                <div class="datatable-scroll">
+                                    <table class="table datatable-export-excel-manualvs dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                        <thead>
+                                        <tr class="bg-grey-300" role="row">
+                                            <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                aria-label="Fecha" aria-sort="descending">{% trans %}TRANS_FECHA_MODELO_347{% endtrans %}
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal view fichero -->
+    <div id="modal_view_fichero" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'gdoc' %}TRANS_DATOS_FICHERO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'gdoc' %}TRANS_NOMBRE_FICHERO{% endtrans %}</label>
+                    <input type="text" id="nombreFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_FECHA_FICHERO{% endtrans %}</label>
+                    <input type="text" id="fechaFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_NOMBRE_USUARIO_FICHERO{% endtrans %}</label>
+                    <input type="text" id="usuarioFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_TIPO_FICHERO{% endtrans %}</label>
+                    <input type="text" id="tipoFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans from 'gdoc' %}TRANS_MIDA_FICHERO{% endtrans %}</label>
+                    <input type="text" id="midaFichero" class="form-control" disabled="disabled" />
+
+                    <input type="hidden" id="idFichero" class="form-control" />
+
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').downGdocFileSn is defined and app.session.get('privilegiosRol').downGdocFileSn is not null %}
+                        {% if app.session.get('privilegiosRol').downGdocFileSn %}
+                            <a href="#" id="btnDownPlantilla" class="btn btn-labeled btn-labeled-left bg-success" target="_blank">{% trans from 'messages' %}TRANS_DOWN{% endtrans %}<b><i class="icon-file-download"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal view fichero -->
+
+{% endblock %}
+
+
+

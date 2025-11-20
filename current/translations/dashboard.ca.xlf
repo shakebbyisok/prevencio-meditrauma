@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_DASHBOARD</source>
+                <target>Dashboard</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_INICIO</source>
+                <target>Inici</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_GIROS_BANCARIOS</source>
+                <target>Girs bancaris</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_GIROS</source>
+                <target>Gir</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_GIROS_BANCARIOS_SIN_REMESAR</source>
+                <target>No remesats</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_GIROS_BANCARIOS_REMESADOS</source>
+                <target>Remesats</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_GIROS_BANCARIOS_NO_GIRADOS</source>
+                <target>No girats</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_GIROS_BANCARIOS_GIRADOS</source>
+                <target>Girats</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_PAGOS</source>
+                <target>Pagaments</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_PAGOS_PENDIENTES</source>
+                <target>Pendents</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_PAGOS_PAGADOS</source>
+                <target>Pagats</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_FACTURACION</source>
+                <target>Facturació</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_FACTURACION_PAGADA</source>
+                <target>Pagada</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_FACTURACION_NO_PAGADA</source>
+                <target>No pagada</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_FACTURACION_CANCELADA</source>
+                <target>Cancel·lada</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_CONTRATOS</source>
+                <target>Contractes</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_CONTRATOS_RENOVADO</source>
+                <target>Renovables</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_CONTRATOS_NO_RENOVADO</source>
+                <target>No renovables</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_REVISIONES</source>
+                <target>Revisions pendents de facturar i enviar</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_FECHA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_TRABAJADOR</source>
+                <target>Treballador</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Lloc de treball</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_APTO</source>
+                <target>Apte</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_AGENDA</source>
+                <target>Agenda</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_FACTURADA</source>
+                <target>Facturada</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_ERROR_REVISIONES_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim una revisió a facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_ENVIAR_APTITUDES</source>
+                <target>Enviar aptitut/s</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_PRUEBAS_COMPLEMENTARIAS</source>
+                <target>Proves complementàries</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_IMPAGADOS_VENCIDOS</source>
+                <target>Impagats i vençuts</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_IMPAGADOS</source>
+                <target>Impagats</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_VENCIDOS</source>
+                <target>Vençuts</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_REVISION_INCLUIR_MULTIPLE</source>
+                <target>Incloure múltiple</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_ERROR_REVISIONES_INCLUIR_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim una revisió a incloure.</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_MARCAR_ENVIADA_REVISION</source>
+                <target>Marcar com enviada/es</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_ERROR_REVISIONES_MARCAR_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim una revisió a marcar.</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_ENVIAR_FACTURA_MULTIPLE</source>
+                <target>Enviar factura múltiple</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_ERROR_REVISIONES_ENVIAR_FACTURA_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim una revisió per enviar la factura al client.</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

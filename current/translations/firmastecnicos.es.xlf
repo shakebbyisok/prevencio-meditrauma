@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_FIRMAS_TECNICOS</source>
+                <target>Firmas técnicos</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_TECNICO</source>
+                <target>Técnico</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_FIRMA</source>
+                <target>Firma</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_FIRMA_ACTUAL</source>
+                <target>Firma actual:</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

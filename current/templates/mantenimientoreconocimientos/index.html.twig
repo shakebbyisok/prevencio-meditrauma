@@ -1,0 +1,799 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'mantenimientoreconocimientos' %}
+
+{% block title %} {% trans %}TRANS_MANTENIMIENTO_RECONOCIMIENTOS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayDataSeriesRespuesta = [];
+            var arrayDataConsejoMedico = [];
+            var arrayDataPregunta = [];
+            var arrayDataRespuesta = [];
+            var arrayDataFormulas = [];
+            var arrayDataCuestionarios = [];
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            {% for sr in seriesRespuesta %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is defined and app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn %}
+                        actions += '<a href="{{ path('mantenimiento_reconocimientos_serie_respuesta_update', { "id": sr.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is defined and app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn %}
+                        actions += '<a href="#" data-id="{{ sr.id }}" class="list-icons-item eliminarSerie" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push(actions, '{{ sr.codigo }}', '{{ sr.descripcion }}', '{{ sr.indicador.descripcion }}');
+                arrayDataSeriesRespuesta.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-seriesRespuesta').DataTable({
+                data: arrayDataSeriesRespuesta,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for cm in consejoMedico %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is defined and app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn %}
+                        actions += '<a href="{{ path('mantenimiento_reconocimientos_consejo_medico_update', { "id": cm.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is defined and app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn %}
+                        actions += '<a href="#" data-id="{{ cm.id }}" class="list-icons-item eliminarConsejo" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var indicarResumen;
+                {% if cm.indicarResumen == true %}
+                    indicarResumen = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    indicarResumen = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                var indicarInforme;
+                {% if cm.indicarInforme == true %}
+                    indicarInforme = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    indicarInforme = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                array.push(actions, '{{ cm.codigo }}', '{{ cm.descripcion }}', '{{ cm.descripcionCa }}', indicarResumen, indicarInforme);
+                arrayDataConsejoMedico.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-consejos').DataTable({
+                data: arrayDataConsejoMedico,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for p in preguntas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoPreguntasSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn %}
+                        actions += '<a href="{{ path('mantenimiento_reconocimientos_pregunta_update', { "id": p.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoPreguntasSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn %}
+                        actions += '<a href="#" data-id="{{ p.id }}" class="list-icons-item eliminarPregunta" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var tipoRespuesta = "";
+                {% if p.tipoRespuesta is not empty %}
+                    tipoRespuesta = '{{ p.tipoRespuesta.descripcion }}';
+                {% endif %}
+
+                var serieRespuesta = "";
+                {% if p.serieRespuesta is not empty %}
+                    serieRespuesta = '{{ p.serieRespuesta.descripcion }}';
+                {% endif %}
+
+                array.push(actions, '{{ p.id }}', '{{ p.descripcion }}', '{{ p.descripcionCa }}', tipoRespuesta, serieRespuesta);
+                arrayDataPregunta.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-preguntas').DataTable({
+                data: arrayDataPregunta,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for r in respuestas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                        actions += '<a href="{{ path('mantenimiento_reconocimientos_respuesta_update', { "id": r.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                        actions += '<a href="#" data-id="{{ r.id }}" class="list-icons-item eliminarRespuesta" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var serieRespuesta = "";
+                {% if r.serieRespuesta is not empty %}
+                    serieRespuesta = '{{ r.serieRespuesta.codigo }}';
+                {% endif %}
+
+                var pregunta = "";
+                {% if r.pregunta is not empty %}
+                    pregunta = '{{ r.pregunta.descripcion }}';
+                {% endif %}
+
+                array.push(actions, '{{ r.descripcion }}', '{{ r.descripcionCa }}', serieRespuesta, pregunta);
+                arrayDataRespuesta.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-respuestas').DataTable({
+                data: arrayDataRespuesta,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for f in formulas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').mantenimientoFormulasSn is defined and app.session.get('privilegiosRol').mantenimientoFormulasSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoFormulasSn %}
+                        actions += '<a href="{{ path('mantenimiento_reconocimientos_formula_update', { "id": f.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').mantenimientoFormulasSn is defined and app.session.get('privilegiosRol').mantenimientoFormulasSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoFormulasSn %}
+                        actions += '<a href="#" data-id="{{ f.id }}" class="list-icons-item eliminarFormula" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push(actions, '{{ f.codigo }}', '{{ f.descripcion }}');
+                arrayDataFormulas.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-formulas').DataTable({
+                data: arrayDataFormulas,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for c in cuestionarios %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                        actions += '<a href="{{ path('mantenimiento_reconocimientos_cuestionario_update', { "id": c.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                    {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                        actions += '<a href="#" data-id="{{ c.id }}" class="list-icons-item eliminarCuestionario" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var tipo = "";
+                {% if c.tipoCuestionario is not empty %}
+                    tipo = '{{ c.tipoCuestionario.descripcion }}';
+                {% endif %}
+
+                array.push(actions, '{{ c.codigo }}', tipo, '{{ c.descripcion }}', '{{ c.descripcionCa }}');
+                arrayDataCuestionarios.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-cuestionarios').DataTable({
+                data: arrayDataCuestionarios,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+        });
+
+        function deleteSerie(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_serie_respuesta_delete') }}",
+                data: {
+                    'serieId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la serie de respuestas seleccionada
+        $(document).on('click', 'a.eliminarSerie', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_SERIE_RESPUESTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteSerie(id)
+                    }
+                }
+            });
+        });
+
+        function deleteConsejo(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_consejo_medico_delete') }}",
+                data: {
+                    'consejoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el consejo seleccionado
+        $(document).on('click', 'a.eliminarConsejo', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_CONSEJO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteConsejo(id)
+                    }
+                }
+            });
+        });
+
+        function deletePregunta(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_pregunta_delete') }}",
+                data: {
+                    'preguntaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la pregunta seleccionada
+        $(document).on('click', 'a.eliminarPregunta', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_PREGUNTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deletePregunta(id)
+                    }
+                }
+            });
+        });
+
+        function deleteRespuesta(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_respuesta_delete') }}",
+                data: {
+                    'respuestaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la respuesta seleccionada
+        $(document).on('click', 'a.eliminarRespuesta', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_RESPUESTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteRespuesta(id)
+                    }
+                }
+            });
+        });
+
+        function deleteFormula(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_formula_delete') }}",
+                data: {
+                    'formulaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la formula seleccionada
+        $(document).on('click', 'a.eliminarFormula', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FORMULA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFormula(id)
+                    }
+                }
+            });
+        });
+
+        function deleteCuestionario(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_cuestionario_delete') }}",
+                data: {
+                    'cuestionarioId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el cuestionario seleccionado
+        $(document).on('click', 'a.eliminarCuestionario', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_CUESTIONARIO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteCuestionario(id)
+                    }
+                }
+            });
+        });
+
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_SERIES_DE_RESPUESTA{% endtrans %}</h3>
+                    {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is defined and app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoSerieRespuestaSn %}
+                            <a href="{{ path('mantenimiento_reconocimientos_serie_respuesta_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="datatable-seriesRespuesta" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-seriesRespuesta dataTable no-footer" id="seriesRespuesta" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Codigo" aria-sort="ascending">{% trans %}TRANS_CODIGO_SERIE{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Descripcion">{% trans %}TRANS_DESCRIPCION{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Indicador">{% trans %}TRANS_INDICADOR{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_RESPUESTAS{% endtrans %}</h3>
+                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                            <a href="{{ path('mantenimiento_reconocimientos_respuesta_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="datatable-respuestas" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-respuestas dataTable no-footer" id="respuestas" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Respuesta" aria-sort="ascending">{% trans %}TRANS_RESPUESTA_ES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="RespuestaCa">{% trans %}TRANS_RESPUESTA_CA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="SerieRespuesta">{% trans %}TRANS_CODIGO_SERIE{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Pregunta">{% trans %}TRANS_TEXTO_PREGUNTA{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_PREGUNTAS{% endtrans %}</h3>
+                    {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoPreguntasSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn %}
+                            <a href="{{ path('mantenimiento_reconocimientos_pregunta_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="datatable-preguntas" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-preguntas dataTable no-footer" id="preguntas" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Numero" aria-sort="ascending">{% trans %}TRANS_NUMERO_PREGUNTA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Pregunta">{% trans %}TRANS_TEXTO_PREGUNTA_ES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PreguntaCa">{% trans %}TRANS_TEXTO_PREGUNTA_CA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="TipoRespuesta">{% trans %}TRANS_TIPO_RESPUESTA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Serie">{% trans %}TRANS_CODIGO_SERIE{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_CONSEJOS_MEDICOS{% endtrans %}</h3>
+                    {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is defined and app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn %}
+                            <a href="{{ path('mantenimiento_reconocimientos_consejo_medico_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="datatable-consejos" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-consejos dataTable no-footer" id="consejos" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Codigo" aria-sort="ascending">{% trans %}TRANS_CODIGO_CONSEJO_MEDICO{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Consejo">{% trans %}TRANS_TEXTO_CONSEJO_ES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="ConsejoCa">{% trans %}TRANS_TEXTO_CONSEJO_CA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="IndicarResumen">{% trans %}TRANS_INDICAR_RESUMEN{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="IndicarInforme">{% trans %}TRANS_INDICAR_INFORME{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_FORMULAS{% endtrans %}</h3>
+                    {% if app.session.get('privilegiosRol').mantenimientoFormulasSn is defined and app.session.get('privilegiosRol').mantenimientoFormulasSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoFormulasSn %}
+                            <a href="{{ path('mantenimiento_reconocimientos_formula_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="datatable-formulas" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-formulas dataTable no-footer" id="formulas" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Codigo" aria-sort="ascending">{% trans %}TRANS_CODIGO_FORMULA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Formula">{% trans %}TRANS_FORMULA{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_CUESTIONARIOS{% endtrans %}</h3>
+                    {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn is defined and app.session.get('privilegiosRol').mantenimientoCuestionariosSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoCuestionariosSn %}
+                            <a href="{{ path('mantenimiento_reconocimientos_cuestionario_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div id="datatable-cuestionarios" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-cuestionarios dataTable no-footer" id="cuestionarios" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Cuestionario" aria-sort="ascending">{% trans %}TRANS_CUESTIONARIO{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Tipo">{% trans %}TRANS_TIPO_CUESTIONARIO{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Descripcion">{% trans %}TRANS_CUESTIONARIO_ES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="DescripcionCa">{% trans %}TRANS_CUESTIONARIO_CA{% endtrans %}</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

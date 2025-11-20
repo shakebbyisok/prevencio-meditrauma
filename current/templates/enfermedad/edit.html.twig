@@ -1,0 +1,61 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'enfermedad' %}
+
+{% block arrow %}<a href="{{ path('medico_enfermedad_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_ENFERMEDAD{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.descripcion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        {{ form_start(form) }}
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcion) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-start align-items-center">
+            {% if app.session.get('privilegiosRol').editEnfermedadProfesionalSn is defined and app.session.get('privilegiosRol').editEnfermedadProfesionalSn is not null %}
+                {% if app.session.get('privilegiosRol').editEnfermedadProfesionalSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}

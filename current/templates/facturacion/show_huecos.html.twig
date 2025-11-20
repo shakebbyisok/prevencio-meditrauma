@@ -1,0 +1,251 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'facturacion' %}
+
+{% block title %} {% trans %}TRANS_HUECOS_FACTURAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for hueco in huecos %}
+                var array = [];
+
+                array.push( '{{ hueco.num_fac }}', '{{ hueco.serie }}');
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('.dt-buttons').css('display', 'none');
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var serie = $('#tipo').val();
+                if(serie != ""){
+                    filtrar(1, serie);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                filtrar(2, null);
+            });
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(op, serie){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('factura_huecos_filtrar') }}',
+                dataType: 'JSON',
+                data: {
+                    'serie': serie
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    var table = $('.datatable-export-excel').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+                            var array = [];
+
+                            array.push(''+item['num_fac']+'', ''+item['serie']+'');
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+                    }else{
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+
+            <label>
+                <span>{% trans %}TRANS_SERIE{% endtrans %}</span>
+                <select id="tipo" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    {% if listSerieFactura is defined and listSerieFactura is not empty %}
+                        {% for l in listSerieFactura %}
+                            <option value="{{ l.id }}">{{ l.descripcion }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Numero">{% trans %}TRANS_NUMERO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Serie">{% trans %}TRANS_SERIE{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

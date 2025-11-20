@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_CODIGO</source>
+                <target>Código</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NOMBRE</source>
+                <target>Nombre</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_EMPRESAS</source>
+                <target>Empresas</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_PUESTOS_TRABAJO</source>
+                <target>Puestos de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_CENTRO</source>
+                <target>Centro</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_CENTROS_TRABAJO</source>
+                <target>Centros de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_ZONAS_TRABAJO</source>
+                <target>Zonas de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_NOMBRE</source>
+                <target>Nombre</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_OBSERVACIONES</source>
+                <target>Observaciones</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_CODIGO</source>
+                <target>Código</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_ZONA_TRABAJO</source>
+                <target>Zona de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MODIFICAR_ZONA_TRABAJO</source>
+                <target>Modificar zona de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_MODIFICAR_PUESTO_TRABAJO</source>
+                <target>Modificar puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_GENERAL</source>
+                <target>General</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Puesto de trabajo</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_PUESTO_TRABAJO_GENERICO</source>
+                <target>Genérico</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

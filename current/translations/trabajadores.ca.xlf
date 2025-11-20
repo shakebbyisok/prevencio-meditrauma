@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_TRABAJADORES</source>
+                <target>Treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVO_TRABAJADOR</source>
+                <target>Nou treballador</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_DNI</source>
+                <target>DNI</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_NOMBRE</source>
+                <target>Nom</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_TRABAJADOR</source>
+                <target>Treballador</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_1</source>
+                <target>Dades generals I</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_2</source>
+                <target>Dades generals II</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_3</source>
+                <target>Centres de treball</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_4</source>
+                <target>Altes i baixes</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_5</source>
+                <target>Avisos de control</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_6</source>
+                <target>Estat</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_DTNAC</source>
+                <target>Data de naixement</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_N_A_SS</source>
+                <target>Nª afiliació a la Seguretat Social</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_EDAD</source>
+                <target>Edat (anys)</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_IDENTIFICACION</source>
+                <target>Identificació</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_SEXO</source>
+                <target>Sexe</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_HOMBRE</source>
+                <target>Home</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_MUJER</source>
+                <target>Dona</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_GRUPO_EDAD</source>
+                <target>Grup edat</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_NACIONALIDAD</source>
+                <target>Nacionalitat</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_DISCAPACIDAD</source>
+                <target>El treballador presenta alguna discapacitat</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_DATOS_PROFESIONALES</source>
+                <target>Dades professionals</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Lloc de treball</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_CNO</source>
+                <target>Certificació Nacional d'Ocupació</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CATEGORIA_PROF</source>
+                <target>Categoría professional</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_REGIMEN_SS</source>
+                <target>Règim de cotització a la S.S</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_SITUACION_PROF</source>
+                <target>Situació professional</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_AUTOMONO</source>
+                <target>És un treballador autònom</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_ETT</source>
+                <target>Pertany a E.T.T.</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_SUBVENCIONADO</source>
+                <target>És un treballador subvencionat</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_EXCLUSION_RATIOS</source>
+                <target>Exlusió als ratis</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_EXCLUIR_RATIO</source>
+                <target>Excloure aquest treballador pel càlcul de ratis.</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_IMPORTAR_TRABAJADORES</source>
+                <target>Importar treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_FICHERO</source>
+                <target>Fitxer</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_PROCESO_DURACION</source>
+                <target>La duració de la importació pot variar en funció de la mida del fitxer.</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_FECHA_ALTA</source>
+                <target>Data alta</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_FECHA_BAJA</source>
+                <target>Data baixa</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_MOTIVO_BAJA</source>
+                <target>Motiu baixa</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_ESTADO</source>
+                <target>Estat</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_ACTIVO</source>
+                <target>Actiu</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_NO_ACTIVO</source>
+                <target>No actiu</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_MODIFICAR_ALTA_BAJA</source>
+                <target>Modificar alta/baixa</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_DATOS_BASICOS</source>
+                <target>Dades basiques</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_EMPRESAS</source>
+                <target>Empreses</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_DOMICILIO</source>
+                <target>Domicili</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_TELEFONO</source>
+                <target>Telèfon</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_MAIL</source>
+                <target>Mail</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_OBS</source>
+                <target>Observacions</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_HISTORIAL_LABORAL</source>
+                <target>Historial laboral</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_EDAD_2</source>
+                <target>Edat</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_DESCRIPCION</source>
+                <target>Descripció</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_PUESTOS_TRABAJO</source>
+                <target>Llocs de treball</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_SENSIBLE</source>
+                <target>Sensible</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_DATOS_COMPLEMENTARIOS</source>
+                <target>Dades complementaris</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_FECHAS</source>
+                <target>Dates</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_TIPO_FORMACION</source>
+                <target>Tipus de formació</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_FORMACION</source>
+                <target>Formació</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_FECHA_FORMACION</source>
+                <target>Data formació</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_FECHA_ULTIMA_REVISION</source>
+                <target>Data última revisió</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_FECHA_NUEVA_REVISION</source>
+                <target>Data nueva revisió</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_FORMACION</source>
+                <target>Formació</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_EVALUACIONES</source>
+                <target>Avaluacions</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_GESTION_DOCUMENTAL</source>
+                <target>Gestió documental</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_ENFERMEDADES</source>
+                <target>Malalties</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_REVISIONES</source>
+                <target>Revisions</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_TRABAJADOR_EXISTE</source>
+                <target>El DNI ja existeix.</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_AÑADIR_PUESTO_TRABAJO_TRABAJADOR</source>
+                <target>Afegir lloc de treball al treballador</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

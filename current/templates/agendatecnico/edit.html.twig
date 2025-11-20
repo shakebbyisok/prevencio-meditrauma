@@ -1,0 +1,91 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'agendatecnico' %}
+
+{% block arrow %}<a href="{{ path('tecnico_agenda_show') }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_TAREA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.descripcion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        {{ form_start(form) }}
+
+        <div class="card-body">
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DATOS_TAREA{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_row(form.fechainicio) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.duracion) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_row(form.estado) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        {{ form_row(form.descripcion) }}
+                    </div>
+                </div>
+            </fieldset>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-start align-items-center">
+            {% if app.session.get('privilegiosRol').editAgendaTecnicoSn is defined and app.session.get('privilegiosRol').editAgendaTecnicoSn is not null %}
+                {% if app.session.get('privilegiosRol').editAgendaTecnicoSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+
+            {% if app.session.get('privilegiosRol').deleteAgendaTecnicoSn is defined and app.session.get('privilegiosRol').deleteAgendaTecnicoSn is not null %}
+                {% if app.session.get('privilegiosRol').deleteAgendaTecnicoSn %}
+                    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                        {{ form_row(form.eliminar, {'attr': {'style': 'margin-left: 10px;'}}) }}
+                    {% else %}
+                        {{ form_row(form.eliminar, {'attr': {'style': 'display: none;'}}) }}
+                    {% endif %}
+                {% else %}
+                    {{ form_row(form.eliminar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.eliminar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\SubPreguntaPreguntaRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass=SubPreguntaPreguntaRepository::class)
+ * @Gedmo\Mapping\Annotation\Loggable()
+ */
+class SubPreguntaPregunta
+{
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     * @Gedmo\Mapping\Annotation\Versioned()
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned()
+     */
+    private $descripcion;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\SubPregunta", inversedBy="SubPreguntaPregunta")
+     * @ORM\JoinColumn(nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned()
+     */
+    private $subPregunta;
+
+    /**
+     * @ORM\Column(type="boolean", length=2000, nullable=true, options={"default":"false"})
+     * @Gedmo\Mapping\Annotation\Versioned()
+     */
+    private $anulado = false;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescripcion()
+    {
+        return $this->descripcion;
+    }
+
+    /**
+     * @param mixed $descripcion
+     */
+    public function setDescripcion($descripcion): void
+    {
+        $this->descripcion = $descripcion;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubPregunta()
+    {
+        return $this->subPregunta;
+    }
+
+    /**
+     * @param mixed $subPregunta
+     */
+    public function setSubPregunta($subPregunta): void
+    {
+        $this->subPregunta = $subPregunta;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAnulado()
+    {
+        return $this->anulado;
+    }
+
+    /**
+     * @param mixed $anulado
+     */
+    public function setAnulado($anulado): void
+    {
+        $this->anulado = $anulado;
+    }
+}

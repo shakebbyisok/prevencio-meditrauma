@@ -1,0 +1,128 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'trabajadores' %}
+
+{% block title %} {% trans %}TRANS_TRABAJADORES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block card %}
+
+    <style>
+        .custom-file-label { opacity: 0; }
+        .custom-file-input { opacity: 1; }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                }
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('medico_trabajador_datatable') }}',
+                    type: 'POST',
+                    dataSrc: 'data'
+                },
+                "columnDefs": [
+                    { "name": "actions", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "a.dni", "targets": 1 },
+                    { "name": "a.nombre", "targets": 2 },
+                    { "name": "c.empresa",  "targets": 3 },
+                    { "name": "puesto", "sortable": false, "searchable": false, "targets": 4 },
+                ],
+                order: [
+                    [2, "asc"]
+                ],
+                columns:[
+                    {data: "actions"},
+                    {data: "dni"},
+                    {data: "nombre"},
+                    {data: "empresa"},
+                    {data: "puesto"},
+                ],
+                buttons: {
+                    buttons: [
+
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportTrabajadorMedicoSn is defined and app.session.get('privilegiosRol').exportTrabajadorMedicoSn is not null %}
+                {% if app.session.get('privilegiosRol').exportTrabajadorMedicoSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="DNI" aria-sort="none">{% trans %}TRANS_DNI{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Nombre" aria-sort="none">{% trans %}TRANS_NOMBRE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa" aria-sort="none">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting_disabled" rowspan="1" colspan="1"
+                            aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

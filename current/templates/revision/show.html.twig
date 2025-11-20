@@ -1,0 +1,643 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'revision' %}
+
+{% block title %} {% trans %}TRANS_REVISIONES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addRevisionSn is defined and app.session.get('privilegiosRol').addRevisionSn is not null %}
+        {% if app.session.get('privilegiosRol').addRevisionSn %}
+            <a href="{{ path('medico_revision_add') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_AÑADIR_REVISION{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 100000], [10, 25, 50, 100, "Todo"]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('medico_revision_datatable') }}',
+                    type: 'POST',
+                    dataSrc: 'data'
+                },
+                "columnDefs": [
+                    { "name": "actions", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "estado", "searchable":false, "targets": 1 },
+                    { "name": "a.fechaFirma", "searchable":false, "targets": 2 },
+                    { "name": "a.usuarioFirma", "targets": 3 },
+                    { "name": "a.fecha", "searchable":false, "targets": 4 },
+                    { "name": "h.descripcion", "targets": 5 },
+                    { "name": "codigo", "searchable":false,  "targets": 6 },
+                    { "name": "b.nombre",  "targets": 7 },
+                    { "name": "b.dni",  "targets": 8 },
+                    { "name": "c.descripcion",  "targets": 9 },
+                    { "name": "d.empresa",  "targets": 10 },
+                    { "name": "f.descripcion",  "targets": 11 },
+                    { "name": "apto",  "searchable":false, "targets": 12 },
+                    { "name": "i.descripcion", "targets": 13 },
+                    { "name": "enviada",  "searchable":false, "targets": 14 },
+                    { "name": "fechaEnvio",  "searchable":false, "targets": 15 },
+                    { "name": "pruebas",  "searchable":false, "targets": 16 },
+                ],
+                order: [
+                    [4, "desc"]
+                ],
+                columns:[
+                    {data: "actions"},
+                    {data: "estado"},
+                    {data: "fechaFirma"},
+                    {data: "usuarioFirma"},
+                    {data: "fecha"},
+                    {data: "agenda"},
+                    {data: "codigo"},
+                    {data: "trabajador"},
+                    {data: "dni"},
+                    {data: "puesto"},
+                    {data: "empresa"},
+                    {data: "doctor"},
+                    {data: "apto"},
+                    {data: "restriccion"},
+                    {data: "enviada"},
+                    {data: "fechaEnvio"},
+                    {data: "pruebas"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportRevisionSn is defined and app.session.get('privilegiosRol').exportRevisionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportRevisionSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que genera el resumen
+            $('#btnResumenRevision').click(function(){
+
+                $('#btnResumenRevision').prop("disabled", true);
+                $('#btnResumenRevision').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantilla').val(),
+                        'id': $('#revisionId').val(),
+                        'tipo': 13
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnResumenRevision').prop("disabled", false);
+                            $('#btnResumenRevision').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            var w2 = window.open();
+                            w2.location = data.urlpdf;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(xhr){
+                        console.log(xhr.responseText);
+                        new PNotify({
+                            title: 'Ops!',
+                            <!--text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',-->
+                            text:  xhr.response,
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnResumenRevision').prop("disabled", false);
+                        $('#btnResumenRevision').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que genera la aptitud
+            $('#btnImprimirAptitud').click(function(){
+                var plantilla = $('#plantillaAptitud').val();
+                if(plantilla == ""){
+                    $('#plantillaAptitud').focus();
+                    return false;
+                }
+
+                $('#btnImprimirAptitud').prop("disabled", true);
+                $('#btnImprimirAptitud').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': plantilla,
+                        'id': $('#aptitudId').val(),
+                        'tipo': 11
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnImprimirAptitud').prop("disabled", false);
+                            $('#btnImprimirAptitud').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnImprimirAptitud').prop("disabled", false);
+                        $('#btnImprimirAptitud').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+                var estado = $('#estado').val();
+                var apto = $('#apto').val();
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }
+
+                if(fechaFin != ""){
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }
+
+                if(dtInici != "" || dtFin != "" || estado != "" || apto != ""){
+                    filtrar(dtInici, dtFin, 1, estado, apto);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                filtrar(null, null, 2, null, null);
+            });
+
+        });
+
+        //Boton que elimina la revision seleccionada
+        $(document).on('click', 'a.eliminarRevision', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_REVISION{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        var url = '{{ path('medico_revision_delete', { "id": "revisionId" }) }}';
+                        url = url.replace("revisionId", id);
+                        window.location.href = url;
+                    }
+                }
+            });
+        });
+
+        //Boton que añade el id de la revision para su generacion
+        $(document).on('click', 'a.selectRevision', function(){
+            var revisionId = $(this).data('id');
+            $('#revisionId').val(revisionId);
+        });
+
+        //Boton que añade el id de la revision para su generacion
+        $(document).on('click', 'a.selectAptitud', function(){
+            var revisionId = $(this).data('id');
+            $('#aptitudId').val(revisionId);
+        });
+
+        function deleteFichero(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_delete_file') }}",
+                data: {
+                    'id': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarAptitud', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,11)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarResumen', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,13)
+                    }
+                }
+            });
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(fechaInicio, fechaFin, op, estado, apto){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            var table = $('.datatable-export-excel').DataTable();
+            table.clear().destroy();
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 100000], [10, 25, 50, 100, "Todo"]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('medico_revision_datatable_filtrar') }}',
+                    type: 'POST',
+                    dataSrc: 'data',
+                    data: {
+                        'ini': fechaInicio,
+                        'fin': fechaFin,
+                        'estado': estado,
+                        'apto': apto
+                    },
+                },
+                "columnDefs": [
+                    { "name": "actions", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "estado", "searchable":false, "targets": 1 },
+                    { "name": "a.fechaFirma", "searchable":false, "targets": 2 },
+                    { "name": "a.usuarioFirma", "targets": 3 },
+                    { "name": "a.fecha", "searchable":false, "targets": 4 },
+                    { "name": "h.descripcion", "targets": 5 },
+                    { "name": "codigo", "searchable":false,  "targets": 6 },
+                    { "name": "b.nombre",  "targets": 7 },
+                    { "name": "b.dni",  "targets": 8 },
+                    { "name": "c.descripcion",  "targets": 9 },
+                    { "name": "d.empresa",  "targets": 10 },
+                    { "name": "f.descripcion",  "targets": 11 },
+                    { "name": "apto",  "searchable":false, "targets": 12 },
+                    { "name": "i.descripcion", "targets": 13 },
+                    { "name": "enviada",  "searchable":false, "targets": 14 },
+                    { "name": "fechaEnvio",  "searchable":false, "targets": 15 },
+                    { "name": "pruebas",  "searchable":false, "targets": 16 },
+                ],
+                order: [
+                    [4, "desc"]
+                ],
+                columns:[
+                    {data: "actions"},
+                    {data: "estado"},
+                    {data: "fechaFirma"},
+                    {data: "usuarioFirma"},
+                    {data: "fecha"},
+                    {data: "agenda"},
+                    {data: "codigo"},
+                    {data: "trabajador"},
+                    {data: "dni"},
+                    {data: "puesto"},
+                    {data: "empresa"},
+                    {data: "doctor"},
+                    {data: "apto"},
+                    {data: "restriccion"},
+                    {data: "enviada"},
+                    {data: "fechaEnvio"},
+                    {data: "pruebas"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", false);
+                $('#btnFiltra').html("Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", false);
+                $('#btnReset').html("Reset");
+            }
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>Estado:</span>
+                <select id="estado" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    {% if estados is defined and estados is not empty %}
+                        {% for e in estados %}
+                            <option value="{{ e.id }}">{{ e.descripcion }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </label>
+
+            <label>
+                <span>Apto:</span>
+                <select id="apto" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    {% if aptos is defined and aptos is not empty %}
+                        {% for a in aptos %}
+                            <option value="{{ a.id }}">{{ a.descripcion }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="prueba" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Estado">{% trans %}TRANS_ESTADO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="FechaFirma">{% trans %}TRANS_FECHA_FIRMA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="UsuarioFirma">{% trans %}TRANS_USUARIO_FIRMA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Agenda">{% trans from 'citaciones' %}TRANS_AGENDA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="CodigoTrabajador">{% trans %}TRANS_CODIGO_TRABAJADOR{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Trabajador">{% trans %}TRANS_TRABAJADOR{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="DNI">DNI</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Doctor">{% trans %}TRANS_MEDICO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Apto">{% trans %}TRANS_APTO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Restriccion">{% trans %}TRANS_RESTRICCION{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Enviada">{% trans %}TRANS_APTITUD_ENVIADA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="FechaEnvio">{% trans %}TRANS_FECHA_ENVIO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PruebasComplementarias">{% trans from 'citaciones' %}TRANS_PRUEBAS_COMPLEMENTARIAS{% endtrans %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generacion resumen revision -->
+    <div id="modal_resumen_revision" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_RESUMEN_REVISION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasResumen is defined and listPlantillasResumen is not empty %}
+                            {% for lp in listPlantillasResumen %}
+                                <option value="{{ lp.id }}">{{ lp.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="revisionId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnResumenRevision">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion resumen revision -->
+
+    <!-- Modal imprimir aptitud -->
+    <div id="modal_print_aptitud" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_APTITUD{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantillaAptitud" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasAptitud is defined and listPlantillasAptitud is not empty %}
+                            {% for lpa in listPlantillasAptitud %}
+                                <option value="{{ lpa.id }}">{{ lpa.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="aptitudId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnImprimirAptitud">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal imprimir aptitud -->
+{% endblock %}

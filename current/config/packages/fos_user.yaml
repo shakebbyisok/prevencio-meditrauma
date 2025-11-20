@@ -1,0 +1,15 @@
+# config/packages/fos_user.yaml
+fos_user:
+    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    firewall_name: main
+    user_class: App\Entity\User
+    from_email:
+        address: soporte@opentic.eu
+        sender_name: soporte@opentic.eu
+    service:
+        mailer:  fos_user.mailer.default
+    resetting:
+        email:
+            from_email:
+                address: soporte@opentic.eu
+                sender_name: soporte@opentic.eu

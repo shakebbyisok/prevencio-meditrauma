@@ -1,0 +1,813 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'revision' %}
+
+{% block title %} {% trans %}TRANS_REVISIONES_PENDIENTES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var arrayDataRevisiones = [];
+
+            {% for r in revisiones %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editRevisionSn %}
+                        actions += '<a href="{{ path('medico_revision_update', { "id": r.id }) }}" class="list-icons-item" target="_blank" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').printAptitudRevisionSn is defined and app.session.get('privilegiosRol').printAptitudRevisionSn is not null %}
+                    {% if app.session.get('privilegiosRol').printAptitudRevisionSn %}
+                        {% if r.fichero_id is not null %}
+                            actions += '<a href="{{ path('gdoc_open_file', { "fileId": r.fichero_id, "tipo": "11" }) }}" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir aptitud" data-container="body"><i class="icon-file-check"></i></a>';
+                                {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                    {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                        actions += '<a href="#" data-id="{{ r.fichero_id }}" class="list-icons-item eliminarAptitud" data-popup="tooltip" title="Eliminar aptitud" data-container="body"><i class="icon-file-minus"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+                        {% else %}
+                            actions += '<a href="#" data-id="{{ r.id }}" class="list-icons-item selectAptitud" data-popup="tooltip" title="Imprimir aptitud" data-container="body" data-toggle="modal" data-target="#modal_print_aptitud"><i class="icon-file-check"></i></a>';
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').printResumenRevisionSn is defined and app.session.get('privilegiosRol').printResumenRevisionSn is not null %}
+                    {% if app.session.get('privilegiosRol').printResumenRevisionSn %}
+                        {% if r.fichero_resumen_id is not null %}
+                            actions += '<a href="{{ path('gdoc_open_file', { "fileId": r.fichero_resumen_id, "tipo": "13" }) }}" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir resumen" data-container="body"><i class="icon-file-text2"></i></a>';
+                                {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                    {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                        actions += '<a href="#" data-id="{{ r.fichero_resumen_id }}" class="list-icons-item eliminarResumen" data-popup="tooltip" title="Eliminar resumen" data-container="body"><i class="icon-file-minus"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+                        {% else %}
+                            actions += '<a href="#" data-id="{{ r.id }}" class="list-icons-item selectRevision" data-popup="tooltip" title="Imprimir resumen" data-container="body" data-toggle="modal" data-target="#modal_resumen_revision"><i class="icon-file-text2"></i></a>';
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').deleteRevisionSn is defined and app.session.get('privilegiosRol').deleteRevisionSn is not null %}
+                    {% if app.session.get('privilegiosRol').deleteRevisionSn %}
+                        actions += '<a href="#" data-id="{{ r.id }}" class="list-icons-item eliminarRevision" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var estado = '';
+                {% if r.estadoid is not empty %}
+                    {% if r.estadoid == 1 %}
+                        estado = '<span class="badge badge-primary"><i class="icon-eye-blocked"></i> {{ r.estado }}</span>';
+                    {% elseif r.estadoid == 2 %}
+                        estado = '<span class="badge badge-warning"><i class="icon-eye"></i> {{ r.estado }}</span>';
+                    {% elseif r.estadoid == 3 %}
+                        estado = '<span class="badge badge-success"><i class="icon-highlight"></i> {{ r.estado }}</span>';
+                    {% elseif r.estadoid == 4 %}
+                        estado = '<span class="badge badge-danger"><i class="icon-cash"></i> {{ r.estado }}</span>';
+                    {% else %}
+                        estado = '<span class="badge badge-warning"><i class="icon-reload-alt"></i> {{ r.estado }}</span>';
+                    {% endif %}
+                {% endif %}
+
+                var electro = '<span class="badge badge-danger"><i class="icon-cross"></i></span>';
+                {% if r.electrocardiograma is not empty %}
+                    electro = '<span class="badge badge-success"><i class="icon-check"></i></span>';
+                {% endif %}
+
+                var analitica = '<span class="badge badge-danger"><i class="icon-cross"></i></span>';
+                {% if r.analitica == true %}
+                    analitica = '<span class="badge badge-success"><i class="icon-check"></i></span>';
+                {% endif %}
+
+                array.push(actions, '<span style="display:none;">{{ r.fechatimestamp }}</span>{{ r.fecha }}', '{{ r.trabajador }}', '{{ r.dni }}', '{{ r.puesto }}', '{{ r.empresa }}', '{{ r.doctor }}', estado, electro, analitica);
+                arrayDataRevisiones.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayDataRevisiones
+            });
+
+            $('#revisionesPendientes').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportRevisionSn is defined and app.session.get('privilegiosRol').exportRevisionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportRevisionSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            $('#revisionesPendientes_filter > label > input[type=search]').keyup(function () {
+                if($(this).val() != ""){
+                    localStorage.setItem('textoActualRevisionesPendientes', $(this).val());
+                }else{
+                    localStorage.setItem('textoActualRevisionesPendientes', "");
+                }
+            });
+
+            var finiActual = localStorage.getItem('finiActualRevisionesPendientes');
+            if(finiActual != "" && finiActual != "null"){
+                $('#fini').val(finiActual);
+            }
+
+            var ffniActual = localStorage.getItem('ffinActualRevisionesPendientes');
+            if(ffniActual != "" && ffniActual != "null"){
+                $('#ffin').val(ffniActual);
+            }
+
+            var estadoActual = localStorage.getItem('estadoActualRevisionesPendientes');
+            if(estadoActual != "" && estadoActual != "null"){
+                $('#estado').val(estadoActual).change();
+            }
+
+            var medicoActual = localStorage.getItem('medicoActualRevisionesPendientes');
+            if(medicoActual != "" && medicoActual != "null"){
+                $('#medico').val(medicoActual).change();
+            }
+
+            if( (finiActual != "" && finiActual != "null") || (ffniActual != "" && ffniActual != "null") || (estadoActual != "" && estadoActual != "null") || (medicoActual != "" && medicoActual != "null")){
+                filtrar(finiActual, ffniActual, 1, estadoActual, medicoActual);
+            }else{
+                var table = $('#revisionesPendientes').DataTable();
+                paginaActualDatatable(table);
+
+                /*var textoActual = localStorage.getItem('textoActualRevisionesPendientes');
+                if(textoActual != "" && textoActual != "null" && textoActual != null){
+                    $('#revisionesPendientes_filter > label > input[type=search]').val(textoActual);
+                    table.search( textoActual ).draw();
+                }*/
+            }
+
+            //Boton que genera el resumen
+            $('#btnResumenRevision').click(function(){
+                $('#btnResumenRevision').prop("disabled", true);
+                $('#btnResumenRevision').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantilla').val(),
+                        'id': $('#revisionId').val(),
+                        'tipo': 13
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnResumenRevision').prop("disabled", false);
+                            $('#btnResumenRevision').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            var w2 = window.open();
+                            w2.location = data.urlpdf;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(xhr){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnResumenRevision').prop("disabled", false);
+                        $('#btnResumenRevision').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que genera la aptitud
+            $('#btnImprimirAptitud').click(function(){
+                var plantilla = $('#plantillaAptitud').val();
+                if(plantilla == ""){
+                    $('#plantillaAptitud').focus();
+                    return false;
+                }
+
+                $('#btnImprimirAptitud').prop("disabled", true);
+                $('#btnImprimirAptitud').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': plantilla,
+                        'id': $('#aptitudId').val(),
+                        'tipo': 11
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnImprimirAptitud').prop("disabled", false);
+                            $('#btnImprimirAptitud').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnImprimirAptitud').prop("disabled", false);
+                        $('#btnImprimirAptitud').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+                var estado = $('#estado').val();
+                var medico = $('#medico').val();
+
+                localStorage.setItem('estadoActualRevisionesPendientes', estado);
+                localStorage.setItem('medicoActualRevisionesPendientes', medico);
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    localStorage.setItem('finiActualRevisionesPendientes', fechaInicio);
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }else{
+                    localStorage.setItem('finiActualRevisionesPendientes', "");
+                }
+
+                if(fechaFin != ""){
+                    localStorage.setItem('ffinActualRevisionesPendientes', fechaFin);
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }else{
+                    localStorage.setItem('ffinActualRevisionesPendientes', "");
+                }
+
+                if(dtInici != "" || dtFin != "" || estado != "" || medico != ""){
+                    filtrar(dtInici, dtFin, 1, estado, medico);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                $('#fini').val("");
+                $('#ffin').val("");
+                $('#estado').val("").change();
+                $('#medico').val("").change();
+
+                localStorage.setItem('finiActualRevisionesPendientes', "");
+                localStorage.setItem('ffinActualRevisionesPendientes', "");
+                localStorage.setItem('estadoActualRevisionesPendientes', "");
+                localStorage.setItem('medicoActualRevisionesPendientes', "");
+                localStorage.setItem('paginaActualRevisionesPendientes', 0);
+
+                filtrar(null, null, 2, null, null);
+            });
+        });
+
+        $(document).on('page.dt', '#revisionesPendientes', function () {
+            var table = $('#revisionesPendientes').DataTable();
+            var info = table.page.info();
+            var actualPage = info.page;
+            localStorage.setItem('paginaActualRevisionesPendientes', actualPage);
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function paginaActualDatatable(table){
+            var activePag = localStorage.getItem('paginaActualRevisionesPendientes');
+            if(activePag != "" && !isNaN(activePag)){
+                table.page(parseInt(activePag)).draw(false);
+            }
+        }
+
+        function filtrar(fechaInicio, fechaFin, op, estado, medico){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            var table = null;
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('medico_revision_filtra_pendientes') }}',
+                dataType: 'JSON',
+                data: {
+                    'ini': fechaInicio,
+                    'fin': fechaFin,
+                    'estado': estado,
+                    'medico': medico,
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    table = $('#revisionesPendientes').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            var array = [];
+                            var actions = '<div class="list-icons">';
+
+                            var id = item['id'];
+
+                            {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editRevisionSn %}
+                                    var url = '{{ path("medico_revision_update", {'id': 'id'}) }}';
+                                    url = url.replace("id", id);
+                                    actions += '<a href="'+url+'" target="_blank" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').printAptitudRevisionSn is defined and app.session.get('privilegiosRol').printAptitudRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').printAptitudRevisionSn %}
+                                    if(item['fichero_id'] != undefined){
+                                        var url = '{{ path("gdoc_open_file", {'fileId': 'id', 'tipo': '11'}) }}';
+                                        url = url.replace("id", item['fichero_id']);
+                                        actions += '<a href="'+url+'" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir aptitud" data-container="body"><i class="icon-file-check"></i></a>';
+                                            {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                                {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                                    actions += '<a href="#" data-id="'+item['fichero_id']+'" class="list-icons-item eliminarAptitud" data-popup="tooltip" title="Eliminar aptitud" data-container="body"><i class="icon-file-minus"></i></a>';
+                                                {% endif %}
+                                            {% endif %}
+                                    }else{
+                                        actions += '<a href="#" data-id="'+id+'" class="list-icons-item selectAptitud" data-popup="tooltip" title="Imprimir aptitud" data-container="body" data-toggle="modal" data-target="#modal_print_aptitud"><i class="icon-file-check"></i></a>';
+                                    }
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').printResumenRevisionSn is defined and app.session.get('privilegiosRol').printResumenRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').printResumenRevisionSn %}
+                                    if(item['fichero_resumen_id'] != undefined){
+                                        var url = '{{ path("gdoc_open_file", {'fileId': 'id', 'tipo': '13'}) }}';
+                                        url = url.replace("id", item['fichero_resumen_id']);
+                                        actions += '<a href="'+url+'" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir resumen" data-container="body"><i class="icon-file-text2"></i></a>';
+                                            {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                                                {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                                                    actions += '<a href="#" data-id="'+item['fichero_resumen_id']+'" class="list-icons-item eliminarResumen" data-popup="tooltip" title="Eliminar resumen" data-container="body"><i class="icon-file-minus"></i></a>';
+                                                {% endif %}
+                                            {% endif %}
+                                    }else{
+                                        actions += '<a href="#" data-id="'+id+'" class="list-icons-item selectRevision" data-popup="tooltip" title="Imprimir resumen" data-container="body" data-toggle="modal" data-target="#modal_resumen_revision"><i class="icon-file-text2"></i></a>';
+                                    }
+                                {% endif %}
+                            {% endif %}
+
+                            {% if app.session.get('privilegiosRol').deleteRevisionSn is defined and app.session.get('privilegiosRol').deleteRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').deleteRevisionSn %}
+                                    actions += '<a href="#" data-id="'+id+'" class="list-icons-item eliminarRevision" target="_self"><i class="icon-trash"></i></a>';
+                                {% endif %}
+                            {% endif %}
+
+                            actions += '</div>';
+
+                            var estado = '';
+                            if(item['estadoid'] == 1){
+                                estado = '<span class="badge badge-primary"><i class="icon-eye-blocked"></i> '+item['estado']+'</span>';
+                            }else if(item['estadoid'] == 2){
+                                estado = '<span class="badge badge-warning"><i class="icon-eye"></i> '+item['estado']+'</span>';
+                            }else if(item['estadoid'] == 3){
+                                estado = '<span class="badge badge-success"><i class="icon-highlight"></i> '+item['estado']+'</span>';
+                            }else if(item['estadoid'] == 4){
+                                estado = '<span class="badge badge-danger"><i class="icon-cash"></i> '+item['estado']+'</span>';
+                            }else{
+                                estado = '<span class="badge badge-warning"><i class="icon-reload-alt"></i> '+item['estado']+'</span>';
+                            }
+
+                            var electro = '<span class="badge badge-danger"><i class="icon-cross"></i></span>';
+                            if(item['electrocardiograma'] == true){
+                                electro = '<span class="badge badge-success"><i class="icon-check"></i></span>';
+                            }
+
+                            var analitica = '<span class="badge badge-danger"><i class="icon-cross"></i></span>';
+                            if(item['analitica'] == true){
+                                analitica = '<span class="badge badge-success"><i class="icon-check"></i></span>';
+                            }
+
+                            array.push(actions, '<span style="display:none;">'+item['fechatimestamp']+'</span>'+item['fecha']+'', ''+item['trabajador']+'', ''+item['dni']+'', ''+item['puesto']+'', ''+item['empresa']+'', ''+item['doctor']+'', estado, electro, analitica);
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('#revisionesPendientes').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+                    }else{
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: false,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('#revisionesPendientes').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        table = $('#revisionesPendientes').DataTable();
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+
+                },
+                complete: function(){
+                    table = $('#revisionesPendientes').DataTable();
+                    paginaActualDatatable(table);
+
+                    /*var textoActual = localStorage.getItem('textoActualRevisionesPendientes');
+                    if(textoActual != "" && textoActual != "null"){
+                        $('#revisionesPendientes_filter > label > input[type=search]').val(textoActual);
+                        table.search( textoActual ).draw();
+                    }*/
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la revision seleccionada
+        $(document).on('click', 'a.eliminarRevision', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_REVISION{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        var url = '{{ path('medico_revision_delete', { "id": "revisionId" }) }}';
+                        url = url.replace("revisionId", id);
+                        window.location.href = url;
+                    }
+                }
+            });
+        });
+
+        //Boton que añade el id de la revision para su generacion
+        $(document).on('click', 'a.selectRevision', function(){
+            var revisionId = $(this).data('id');
+            $('#revisionId').val(revisionId);
+        });
+
+        //Boton que añade el id de la revision para su generacion
+        $(document).on('click', 'a.selectAptitud', function(){
+            var revisionId = $(this).data('id');
+            $('#aptitudId').val(revisionId);
+        });
+
+        function deleteFichero(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_delete_file') }}",
+                data: {
+                    'id': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarAptitud', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,11)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarResumen', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,13)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>Estado:</span>
+                <select id="estado" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    {% if estados is defined and estados is not empty %}
+                        {% for e in estados %}
+                            <option value="{{ e.id }}">{{ e.descripcion }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </label>
+
+            <label>
+                <span>{% trans %}TRANS_MEDICO{% endtrans %}</span>
+                <select id="medico" class="form-control select select2-hidden-accessible">
+                    <option value=""></option>
+                    {% if medicos is defined and medicos is not empty %}
+                        {% for m in medicos %}
+                            <option value="{{ m.id }}">{{ m.descripcion }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="revisionesPendientes" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Trabajador">{% trans %}TRANS_TRABAJADOR{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="DNI">DNI</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Doctor">{% trans %}TRANS_MEDICO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Estado">{% trans %}TRANS_ESTADO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Electro">{% trans %}TRANS_ELECTRO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Analitica">{% trans %}TRANS_ANALITICA{% endtrans %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generacion resumen revision -->
+    <div id="modal_resumen_revision" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_RESUMEN_REVISION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasResumen is defined and listPlantillasResumen is not empty %}
+                            {% for lp in listPlantillasResumen %}
+                                <option value="{{ lp.id }}">{{ lp.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="revisionId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnResumenRevision">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion resumen revision -->
+
+    <!-- Modal imprimir aptitud -->
+    <div id="modal_print_aptitud" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_APTITUD{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantillaAptitud" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasAptitud is defined and listPlantillasAptitud is not empty %}
+                            {% for lpa in listPlantillasAptitud %}
+                                <option value="{{ lpa.id }}">{{ lpa.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="aptitudId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnImprimirAptitud">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal imprimir aptitud -->
+{% endblock %}

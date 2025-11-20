@@ -1,0 +1,317 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'citaciones' %}
+
+{% block arrow %}<a href="{{ path('citacion_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_CITACION{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.agenda }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+    {% if app.request.get('id') is defined and app.request.get('id') is not empty %}
+        {% if app.session.get('privilegiosRol').editCitacionSn is defined and app.session.get('privilegiosRol').editCitacionSn is not null %}
+            {% if app.session.get('privilegiosRol').editCitacionSn %}
+                <a href="#" class="btn btn-labeled btn-labeled-left bg-warning" data-toggle="modal" data-target="#modal_generate_citacion" style="margin-right: 10px;">{% trans %}TRANS_IMPRIMIR_FICHERO{% endtrans %}<b><i class="icon-file-download"></i></b></a>
+            {% endif %}
+        {% endif %}
+
+        {% if app.session.get('privilegiosRol').addRevisionSn is defined and app.session.get('privilegiosRol').addRevisionSn is not null %}
+            {% if app.session.get('privilegiosRol').addRevisionSn %}
+                {% if revisionId is defined and revisionId is not empty %}
+                    <a href="{{ path('medico_revision_update', { "id": revisionId }) }}" target="_blank" class="btn btn-labeled btn-labeled-left bg-primary">{% trans from 'revision' %}TRANS_MODIFICAR_REVISION{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                {% else %}
+                    {% if app.request.get('id') is defined and app.request.get('id') is not empty %}
+                        <a href="{{ path('medico_revision_add') }}?empresaId={{ empresaId }}&trabajadorId={{ trabajadorId }}&citacionId={{ app.request.get('id') }}" target="_blank" class="btn btn-labeled btn-labeled-left bg-primary">{% trans from 'revision' %}TRANS_CREAR_REVISION{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('.summernote').summernote();
+
+            //Cuando se selecciona la empresa buscamos los trabajadores
+            $('#citacion_empresa').change(function () {
+                var empresaId = $(this).val();
+                if(empresaId != ""){
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('citacion_busca_trabajador_empresa') }}",
+                        data: {
+                            'empresaId': empresaId,
+                        },
+                        dataType: "JSON",
+                        success: function (data) {
+                            if (JSON.parse(data) != "") {
+                                $('#citacion_trabajador').empty();
+                                $("#citacion_trabajador").append('<option value=""></option>');
+                                $.each(JSON.parse(data), function (i, item) {
+                                    $('#citacion_trabajador').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                                });
+                            }
+                        },
+                        complete: function (){
+                            $('#citacion_trabajador').focus();
+                        },
+                        error: function () {
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('citacion_busca_observaciones_empresa') }}",
+                        data: {
+                            'empresaId': empresaId,
+                        },
+                        dataType: "JSON",
+                        success: function (data) {
+                            if (data.observaciones != "") {
+                               $('#citacion_pruebasComplementarias').text(data.observaciones);
+                            }
+                        },
+                        error: function () {
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+
+            $('#citacion_empresa').each(function () {
+                var empresaId = $(this).val();
+                if(empresaId != ""){
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('citacion_busca_trabajador_empresa') }}",
+                        data: {
+                            'empresaId': empresaId,
+                        },
+                        dataType: "JSON",
+                        success: function (data) {
+                            if (JSON.parse(data) != "") {
+                                $('#citacion_trabajador').empty();
+                                $("#citacion_trabajador").append('<option value=""></option>');
+                                $.each(JSON.parse(data), function (i, item) {
+                                    $('#citacion_trabajador').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                                });
+                            }
+                        },
+                        complete: function (){
+                            {% if trabajadorCitacion is defined and trabajadorCitacion is not empty %}
+                                $("#citacion_trabajador").val({{ trabajadorCitacion.id }}).change();
+                            {% endif %}
+                        },
+                        error: function () {
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+
+            //Boton que genera la notificacion
+            $('#btnGenerarFicheroCitacion').click(function(){
+
+                $('#btnGenerarFicheroCitacion').prop("disabled", true);
+                $('#btnGenerarFicheroCitacion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantillaCitacion').val(),
+                        'id': '{{ app.request.get('id') }}',
+                        'tipo': 9
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+                            $('#btnGenerarFicheroCitacion').prop("disabled", false);
+                            $('#btnGenerarFicheroCitacion').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                            var w = window.open();
+                            w.location = data.url;
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnGenerarFicheroCitacion').prop("disabled", false);
+                        $('#btnGenerarFicheroCitacion').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        {{ form_start(form) }}
+
+        <div class="card-body">
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_EMPRESA_TRABAJADOR{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ form_row(form.empresa) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ form_row(form.trabajador) }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DATOS_CITACION{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_row(form.agenda) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.estado) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.fechainicio) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.usuarioCrea) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.tecnico) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        {{ form_row(form.comentarios) }}
+                    </div>
+                    <div class="col-lg-6">
+                        {{ form_row(form.pruebasComplementarias) }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_LLEGADA_SALIDA{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_row(form.horainicio) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.horafin) }}
+                    </div>
+                </div>
+            </fieldset>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-start align-items-center">
+            {% if app.session.get('privilegiosRol').editCitacionSn is defined and app.session.get('privilegiosRol').editCitacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editCitacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+
+            {% if app.session.get('privilegiosRol').deleteCitacionSn is defined and app.session.get('privilegiosRol').deleteCitacionSn is not null %}
+                {% if app.session.get('privilegiosRol').deleteCitacionSn %}
+                    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                        {{ form_row(form.eliminar, {'attr': {'style': 'margin-left: 10px;'}}) }}
+                    {% else %}
+                        {{ form_row(form.eliminar, {'attr': {'style': 'display: none;'}}) }}
+                    {% endif %}
+                {% else %}
+                    {{ form_row(form.eliminar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.eliminar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+    <!-- Modal generacion citacion -->
+    <div id="modal_generate_citacion" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_CITACION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantillaCitacion" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasCitacion is defined and listPlantillasCitacion is not empty %}
+                            {% for lpc in listPlantillasCitacion %}
+                                <option value="{{ lpc.id }}">{{ lpc.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGenerarFicheroCitacion">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion citacion -->
+
+{% endblock %}

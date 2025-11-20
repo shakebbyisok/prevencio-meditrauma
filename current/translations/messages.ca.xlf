@@ -1,0 +1,923 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_MENU_ADM</source>
+                <target>Administració</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_MENU_TEC</source>
+                <target>Tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_MENU_MED</source>
+                <target>Mèdic</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_MENU_ADM_EMPRESAS</source>
+                <target>Empreses</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_MENU_ADM_CENTROS_TRABAJO</source>
+                <target>Centres de treball</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_MENU_ADM_TRABAJADORES</source>
+                <target>Treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_MENU_ADM_CONTRATOS</source>
+                <target>Contractes</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_ADM_RENOVACIONES</source>
+                <target>Renovacions</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_ADM_PAGOS_PENDIENTES</source>
+                <target>Pagaments pendents</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_ADM_FACTURACION</source>
+                <target>Facturació</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_ADM_BALANCE</source>
+                <target>Balanç econòmic</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_ADM_BUSCADORES</source>
+                <target>Extracció de dades</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_CONFIGURACION</source>
+                <target>Configuració</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MENU_LOGOUT</source>
+                <target>Tancar sessió</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MENU_CAMBIAR_IDIOMA</source>
+                <target>Canviar idioma</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_MENU_SELECT_IDIOMA</source>
+                <target>Selecciona un idioma</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_MENU_SELECT_IDIOMA_ES</source>
+                <target>Espanyol</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_MENU_SELECT_IDIOMA_CA</source>
+                <target>Català</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_EDITAR</source>
+                <target>Editar</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_ELIMINAR</source>
+                <target>Eliminar</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_ACCIONES</source>
+                <target>Accions</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_CREATE_OK</source>
+                <target>El registre s'ha creat correctament</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_DELETE_OK</source>
+                <target>El registre se ha eliminado correctament</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_UPDATE_OK</source>
+                <target>El registre s\'ha modificat correctament</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_CONFIRM_DELETE_REGISTRO</source>
+                <target>¿Estas segur que desitges eliminar el registre?</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_NUEVO</source>
+                <target>Nou</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_NUEVA</source>
+                <target>Nova</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_AÑADIR_TARIFA</source>
+                <target>Afegir Tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_AÑADIR</source>
+                <target>Afegir</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SIN_REGISTROS</source>
+                <target>Sense registres.</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_AVISO_AÑADIDO</source>
+                <target>¡Afegit!</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_AVISO_MODIFICADO</source>
+                <target>¡Modificat!</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_AVISO_ELIMINADO</source>
+                <target>¡Eliminat!</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_AVISO_AÑADIDO_MSG</source>
+                <target>El registre s'ha afegit amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_AVISO_MODIFICADO_MSG</source>
+                <target>El registre s\'ha modificat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_AVISO_ELIMINADO_MSG</source>
+                <target>El registre s\'ha eliminat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_AVISO_ERROR</source>
+                <target>S\'ha produït un error. Contacti amb suport.</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_RENOVAR_OK</source>
+                <target>El registre s'ha renovat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_AÑADIR_SERVICIO</source>
+                <target>Afegir servei</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_ELIMINAR_SERVICIO</source>
+                <target>Eliminar servei</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_AÑADIR_TECNICO</source>
+                <target>Afegir tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_ELIMINAR_TECNICO</source>
+                <target>Eliminar tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_AÑADIR_EMAIL</source>
+                <target>Afegir email</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_ELIMINAR_EMAIL</source>
+                <target>Eliminar email</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_ELIMINAR_TARIFA</source>
+                <target>Eliminar tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_AÑADIR_CNAE</source>
+                <target>Afegir CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_ELIMINAR_CNAE</source>
+                <target>Eliminar CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_ELIMINAR_PAGO</source>
+                <target>Eliminar pagament</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_ELIMINAR_CONCEPTO</source>
+                <target>Eliminar concepte</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_AÑADIR_PAGO</source>
+                <target>Añadir pagament</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_AÑADIR_CONCEPTO</source>
+                <target>Añadir concepte</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_MSG_GUARDAR_ANTES</source>
+                <target>Has de guardar els canvis abans de continuar</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_MENU_ADM_DATOS_BANCARIOS</source>
+                <target>Dades bancàries</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_ELIMINAR_GIRO</source>
+                <target>Eliminar gir</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_ELIMINAR_TRANSFERENCIA</source>
+                <target>Eliminar transferència</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_AÑADIR_TRABAJADOR</source>
+                <target>Afegir treballador</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_ELIMINAR_TRABAJADOR</source>
+                <target>Eliminar treballador</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_ELIMINAR_CENTRO</source>
+                <target>Eliminar centre de treball</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_MENU_ADM_REMESAS</source>
+                <target>Remeses bancàries</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_ATENCION</source>
+                <target>¡Atenció!</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_MSG_OK_REMESA</source>
+                <target>El fitxer de remeses s'ha generat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_MENU_ADM_REMESAS_GENERADAS</source>
+                <target>Remeses generades</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_MSG_NO_FICHERO_REMESA</source>
+                <target>No s'ha trobat el fitxer.</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_ERROR</source>
+                <target>¡Error!</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_SELECT_EMPRESA</source>
+                <target>Has de seleccionar una empresa.</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_BUSCADOR_ERROR_REGISTROS</source>
+                <target>La consulta retorna una quantitat de registres molt elevada, intenti utilitzar més filtres.</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_COPY_OK</source>
+                <target>El registre s'ha copiat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_MENU_ADM_PLANTILLAS</source>
+                <target>Plantilles</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_DOWN</source>
+                <target>Descarregar</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_OPEN</source>
+                <target>Obrir</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_ELIMINAR_MANDATO</source>
+                <target>Eliminar mandato</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_SELECT_ALL</source>
+                <target>Seleccionar totes</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_ERROR_EXTENSION</source>
+                <target>¡Error! L'extensió del fitxer no es vàlida.</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_IMPORTACION_OK</source>
+                <target>Les dades s'han importat correctament.</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_ELIMINAR_ALTA_BAJA</source>
+                <target>Eliminar alta/baixa</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_NO_EMPRESA</source>
+                <target>¡Atenció! Has de seleccionar una empresa.</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_MENU_MONITORAUDITORIA</source>
+                <target>Monitor auditoria</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_CONFIRM_RETURN</source>
+                <target>¿Estas segur que desitges sortir?</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_MENU_TEC_GRUPO_EMPRESAS</source>
+                <target>Grups d'empreses</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_MENU_TEC_PUESTOS_TRABAJO</source>
+                <target>Llocs de treball</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_MENU_TEC_TRABAJADORES</source>
+                <target>Treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_MENU_TEC_EMPRESAS</source>
+                <target>Empreses</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_MENU_TEC_EVALUACIONES</source>
+                <target>Avaluacions</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_ELIMINAR_FICHERO</source>
+                <target>Eliminar fitxer</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>IMPRIMIR_FACTURA</source>
+                <target>Imprimir factura</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_PLANTILLA</source>
+                <target>Plantilla</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_IMPRIMIR</source>
+                <target>Imprimir</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_AVISO_FRACCIONADO</source>
+                <target>¡Fraccionat!</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_AVISO_FRACCIONADO_MSG</source>
+                <target>Els pagaments s'han fraccionat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_REALIZAR</source>
+                <target>Realitzar</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_ENVIAR</source>
+                <target>Enviar</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_AVISO_NO_FACTURA</source>
+                <target>Has de seleccionar com a mínim una factura a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="93">
+                <source>TRANS_SEND_OK</source>
+                <target>El correu s'ha enviat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="94">
+                <source>TRANS_VENCIMIENTO_GENERADO</source>
+                <target>El venciment s'ha generat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="95">
+                <source>TRANS_VENCIMIENTO_ELIMINADO</source>
+                <target>El vencimient s0ha eliminado amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="96">
+                <source>TRANS_ELIMINAR_VENCIMIENTO</source>
+                <target>Eliminar venciment</target>
+            </trans-unit>
+
+            <trans-unit id="97">
+                <source>TRANS_VENCIMIENTO_COBRO_CONFIRMADO</source>
+                <target>El cobrament del vencimient s'ha confirmat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="98">
+                <source>TRANS_MENU_MED_EMPRESAS</source>
+                <target>Empreses</target>
+            </trans-unit>
+
+            <trans-unit id="99">
+                <source>TRANS_MENU_MED_CITACIONES</source>
+                <target>Citacions</target>
+            </trans-unit>
+
+            <trans-unit id="100">
+                <source>TRANS_MENU_MED_INVESTIGACIONES</source>
+                <target>Investigacions</target>
+            </trans-unit>
+
+            <trans-unit id="101">
+                <source>TRANS_MENU_MED_REVISIONES</source>
+                <target>Revisions</target>
+            </trans-unit>
+
+            <trans-unit id="102">
+                <source>TRANS_MENU_MED_ENFERMEDADES</source>
+                <target>Manteniment de malalties</target>
+            </trans-unit>
+
+            <trans-unit id="103">
+                <source>TRANS_MENU_MED_TRABAJADORES</source>
+                <target>Treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="104">
+                <source>TRANS_DELETE_EMPRESA_GRUPO_EMPRESA</source>
+                <target>Eliminar empresa del grup</target>
+            </trans-unit>
+
+            <trans-unit id="105">
+                <source>TRANS_ERROR_FECHA_INI_FILTRO</source>
+                <target>La data d\'inici no és vàlida.</target>
+            </trans-unit>
+
+            <trans-unit id="106">
+                <source>TRANS_ERROR_FECHA_FIN_FILTRO</source>
+                <target>La data de fi no és vàlida.</target>
+            </trans-unit>
+
+            <trans-unit id="107">
+                <source>TRANS_UPLOAD_IMG</source>
+                <target>Les imatges s'han pujat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="108">
+                <source>TRANS_ERROR_PRINT_EVALUACION</source>
+                <target>No s'ha pogut imprimir l'avaluació.</target>
+            </trans-unit>
+
+            <trans-unit id="109">
+                <source>TRANS_ACEPTAR</source>
+                <target>Acceptar</target>
+            </trans-unit>
+
+            <trans-unit id="110">
+                <source>TRANS_FIRMAS_TECNICOS</source>
+                <target>Firmes dels tècnics</target>
+            </trans-unit>
+
+            <trans-unit id="111">
+                <source>TRANS_IMPRIMIENDO</source>
+                <target>Imprimint</target>
+            </trans-unit>
+
+            <trans-unit id="112">
+                <source>TRANS_ELIMINANDO</source>
+                <target>Eliminant</target>
+            </trans-unit>
+
+            <trans-unit id="113">
+                <source>TRANS_MENU_MED_MANTENIMIENTO_RECONOCIMIENTOS</source>
+                <target>Manteniment de reconeixements</target>
+            </trans-unit>
+
+            <trans-unit id="114">
+                <source>TRANS_ELIMINAR_RESPUESTA</source>
+                <target>Eliminar resposta</target>
+            </trans-unit>
+
+            <trans-unit id="115">
+                <source>TRANS_ELIMINAR_SERIE_RESPUESTA</source>
+                <target>Eliminar sèrie de resposta</target>
+            </trans-unit>
+
+            <trans-unit id="116">
+                <source>TRANS_ELIMINAR_CONSEJO</source>
+                <target>Eliminar consell mèdic</target>
+            </trans-unit>
+
+            <trans-unit id="117">
+                <source>TRANS_ELIMINAR_PREGUNTA</source>
+                <target>Eliminar pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="118">
+                <source>TRANS_ELIMINAR_FORMULA</source>
+                <target>Eliminar formula</target>
+            </trans-unit>
+
+            <trans-unit id="119">
+                <source>TRANS_ELIMINAR_VARIABLE</source>
+                <target>Eliminar variable</target>
+            </trans-unit>
+
+            <trans-unit id="120">
+                <source>TRANS_ELIMINAR_CUESTIONARIO</source>
+                <target>Eliminar qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="121">
+                <source>TRANS_ELIMINAR_SUBPREGUNTA</source>
+                <target>Eliminar subpregunta</target>
+            </trans-unit>
+
+            <trans-unit id="122">
+                <source>TRANS_MENU_MED_PUESTO_TRABAJO_PROTOCOLO_CUESTIONARIO</source>
+                <target>Lloc de treball - Protocols - Qüestionaris</target>
+            </trans-unit>
+
+            <trans-unit id="123">
+                <source>TRANS_ELIMINAR_PROTOCOLO</source>
+                <target>Eliminar protocol</target>
+            </trans-unit>
+
+            <trans-unit id="124">
+                <source>TRANS_ELIMINAR_PUESTO_TRABAJO_PROTOCOLO</source>
+                <target>Eliminar lloc de treball - protocol</target>
+            </trans-unit>
+
+            <trans-unit id="125">
+                <source>TRANS_ELIMINAR_EXPLORACION</source>
+                <target>Eliminar exploració</target>
+            </trans-unit>
+
+            <trans-unit id="126">
+                <source>TRANS_CANCELAR</source>
+                <target>Cancel·lar</target>
+            </trans-unit>
+
+            <trans-unit id="127">
+                <source>TRANS_ELIMINAR_REVISION</source>
+                <target>Eliminar revisió</target>
+            </trans-unit>
+
+            <trans-unit id="128">
+                <source>TRANS_BUSCANDO</source>
+                <target>Buscant</target>
+            </trans-unit>
+
+            <trans-unit id="129">
+                <source>TRANS_ELIMINAR_ENFERMEDAD</source>
+                <target>Eliminar malaltia</target>
+            </trans-unit>
+
+            <trans-unit id="130">
+                <source>TRANS_ENVIAR_CORREO</source>
+                <target>Enviar correu</target>
+            </trans-unit>
+
+            <trans-unit id="131">
+                <source>TRANS_CORREO_MENSAJE</source>
+                <target>Missatge</target>
+            </trans-unit>
+
+            <trans-unit id="132">
+                <source>TRANS_CORREO_PARA</source>
+                <target>Per</target>
+            </trans-unit>
+
+            <trans-unit id="133">
+                <source>TRANS_CORREO_ASUNTO</source>
+                <target>Assumpte</target>
+            </trans-unit>
+
+            <trans-unit id="144">
+                <source>TRANS_AVISO_MULTIPLE_CORREO</source>
+                <target>Els correus electrònics han d'anar separats per:</target>
+            </trans-unit>
+
+            <trans-unit id="145">
+                <source>TRANS_AVISO_NO_NOTIFICACION</source>
+                <target>Has de seleccionar com a mínim una notificació a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="146">
+                <source>TRANS_CORREOS_ENVIADOS</source>
+                <target>Correus enviats</target>
+            </trans-unit>
+
+            <trans-unit id="147">
+                <source>TRANS_ELIMINAR_DEVOLUCION</source>
+                <target>Eliminar devolució</target>
+            </trans-unit>
+
+            <trans-unit id="148">
+                <source>TRANS_AGENDA_TECNICO</source>
+                <target>Agenda</target>
+            </trans-unit>
+
+            <trans-unit id="149">
+                <source>TRANS_COPIAR</source>
+                <target>Copiar</target>
+            </trans-unit>
+
+            <trans-unit id="150">
+                <source>TRANS_FACTURAR_OK</source>
+                <target>Les factures s'han generat correctament.</target>
+            </trans-unit>
+
+            <trans-unit id="151">
+                <source>TRANS_MENU_MED_REVISIONES_PENDIENTES</source>
+                <target>Revisions pendents</target>
+            </trans-unit>
+
+            <trans-unit id="152">
+                <source>TRANS_FIRMAS_MEDICOS</source>
+                <target>Firmes dels metges</target>
+            </trans-unit>
+
+            <trans-unit id="153">
+                <source>TRANS_DAR_DE_BAJA_EMPRESA</source>
+                <target>Donar de baixa</target>
+            </trans-unit>
+
+            <trans-unit id="154">
+                <source>TRANS_CONFIRM_ACTIVAR_EMPRESA</source>
+                <target>Està segur que desitja tornar a activar l\'empresa?</target>
+            </trans-unit>
+
+            <trans-unit id="155">
+                <source>TRANS_AVISO_NO_CONFIGURACION_CORREO</source>
+                <target>No s'ha pogut enviar el correu perquè l'usuari no té un compte de correu configurat.</target>
+            </trans-unit>
+
+            <trans-unit id="156">
+                <source>TRANS_AVISO_NO_TELEFONO</source>
+                <target>El treballador no té un numero de telèfon definit.</target>
+            </trans-unit>
+
+            <trans-unit id="157">
+                <source>TRANS_AVISO_TELEFONO_NO_VALIDO</source>
+                <target>El trabajador no té un numero de teléfon vàlid.</target>
+            </trans-unit>
+
+            <trans-unit id="158">
+                <source>TRANS_MSG_KO_REMESA_1</source>
+                <target>La empresa</target>
+            </trans-unit>
+
+            <trans-unit id="159">
+                <source>TRANS_AVISO_NO_CERTIFICACION</source>
+                <target>Has de seleccionar com a mínim una certificació a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="160">
+                <source>TRANS_AVISO_NO_CONTRATO</source>
+                <target>Has de seleccionar com a mínim un contracte a enviar.</target>
+            </trans-unit>
+
+            <trans-unit id="161">
+                <source>TRANS_IMPORTACION_KO</source>
+                <target>S'ha produït un error en importar les dades.</target>
+            </trans-unit>
+
+            <trans-unit id="162">
+                <source>TRANS_RECIBO_GENERADO_OK</source>
+                <target>El rebut s'ha generat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="163">
+                <source>TRANS_DELETE_ENTRADA_BALANCE_ECONOMICO</source>
+                <target>Eliminar entrada</target>
+            </trans-unit>
+
+            <trans-unit id="164">
+                <source>TRANS_SEND_KO</source>
+                <target>S'ha produit un error a l'enviar el correu.</target>
+            </trans-unit>
+
+            <trans-unit id="165">
+                <source>TRANS_CUENTA_NO_PRINCIPAL</source>
+                <target>Una empresa no té un compte bancari marcat com principal.</target>
+            </trans-unit>
+
+            <trans-unit id="166">
+                <source>TRANS_MENU_ADM_PAGOS_POR_FACURAR</source>
+                <target>Pagaments per facturar</target>
+            </trans-unit>
+
+            <trans-unit id="167">
+                <source>TRANS_MSG_KO_REMESA_2</source>
+                <target>no té mandato generat.</target>
+            </trans-unit>
+
+            <trans-unit id="168">
+                <source>TRANS_REVISIONES_FACTURADAS</source>
+                <target>Les revisions s'han facturat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="169">
+                <source>TRANS_AVISO_TRABAJADOR_NO_DNI</source>
+                <target>El treballador no té el DNI informat.</target>
+            </trans-unit>
+
+            <trans-unit id="170">
+                <source>TRANS_ENVIAR_CORREO_MASIVO</source>
+                <target>Enviar correu massiu</target>
+            </trans-unit>
+
+            <trans-unit id="171">
+                <source>TRANS_ERROR_EMPRESAS_CORREO_MASIVO</source>
+                <target>Has de seleccionar una empresa com a mínim</target>
+            </trans-unit>
+
+            <trans-unit id="172">
+                <source>TRANS_CORREO_MASIVO_OK</source>
+                <target>El correu massiu s'ha enviat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="173">
+                <source>TRANS_VER_HUECOS_LIBRES_FACTURAS</source>
+                <target>Veure espais lliures factures</target>
+            </trans-unit>
+
+            <trans-unit id="174">
+                <source>TRANS_CONTRATO_FACTURADO_OK</source>
+                <target>El contracte s'ha facturar amb èxit</target>
+            </trans-unit>
+
+            <trans-unit id="175">
+                <source>TRANS_REMESA_DELETE_OK</source>
+                <target>La remesa s'ha eliminat amb èxit</target>
+            </trans-unit>
+
+            <trans-unit id="176">
+                <source>TRANS_MENU_CITACIONES_LISTA</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="177">
+                <source>TRANS_MENU_CITACIONES_CALENDARIO</source>
+                <target>Calendari</target>
+            </trans-unit>
+
+            <trans-unit id="178">
+                <source>TRANS_ELIMINAR_PUESTO_TRABAJO_TRABAJADOR</source>
+                <target>Eliminar Lloc de treball - treballador</target>
+            </trans-unit>
+
+            <trans-unit id="179">
+                <source>TRANS_MSG_KO_REMESA_3</source>
+                <target>té un rebut amb import 0.</target>
+            </trans-unit>
+
+            <trans-unit id="180">
+                <source>TRANS_REVISIONES_INCLUIDAS</source>
+                <target>Les revisions s'han inclós amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="181">
+                <source>TRANS_UPLOAD_DOCUMENT</source>
+                <target>Els documents s'han adjuntat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="182">
+                <source>TRANS_ELIMINAR_DOCUMENTO_ADJUNTO</source>
+                <target>Eliminar document adjunt</target>
+            </trans-unit>
+
+            <trans-unit id="183">
+                <source>TRANS_TELEFONO_NO_VALIDO</source>
+                <target>El telèfon no és vàlid.</target>
+            </trans-unit>
+
+            <trans-unit id="184">
+                <source>TRANS_ELIMINAR_FACTURA</source>
+                <target>Eliminar factura</target>
+            </trans-unit>
+
+            <trans-unit id="185">
+                <source>TRANS_CORREO_EMPRESA_EXISTE</source>
+                <target>El correu ja existeix per aquesta empresa</target>
+            </trans-unit>
+
+            <trans-unit id="186">
+                <source>TRANS_MSG_KO_REMESA</source>
+                <target>S'ha produit un error en generar la remesa.</target>
+            </trans-unit>
+
+            <trans-unit id="187">
+                <source>TRANS_ENVIAR_FACTURA_ERROR_EMPRESA</source>
+                <target>No s'han pogut enviar les factures de les següents empreses:</target>
+            </trans-unit>
+
+            <trans-unit id="188">
+                <source>TRANS_AVISO_VENCIMIENTO_APTITUD</source>
+                <target>Avís venciment aptitud</target>
+            </trans-unit>
+
+            <trans-unit id="189">
+                <source>TRANS_ERROR_AVISO_VENCIMIENTO_APTITUD</source>
+                <target>Has de seleccionar com a mínim una aptitud per avisar.</target>
+            </trans-unit>
+
+            <trans-unit id="190">
+                <source>TRANS_ENVIAR_RECORDATORIO</source>
+                <target>Enviar recordatori</target>
+            </trans-unit>
+
+            <trans-unit id="191">
+                <source>TRANS_AVISO_VENCIMIENTO_APTITUD_OK</source>
+                <target>El recordatori de vencimient d'aptituts s'ha enviat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="192">
+                <source>TRANS_ENVIAR_AVISO_VENCIMIENTO_APTITUD_ERROR_EMPRESA</source>
+                <target>No s'ha pogut enviar la notificació del vencimenta les següents empreses:</target>
+            </trans-unit>
+
+            <trans-unit id="193">
+                <source>TRANS_AVISO_NO_MODELO347</source>
+                <target>Has de seleccionar com a mínim un model 347 a enviar.</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

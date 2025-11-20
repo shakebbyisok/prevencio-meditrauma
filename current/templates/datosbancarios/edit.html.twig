@@ -1,0 +1,819 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'datosbancarios' %}
+
+{% block arrow %}<a href="{{ path('datos_bancarios_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_DATO_BANCARIO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+
+        {% if form.vars.value.entidadBancaria is not null %}
+            {{ form.vars.value.entidadBancaria.descripcion }}
+        {% endif %}
+
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            //Boton que añade el mandato
+            $('#btnGenerarMandato').click(function(){
+
+                $('#btnGenerarMandato').prop("disabled", true);
+                $('#btnGenerarMandato').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_AÑADIR_MANDATO{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: '{{ path('datos_bancarios_add_mandato') }}',
+                    data: {
+                    },
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if(data == 'OK'){
+
+                            $('#btnGenerarMandato').hide();
+                            recuperaMandatos();
+
+                            $('#btnGenerarMandato').prop("disabled", false);
+                            $('#btnGenerarMandato').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_AÑADIR_MANDATO{% endtrans %}");
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_AÑADIDO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_AÑADIDO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+                        }
+                    },
+                    error: function(){
+                        $('#btnGenerarMandato').prop("disabled", false);
+                        $('#btnGenerarMandato').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_AÑADIR_MANDATO{% endtrans %}");
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            });
+
+            //Boton que modifica el mandato
+            $('#btnUpdateMandato').click(function(){
+
+                var referencia = $('#referenciaEditar').val();
+                var fecha = $('#firmaEditar').val();
+                var tipoPago = $('#tipoPagoEditar').val();
+                var mandatoId = $('#mandatoIdEditar').val();
+
+                if(referencia == '' || referencia == null){
+                    $('#referenciaEditar').focus();
+                    return false;
+                }
+
+                if(fecha == '' || fecha == null){
+                    $('#firmaEditar').focus();
+                    return false;
+                }
+
+                if(tipoPago == '' || tipoPago == null){
+                    $('#tipoPagoEditar').focus();
+                    return false;
+                }
+
+                $('#btnUpdateMandato').prop("disabled", true);
+                $('#btnUpdateMandato').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: '{{ path('datos_bancarios_update_mandato') }}',
+                    data: {
+                        'referencia': referencia,
+                        'fecha': fecha,
+                        'tipoPago': tipoPago,
+                        'mandatoId': mandatoId
+                    },
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if(data == 'OK'){
+
+                            recuperaMandatos();
+
+                            $('#referencia').val('');
+                            $('#firma').val('');
+                            $('#tipoPago').val('').change();
+                            $('#mandatoIdEditar').val('');
+
+                            $('#btnUpdateMandato').prop("disabled", false);
+                            $('#btnUpdateMandato').html("Guardar");
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            });
+
+            //Botón que recupera el BIC de la entidad bancaria
+            $('#datos_bancarios_entidadBancaria').change(function(){
+                var entidadId = $('#datos_bancarios_entidadBancaria').val();
+                if(entidadId != ""){
+                    validaCampos();
+                }
+            });
+
+            //Botón que recupera el BIC de la entidad bancaria
+            $('#datos_bancarios_pais').change(function(){
+                var paisId = $('#datos_bancarios_pais').val();
+                if(paisId != ""){
+                    validaCampos();
+                }
+            });
+
+            //Si se pierde el foco llamamos a la función
+            $('#datos_bancarios_oficina').on('focusout',function(){
+                validaCampos();
+            });
+
+            $('#datos_bancarios_numCuenta').on('focusout',function(){
+                validaCampos();
+            });
+
+            $('#datos_bancarios_dc').on('focusout',function(){
+                validaCampos();
+            });
+
+        });
+
+        //Función que valida que los campos esten informados
+        function validaCampos(){
+            $('#datos_bancarios_guardar').css('display', 'none');
+            $('.msgValidacionIban').css("display", "none");
+            $('.msgValidacionIbanPais').css("display", "none");
+            $('.msgValidacionIbanEntidad').css("display", "none");
+            $('.msgValidacionIbanOficina').css("display", "none");
+            $('.msgValidacionIbanCuenta').css("display", "none");
+            $('.msgValidacionIbanDc').css("display", "none");
+
+            var paisId = $('#datos_bancarios_pais').val();
+            var entidadId = $('#datos_bancarios_entidadBancaria').val();
+            var oficina = $('#datos_bancarios_oficina').val();
+            var cuenta = $('#datos_bancarios_numCuenta').val();
+            var dc = $('#datos_bancarios_dc').val();
+
+            if(paisId == "" || paisId == null){
+                $('#datos_bancarios_pais').focus();
+                $('.msgValidacionIbanPais').html("{% trans %}TRANS_PAIS_NO_INFORMADO{% endtrans %}");
+                $('.msgValidacionIbanPais').css("display", "block");
+                return false;
+            }
+
+            if(entidadId == "" || entidadId == null){
+                $('#datos_bancarios_entidadBancaria').focus();
+                $('.msgValidacionIbanEntidad').html("{% trans %}TRANS_ENTIDAD_NO_INFORMADA{% endtrans %}");
+                $('.msgValidacionIbanEntidad').css("display", "block");
+                return false;
+            }
+
+            if(oficina == "" || oficina == null){
+                $('#datos_bancarios_oficina').addClass('border-danger');
+                $('#datos_bancarios_oficina').focus();
+                $('.msgValidacionIbanOficina').html("{% trans %}TRANS_OFICINA_NO_INFORMADA{% endtrans %}");
+                $('.msgValidacionIbanOficina').css("display", "block");
+                return false;
+            }else{
+                if(oficina.length != 4){
+                    $('#datos_bancarios_oficina').addClass('border-danger');
+                    $('#datos_bancarios_oficina').focus();
+                    $('.msgValidacionIbanCuenta').html("{% trans %}TRANS_OFICINA_CARACTERES{% endtrans %}");
+                    $('.msgValidacionIbanCuenta').css("display", "block");
+                }else{
+                    $('#datos_bancarios_oficina').removeClass('border-danger');
+                    $('#datos_bancarios_oficina').addClass('border-success');
+                }
+            }
+
+            if(cuenta == "" || cuenta == null){
+                $('#datos_bancarios_numCuenta').addClass('border-danger');
+                $('#datos_bancarios_numCuenta').focus();
+                $('.msgValidacionIbanCuenta').html("{% trans %}TRANS_OFICINA_NO_INFORMADA{% endtrans %}");
+                $('.msgValidacionIbanCuenta').css("display", "block");
+                return false;
+            }else{
+                if(cuenta.length != 10){
+                    $('#datos_bancarios_numCuenta').addClass('border-danger');
+                    $('#datos_bancarios_numCuenta').focus();
+                    $('.msgValidacionIbanCuenta').html("{% trans %}TRANS_CUENTA_CARACTERES{% endtrans %}");
+                    $('.msgValidacionIbanCuenta').css("display", "block");
+                }else{
+                    $('#datos_bancarios_numCuenta').removeClass('border-danger');
+                    $('#datos_bancarios_numCuenta').addClass('border-success');
+                }
+            }
+
+            if(dc == "" || dc == null){
+                $('#datos_bancarios_dc').addClass('border-danger');
+                $('#datos_bancarios_dc').focus();
+                $('.msgValidacionIbanDc').html("{% trans %}TRANS_DC_NO_INFORMADO{% endtrans %}");
+                $('.msgValidacionIbanDc').css("display", "block");
+                return false;
+            }else{
+                if(dc.length != 2){
+                    $('#datos_bancarios_dc').addClass('border-danger');
+                    $('#datos_bancarios_dc').focus();
+                    $('.msgValidacionIbanDc').html("{% trans %}TRANS_DC_CARACTERES{% endtrans %}");
+                    $('.msgValidacionIbanDc').css("display", "block");
+                }else{
+                    $('#datos_bancarios_dc').removeClass('border-danger');
+                    $('#datos_bancarios_dc').addClass('border-success');
+                }
+            }
+            var ccc = oficina+dc+cuenta;
+            validaIbanAjax(ccc, paisId, entidadId);
+        }
+
+        function validaIbanAjax(ccc, paisId, entidadId){
+            //Recuperamos el codigo del pais
+            var codigoPais = "";
+            var nrb = "";
+            $.ajax({
+                type: "POST",
+                url: '{{ path('datos_bancarios_recupera_codigo_pais') }}',
+                data: {
+                    'paisId': paisId,
+                },
+                dataType: 'JSON',
+                success: function (data) {
+                    codigoPais = data.codigo;
+                },
+                complete: function (){
+                    $.ajax({
+                        type: "POST",
+                        url: '{{ path('datos_bancarios_recupera_bic_nrb') }}',
+                        data: {
+                            'entidadId': entidadId,
+                        },
+                        dataType: 'JSON',
+                        success: function (data) {
+                            $('#datos_bancarios_bic').val(data.bic);
+                            nrb = data.nrb;
+                        },
+                        complete: function(){
+                            //Validamos el CCC
+                            var cccCheck = nrb+ccc;
+                            $.ajax({
+                                type: "POST",
+                                url: '{{ path('datos_bancarios_valida_iban') }}',
+                                data: {
+                                    'iban': cccCheck,
+                                },
+                                dataType: 'JSON',
+                                success: function (data) {
+                                    if(data.result == true){
+                                        //Calculamos los digitos
+                                        var digitos = getCodigoControl_IBAN(codigoPais, cccCheck);
+                                        var ibanFinal = 'ES'+digitos+cccCheck;
+                                        $('#datos_bancarios_ibanDigital').val(ibanFinal);
+                                        var ibanFinalPapel = 'IBAN ' + ibanFinal.substring(0, 4) + ' ' + ibanFinal.substring(4, 8) + ' ' + ibanFinal.substring(8, 12) + ' ' + ibanFinal.substring(12, 16) + ' ' + ibanFinal.substring(16, 20) + ' ' + ibanFinal.substring(20, 24);
+                                        $('#datos_bancarios_ibanPapel').val(ibanFinalPapel);
+                                        //Comprobamos que el IBAN no esté repetido
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '{{ path('datos_bancarios_comprueba_iban') }}',
+                                            data: {
+                                                'iban': ibanFinal,
+                                            },
+                                            dataType: 'JSON',
+                                            success: function (data) {
+                                                if(data == 'OK'){
+                                                    //Volvemos a mostrar el botón de guardar
+                                                    $('#datos_bancarios_guardar').css('display', 'block');
+                                                }else{
+                                                    $('#datos_bancarios_oficina').addClass('border-danger');
+                                                    $('#datos_bancarios_numCuenta').addClass('border-danger');
+                                                    $('#datos_bancarios_dc').addClass('border-danger');
+                                                    $('.msgValidacionIban').html("{% trans %}TRANS_IBAN_EXISTENTE{% endtrans %}");
+                                                    $('.msgValidacionIban').css("display", "block");
+                                                    $('#datos_bancarios_guardar').css('display', 'block');
+                                                }
+                                            },
+                                            error: function(){
+                                                new PNotify({
+                                                    title: 'Ops!',
+                                                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                                    icon: 'icon-blocked',
+                                                    type: 'error'
+                                                });
+                                            }
+                                        });
+                                    }else{
+                                        $('#datos_bancarios_oficina').addClass('border-danger');
+                                        $('#datos_bancarios_numCuenta').addClass('border-danger');
+                                        $('#datos_bancarios_dc').addClass('border-danger');
+                                        $('.msgValidacionIban').html("{% trans %}TRANS_CC_NO_VALIDO{% endtrans %}");
+                                        $('.msgValidacionIban').css("display", "block");
+                                    }
+                                },
+                                error: function(){
+                                    new PNotify({
+                                        title: 'Ops!',
+                                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                        icon: 'icon-blocked',
+                                        type: 'error'
+                                    });
+                                }
+                            });
+                        },
+                        error: function(){
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Funciones para recuperar el codigo de control
+        function getCodigoControl_IBAN(codigoPais,cc)
+        {
+            // cada letra de pais tiene un valor
+            valoresPaises = {
+                'A':'10',
+                'B':'11',
+                'C':'12',
+                'D':'13',
+                'E':'14',
+                'F':'15',
+                'G':'16',
+                'H':'17',
+                'I':'18',
+                'J':'19',
+                'K':'20',
+                'L':'21',
+                'M':'22',
+                'N':'23',
+                'O':'24',
+                'P':'25',
+                'Q':'26',
+                'R':'27',
+                'S':'28',
+                'T':'29',
+                'U':'30',
+                'V':'31',
+                'W':'32',
+                'X':'33',
+                'Y':'34',
+                'Z':'35'
+            };
+
+            // reemplazamos cada letra por su valor numerico y ponemos los valores mas dos ceros al final de la cuenta
+            var dividendo = cc+valoresPaises[codigoPais.substr(0,1)]+valoresPaises[codigoPais.substr(1,1)]+'00';
+
+            // Calculamos el modulo 97 sobre el valor numerico y lo restamos al valor 98
+            var digitoControl = 98-modulo(dividendo, 97);
+
+            // Si el digito de control es un solo numero, añadimos un cero al delante
+            if(digitoControl < 10)
+            {
+                digitoControl='0'+digitoControl;
+            }
+            return digitoControl;
+        }
+
+        function modulo(valor, divisor) {
+            var resto=0;
+            var dividendo=0;
+            for (var i=0;i<valor.length;i+=10) {
+                dividendo = resto + "" + valor.substr(i, 10);
+                resto = dividendo % divisor;
+            }
+            return resto;
+        }
+
+        function recuperaMandato(id){
+            $.ajax({
+                type: "POST",
+                url: '{{ path('datos_bancarios_recupera_mandato') }}',
+                data: {
+                    'mandatoId': id,
+                },
+                dataType: 'JSON',
+                success: function (data) {
+                    $('#referenciaEditar').val(data.referencia);
+                    $('#firmaEditar').val(data.firma);
+                    $('#tipoPagoEditar').val(data.tipoPago).change();
+                    $('#mandatoIdEditar').val(data.mandatoId);
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaMandatos(){
+            $.ajax({
+                type: "POST",
+                url: '{{ path('datos_bancarios_recupera_mandatos') }}',
+                dataType: 'JSON',
+                data: {
+                    'datoBancarioId': '{{ app.request.get('id') }}',
+                },
+                beforeSend: function(data){
+                    $("#mandatos").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans %}TRANS_REFERENCIA{% endtrans %}</th><th>{% trans %}TRANS_FECHA{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    table += "<tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr class="grid-row-cells even"> ';
+                             }
+
+                            if (item["referencia"] != undefined) {
+                                table += '<td>' + item["referencia"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["firma"] != undefined) {
+                                table += '<td>' + item["firma"] + '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" data-tipo="1" class="list-icons-item" onclick="recuperaMandato('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_mandato"><i class="icon-pencil7"></i></a>';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarMandato"><i class="icon-trash"></i></a>';
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='3' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#mandatos").html("");
+                    $("#mandatos").html(table);
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteMandato(id){
+            $.ajax({
+                type: "POST",
+                url: '{{ path('datos_bancarios_delete_mandato') }}',
+                data: {
+                    'mandatoId': id,
+                },
+                dataType: 'JSON',
+                success: function (data) {
+                    if (data == "OK") {
+
+                        recuperaMandatos();
+
+                        new PNotify({
+                            title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                            icon: 'icon-checkmark3',
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el mandato seleccionado
+        $(document).on('click', 'a.eliminarMandato', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_MANDATO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteMandato(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+
+                    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                        {% if form.vars.value.empresa is not null %}
+                            {{ form_row(form.empresa, {'attr': {'class': 'disabled'}}) }}
+                        {% endif %}
+                    {% else %}
+                        {{ form_row(form.empresa) }}
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.pais) }}
+                    <span class="form-text text-danger msgValidacionIbanPais" style="display: none;"></span>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.entidadBancaria) }}
+                    <span class="form-text text-danger msgValidacionIbanEntidad" style="display: none;"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.oficina) }}
+                    <span class="form-text text-danger msgValidacionIbanOficina" style="display: none;"></span>
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.numCuenta) }}
+                    <span class="form-text text-danger msgValidacionIbanCuenta" style="display: none;"></span>
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.dc) }}
+                    <span class="form-text text-danger msgValidacionIbanDc" style="display: none;"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <span class="form-text text-danger msgValidacionIban" style="display: none;"></span>
+                    <br/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.ibanDigital) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.ibanPapel) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.bic) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.formaPago) }}
+                </div>
+                <div class="col-lg-6">
+                    {{ form_row(form.diaPago) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.principal) }}
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                        {% if app.session.get('privilegiosRol').addDatosBancariosSn is defined and app.session.get('privilegiosRol').addDatosBancariosSn is not null %}
+                            {% if app.session.get('privilegiosRol').addDatosBancariosSn and mandatoSn is defined and mandatoSn == false %}
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" id="btnGenerarMandato">{% trans %}TRANS_AÑADIR_MANDATO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-bordered">
+                        <table class="table" id="mandatos">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>{% trans %}TRANS_REFERENCIA{% endtrans %}</th>
+                                <th>{% trans %}TRANS_FECHA{% endtrans %}</th>
+                                <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if mandatos is not empty %}
+                                {% for m in mandatos %}
+                                    <tr>
+                                        <td>{{ m.referencia }}</td>
+                                        <td>{{ m.firma|date('d/m/Y') }}</td>
+                                        <td>
+                                            <div class="list-icons">
+                                                <a href="#" data-id="{{ m.id }}" target="_self" data-tipo="1" class="list-icons-item" onclick="recuperaMandato('{{ m.id }}');" data-toggle="modal" data-target="#modal_editar_mandato"><i class="icon-pencil7"></i></a>
+                                                <a href="#" data-id="{{ m.id }}" target="_self" class="list-icons-item eliminarMandato"><i class="icon-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editDatosBancariosSn is defined and app.session.get('privilegiosRol').editDatosBancariosSn is not null %}
+                {% if app.session.get('privilegiosRol').editDatosBancariosSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir mandato -->
+    <div id="modal_añadir_mandato" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_MANDATO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_REFERENCIA{% endtrans %}</label>
+                    <input type="text" id="referencia" class="form-control" />
+
+                    <label>{% trans %}TRANS_FECHA{% endtrans %}</label>
+                    <input type="date" id="firma" class="form-control" />
+
+                    <label>{% trans %}TRANS_TIPO_PAGO{% endtrans %}</label>
+                    <select id="tipoPago" class="select-search">
+                        <option value=""></option>
+                        <option value="2">{% trans %}TRANS_TIPO_PAGO_RECURRENTE{% endtrans %}</option>
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddMandato">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir mandato -->
+
+    <!-- Modal editar mandato -->
+    <div id="modal_editar_mandato" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_EDITAR_MANDATO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_REFERENCIA{% endtrans %}</label>
+                    <input type="text" id="referenciaEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_FECHA{% endtrans %}</label>
+                    <input type="date" id="firmaEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_TIPO_PAGO{% endtrans %}</label>
+                    <select id="tipoPagoEditar" class="select-search">
+                        <option value=""></option>
+                        <option value="2">{% trans %}TRANS_TIPO_PAGO_RECURRENTE{% endtrans %}</option>
+                    </select>
+
+                    <input type="hidden" id="mandatoIdEditar" class="form-control" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateMandato">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal editar mandato -->
+
+{% endblock %}
+
+
+

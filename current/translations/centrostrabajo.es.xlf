@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_CENTROS</source>
+                <target>Centros</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVO_CENTRO</source>
+                <target>Nuevo centro</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CODIGO</source>
+                <target>Código</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_NOMBRE</source>
+                <target>Nombre</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_CENTRO</source>
+                <target>Centro</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_1</source>
+                <target>Datos generales</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_2</source>
+                <target>Datos generales II</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_3</source>
+                <target>Trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_4</source>
+                <target>Estructura del centro</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_5</source>
+                <target>Actuaciones</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_6</source>
+                <target>Avisos de control</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MENU_7</source>
+                <target>Estado</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MENU_8</source>
+                <target>Personal asignado</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_TRABAJADORES</source>
+                <target>Nª de trabajadores</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_TIPO</source>
+                <target>Tipo</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_DIRECCION</source>
+                <target>Dirección</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_LOCALIDAD</source>
+                <target>Localidad</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_CODIGO_POSTAL</source>
+                <target>Código postal</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_PROVINCIA</source>
+                <target>Provincia</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_ZONA</source>
+                <target>Zona</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_EMAIL</source>
+                <target>E-mail</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_TELEFONO</source>
+                <target>Teléfono1</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_TELEFONO2</source>
+                <target>Teléfono2</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_FAX</source>
+                <target>Fax</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CENTRO_MISMA_PROVINCIA</source>
+                <target>El centro no está en la misma provincia o provincia limitrofe (o en la misma isla) que las instalaciones del SP.</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_MUNICIPIO</source>
+                <target>Municipio</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_CONSENTIMIENTO_CESION_DATOS</source>
+                <target>Consentimiento para la cesión de datos</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_ACTIVIDAD_CENTRO</source>
+                <target>Actividad del centro</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_DESCRIPCION_ACT</source>
+                <target>Descripción</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_CNAE</source>
+                <target>CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_EXCLUIR_RATIO</source>
+                <target>Excluir este centro de trabajo para el cálculo de ratios.</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_EXCLUIR_MEMORIAL_ANUAL</source>
+                <target>Excluir este centro de trabajo de la memorial anual.</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_SEGURIDAD_SOCIAL</source>
+                <target>Seguridad social</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_REGIMEN</source>
+                <target>Régimen</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_CCC</source>
+                <target>C.C.C</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_CENTRO_MEDICO_ASIGNADO</source>
+                <target>Centro médico asignado</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_CESION_DATOS</source>
+                <target>Se requiere información sobre el consentimiento para la cesión de datos</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

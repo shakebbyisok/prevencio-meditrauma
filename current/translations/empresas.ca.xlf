@@ -1,0 +1,958 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_CODIGO</source>
+                <target>Codi</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NOMBRE</source>
+                <target>Nom</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_EMPRESAS</source>
+                <target>Empreses</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_NUEVA_EMPRESA</source>
+                <target>Nova empresa</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_1</source>
+                <target>Dades generals</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_2</source>
+                <target>Dades de contacte</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_3</source>
+                <target>Estats</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_4</source>
+                <target>Activitat</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_5</source>
+                <target>Observacions</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_6</source>
+                <target>Centres de treball</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MENU_7</source>
+                <target>Treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MENU_8</source>
+                <target>Actuacions</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_MENU_9</source>
+                <target>Avisos de control</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_MENU_10</source>
+                <target>Estruct. departamental</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_MARCA_COMERCIAL</source>
+                <target>Marca comercial</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_GRUPO_EMPRESA</source>
+                <target>Grup empresa</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_TIPO_EMPRESA</source>
+                <target>Tipus d'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_TRABAJADORES</source>
+                <target>Treballadors</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_USUARIOS_RESPONSABLES</source>
+                <target>Usuaris responsables</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_TECNICO</source>
+                <target>Tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_AGENTE</source>
+                <target>Agent</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_VIGILANCIA_SALUD</source>
+                <target>Vigilància de salut</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_GESTOR_ADM</source>
+                <target>Gestor administratiu</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_SEGURIDAD_SOCIAL</source>
+                <target>Seguretat social</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_REGIMEN</source>
+                <target>Règimen</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_CCC</source>
+                <target>CCC</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_OTROS_DATOS_INTERES</source>
+                <target>Altres dades d'interes</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_COLABORADOR</source>
+                <target>Col·laborador</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_MUTUA</source>
+                <target>Mútua</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_SPA</source>
+                <target>SPA</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_PRESCRIPTOR</source>
+                <target>Prescriptor</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_MODALIDAD_PREVENTIVA</source>
+                <target>Modalitat preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRAMS_CENTRO_MEDICO_ASIGNADO</source>
+                <target>Centre mèdic assignat</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_CONSENTIMIENTO_CESION_DATOS</source>
+                <target>Consentimient per a la cessió de dades</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_CESION_DATOS</source>
+                <target>Es requereix informació sobre el consentimient per a la cessió de dades</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_DIRECCION_POSTAL</source>
+                <target>Direcció postal</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_DOMICILIO</source>
+                <target>Domicili</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_LOCALIDAD</source>
+                <target>Localitat</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_CODIGO_POSTAL</source>
+                <target>Codi postal</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_PROVINCIA</source>
+                <target>Provincia</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_MUNICIPIO</source>
+                <target>Municipi</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_CODIGO_SERPA</source>
+                <target>Codi provincia/municipi (enllaç amb SERPA)</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_DIRECCION_FISCAL</source>
+                <target>Direcció fiscal</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_PAIS</source>
+                <target>País</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_ESTADOS</source>
+                <target>Estats de l'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_ESTADO_ADM_PREV</source>
+                <target>Estat administratiu en prevenció</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_ESTADO_ADM_VIG</source>
+                <target>Estat administratiu en vigilància de la salut</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_ESTADO_AREA_ADM</source>
+                <target>Estat en l'àrea de administració</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_ESTADO_AREA_TEC</source>
+                <target>Estat en l'area tècnica</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_ESTADO_AREA_VIG</source>
+                <target>Estat en l'àrea de vigilància de la salut</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_FECHAS_ALTA_BAJA</source>
+                <target>Dates d'alta i baixa de l'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_PREVENCION</source>
+                <target>Prevenció</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_FECHA_ALTA</source>
+                <target>Data d'alta</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_FECHA_BAJA</source>
+                <target>Data de baixa</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_MOTIVO_BAJA</source>
+                <target>Motiu de la baixa</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_VIG_SALUD</source>
+                <target>Vigilància de la salut</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_ACTIVIDAD_EMPRESA</source>
+                <target>Activitat de l'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_DESC_ACTIVIDAD</source>
+                <target>Descripció de l'activitat</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_SECTOR_EMP</source>
+                <target>Sector empresarial</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_GRUPO_ACTIVIDAD</source>
+                <target>Grup d'activitat</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_ACTIVIDAD_PREV</source>
+                <target>Activitat preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_ESP_PREV</source>
+                <target>Especialitat preventiva</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_ACTIVIDDAD_INCLUIDA_ANEXO</source>
+                <target>L'activitat de l'empresa està inclosa a l'ANNEX</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_ETT</source>
+                <target>L'empresa és una E.T.T</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_NIVEL_RIESGO</source>
+                <target>Nivell de risc</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_NIVEL_RIESGO_INT</source>
+                <target>Nivell de risc subjectiu intern</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_RIESGO_ALTO</source>
+                <target>Alt</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_RIESGO_MEDIO</source>
+                <target>Mitjà</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_RIESGO_BAJO</source>
+                <target>Baix</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_NIVEL_SEGUIMIENTO</source>
+                <target>Nivell de seguimient</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_NIVEL_SEGUIMIENTO_EMP</source>
+                <target>Nivell de seguimient de l'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_CNAE</source>
+                <target>C.N.A.E. (CODI NACIONAL D'ACTIVITAT EMPRESARIALS)</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_COTIZACION_SS</source>
+                <target>Taula de cotització SS per IT i IMS aplicable a aquesta empresa</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_EXCLUIR_RATIOS</source>
+                <target>Excloure aquesta empresa pel càlcul de ratis</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_EXCLUIR_MEMORIAL_ANUAL</source>
+                <target>Excloure aquesta empresa de la memòria anual</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_OBS_GEN</source>
+                <target>Observacions generals</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_OBS_AREA_MED</source>
+                <target>Observacions a l'àrea de medicina</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_OBS_AREA_TEC</source>
+                <target>Observacions a l'àrea tècnica</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_TELEFONO_EMAIL</source>
+                <target>Telèfons i emails</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_TELEFONO1</source>
+                <target>Telèfon1</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_TELEFONO2</source>
+                <target>Telèfon2</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>TRANS_FAX</source>
+                <target>Fax</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_RESPONSABLE_EMPRESA</source>
+                <target>Responsable de l'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_NOMBRE_RESPONSABLE_EMPRESA</source>
+                <target>Nom</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_DNI_RESPONSABLE_EMPRESA</source>
+                <target>DNI</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_CARGO_RESPONSABLE_EMPRESA</source>
+                <target>Càrrec</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_PERSONAS_CONTACTO</source>
+                <target>Persones de contacte</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_NOMBRE_CONTACTO</source>
+                <target>Nom</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_AÑADIR_TECNICO</source>
+                <target>Afegir tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="93">
+                <source>TRANS_EDITAR_TECNICO</source>
+                <target>Editar tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="94">
+                <source>TRANS_EMAIL</source>
+                <target>E-mail</target>
+            </trans-unit>
+
+            <trans-unit id="95">
+                <source>TRANS_FUNCION_EMAIL</source>
+                <target>Funció</target>
+            </trans-unit>
+
+            <trans-unit id="96">
+                <source>TRANS_EDITAR_CORREO</source>
+                <target>Editar e-amil</target>
+            </trans-unit>
+
+            <trans-unit id="97">
+                <source>TRANS_AÑADIR_CORREO</source>
+                <target>Afegir e-mail</target>
+            </trans-unit>
+
+            <trans-unit id="98">
+                <source>TRANS_CODIGO_CNAE</source>
+                <target>Codi</target>
+            </trans-unit>
+
+            <trans-unit id="99">
+                <source>TRANS_DESCRIPCION_CNAE</source>
+                <target>Descripcio</target>
+            </trans-unit>
+
+            <trans-unit id="100">
+                <source>TRANS_PRINCIPAL_CNAE</source>
+                <target>Principal</target>
+            </trans-unit>
+
+            <trans-unit id="101">
+                <source>TRANS_AÑADIR_CNAE</source>
+                <target>Afegir CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="102">
+                <source>TRANS_EDITAR_CNAE</source>
+                <target>Editar CNAE</target>
+            </trans-unit>
+
+            <trans-unit id="103">
+                <source>TRANS_AÑADIR_TRABAJADOR</source>
+                <target>Afegir treballador</target>
+            </trans-unit>
+
+            <trans-unit id="104">
+                <source>TRANS_TRABAJADOR</source>
+                <target>Treballador</target>
+            </trans-unit>
+
+            <trans-unit id="105">
+                <source>TRANS_AÑADIR_CENTRO</source>
+                <target>Afegir centre de treball</target>
+            </trans-unit>
+
+            <trans-unit id="106">
+                <source>TRANS_CENTRO_TRABAJO</source>
+                <target>Centre de treball</target>
+            </trans-unit>
+
+            <trans-unit id="107">
+                <source>TRANS_ACTIVA</source>
+                <target>Activa</target>
+            </trans-unit>
+
+            <trans-unit id="108">
+                <source>TRANS_NO_ACTIVA</source>
+                <target>No activa</target>
+            </trans-unit>
+
+            <trans-unit id="109">
+                <source>TRANS_ESTADO</source>
+                <target>Estat</target>
+            </trans-unit>
+
+            <trans-unit id="110">
+                <source>TRANS_ERROR_CIF</source>
+                <target>Introdueix un CIF vàlid.</target>
+            </trans-unit>
+
+            <trans-unit id="111">
+                <source>TRANS_ERROR_CIF_EXISTE</source>
+                <target>El CIF ja existeix.</target>
+            </trans-unit>
+
+            <trans-unit id="112">
+                <source>TRANS_TIPO</source>
+                <target>Tipus</target>
+            </trans-unit>
+
+            <trans-unit id="113">
+                <source>TRANS_COPIAR_DIRECCION</source>
+                <target>Copiar direcció postal</target>
+            </trans-unit>
+
+            <trans-unit id="114">
+                <source>TRANS_MEDICO</source>
+                <target>Metge</target>
+            </trans-unit>
+
+            <trans-unit id="115">
+                <source>TRANS_MENU_11</source>
+                <target>Notificacions</target>
+            </trans-unit>
+
+            <trans-unit id="116">
+                <source>TRANS_MENU_12</source>
+                <target>Certificacions</target>
+            </trans-unit>
+
+            <trans-unit id="117">
+                <source>TRANS_AÑADIR_CERTIFICACION</source>
+                <target>Nova certificació</target>
+            </trans-unit>
+
+            <trans-unit id="118">
+                <source>TRANS_AÑADIR_NOTIFICACION</source>
+                <target>Nueva notificació</target>
+            </trans-unit>
+
+            <trans-unit id="119">
+                <source>TRANS_IMPRIMIR_NOTIFICACION</source>
+                <target>Imprimir notificació</target>
+            </trans-unit>
+
+            <trans-unit id="120">
+                <source>TRANS_IMPRIMIR_CERTIFICACION</source>
+                <target>Imprimir certificació</target>
+            </trans-unit>
+
+            <trans-unit id="121">
+                <source>TRANS_MENU_13</source>
+                <target>Tarifes</target>
+            </trans-unit>
+
+            <trans-unit id="122">
+                <source>TRANS_PRL</source>
+                <target>PRL</target>
+            </trans-unit>
+
+            <trans-unit id="123">
+                <source>TRANS_REVISIONES_MEDICAS</source>
+                <target>Revisions mèdiques</target>
+            </trans-unit>
+
+            <trans-unit id="124">
+                <source>TRANS_AÑADIR_TARIFA</source>
+                <target>Afegir tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="125">
+                <source>TRANS_EDITAR_TARIFA</source>
+                <target>Editar tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="126">
+                <source>TRANS_MENU_14</source>
+                <target>Model 347</target>
+            </trans-unit>
+
+            <trans-unit id="127">
+                <source>TRANS_FECHA_MODELO_347</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="128">
+                <source>TRANS_AÑADIR_MODELO_347</source>
+                <target>Afegir Model 347</target>
+            </trans-unit>
+
+            <trans-unit id="129">
+                <source>TRANS_IMPRIMIR_MODELO_347</source>
+                <target>Imprimir Model 347</target>
+            </trans-unit>
+
+            <trans-unit id="130">
+                <source>TRANS_ACCIDENTES</source>
+                <target>Accidents laborals</target>
+            </trans-unit>
+
+            <trans-unit id="131">
+                <source>TRANS_AÑADIR_ACCIDENTE</source>
+                <target>Afegir accident</target>
+            </trans-unit>
+
+            <trans-unit id="132">
+                <source>TRANS_PLANTILLA</source>
+                <target>Plantilla</target>
+            </trans-unit>
+
+            <trans-unit id="133">
+                <source>TRANS_EVALUACIONES</source>
+                <target>Avaluacions</target>
+            </trans-unit>
+
+            <trans-unit id="134">
+                <source>TRANS_TECNICOS</source>
+                <target>Tècnics</target>
+            </trans-unit>
+
+            <trans-unit id="135">
+                <source>TRANS_MAQUINARIA</source>
+                <target>Maquinària</target>
+            </trans-unit>
+
+            <trans-unit id="136">
+                <source>TRANS_AÑADIR_MAQUINARIA</source>
+                <target>Afegir maquinària</target>
+            </trans-unit>
+
+            <trans-unit id="137">
+                <source>TRANS_GRUPO_MAQUINARIA</source>
+                <target>Grup</target>
+            </trans-unit>
+
+            <trans-unit id="138">
+                <source>TRANS_MAQUINARIA_GENERICA</source>
+                <target>Genèrica</target>
+            </trans-unit>
+
+            <trans-unit id="139">
+                <source>TRANS_MAQUINA</source>
+                <target>Màquina</target>
+            </trans-unit>
+
+            <trans-unit id="140">
+                <source>TRANS_FABRICANTE</source>
+                <target>Fabricant</target>
+            </trans-unit>
+
+            <trans-unit id="141">
+                <source>TRANS_MODELO</source>
+                <target>Model</target>
+            </trans-unit>
+
+            <trans-unit id="142">
+                <source>TRANS_NUMERO_SERIE</source>
+                <target>Numero de sèrie</target>
+            </trans-unit>
+
+            <trans-unit id="143">
+                <source>TRANS_AÑO_FABRICACION</source>
+                <target>Any de fabricació</target>
+            </trans-unit>
+
+            <trans-unit id="144">
+                <source>TRANS_AÑO_COMPRA</source>
+                <target>Any de compra</target>
+            </trans-unit>
+
+            <trans-unit id="145">
+                <source>TRANS_PLACA_CARACTERISTICA</source>
+                <target>Placa de caracteristiques</target>
+            </trans-unit>
+
+            <trans-unit id="146">
+                <source>TRANS_MARCADO_CE</source>
+                <target>CE</target>
+            </trans-unit>
+
+            <trans-unit id="147">
+                <source>TRANS_CONFORMIDAD</source>
+                <target>Conformitat</target>
+            </trans-unit>
+
+            <trans-unit id="148">
+                <source>TRANS_MANUAL_INSTRUCCIONES</source>
+                <target>Manual d'instruccions</target>
+            </trans-unit>
+
+            <trans-unit id="149">
+                <source>TRANS_MAQUINA_EMPRESA</source>
+                <target>Màquina empresa</target>
+            </trans-unit>
+
+            <trans-unit id="150">
+                <source>TRANS_DELETE_MAQUINARIA</source>
+                <target>Eliminar maquinària</target>
+            </trans-unit>
+
+            <trans-unit id="151">
+                <source>TRANS_MAQUINA_GENERICA</source>
+                <target>Màquina genèrica</target>
+            </trans-unit>
+
+            <trans-unit id="152">
+                <source>TRANS_ALTA_TECNICO</source>
+                <target>Alta</target>
+            </trans-unit>
+
+            <trans-unit id="153">
+                <source>TRANS_PRESUPUESTADA_TECNICO</source>
+                <target>Pressupostada</target>
+            </trans-unit>
+
+            <trans-unit id="154">
+                <source>TRANS_BAJA_TECNICO</source>
+                <target>Baixa</target>
+            </trans-unit>
+
+            <trans-unit id="155">
+                <source>TRANS_EN_PRESUPUESTO</source>
+                <target>En pressupost</target>
+            </trans-unit>
+
+            <trans-unit id="166">
+                <source>TRANS_LOGO</source>
+                <target>Logo</target>
+            </trans-unit>
+
+            <trans-unit id="167">
+                <source>TRANS_LOGO_ACTUAL</source>
+                <target>Logo actual:</target>
+            </trans-unit>
+
+            <trans-unit id="168">
+                <source>TRANS_PLA_PREVENCION</source>
+                <target>Pla de prevenció</target>
+            </trans-unit>
+
+            <trans-unit id="169">
+                <source>TRANS_NUEVO_PLAN_PREVENCION</source>
+                <target>Nou pla de prevenció</target>
+            </trans-unit>
+
+            <trans-unit id="170">
+                <source>TRANS_AÑADIR_PLAN_PREVENCION</source>
+                <target>Afegir pla de prevenció</target>
+            </trans-unit>
+
+            <trans-unit id="171">
+                <source>TRANS_MENU_15</source>
+                <target>Representants i contacte</target>
+            </trans-unit>
+
+            <trans-unit id="172">
+                <source>TRANS_GESTION_DOCUMENTAL</source>
+                <target>Gestió documental</target>
+            </trans-unit>
+
+            <trans-unit id="173">
+                <source>TRANS_ENVIAR_NOTIFICACION</source>
+                <target>Enviar notificació/ns</target>
+            </trans-unit>
+
+            <trans-unit id="174">
+                <source>TRANS_NO_APLICAR_IPC</source>
+                <target>No aplicar IPC</target>
+            </trans-unit>
+
+            <trans-unit id="175">
+                <source>TRANS_MENU_16</source>
+                <target>Memòria</target>
+            </trans-unit>
+
+            <trans-unit id="176">
+                <source>TRANS_GENERAR_MEMORIA</source>
+                <target>Generar memòria</target>
+            </trans-unit>
+
+            <trans-unit id="177">
+                <source>TRANS_AÑO</source>
+                <target>Any</target>
+            </trans-unit>
+
+            <trans-unit id="178">
+                <source>TRANS_MENU_17</source>
+                <target>Estudi epidemiològic</target>
+            </trans-unit>
+
+            <trans-unit id="179">
+                <source>TRANS_GENERAR_ESTUDIO</source>
+                <target>Generar estudi</target>
+            </trans-unit>
+
+            <trans-unit id="180">
+                <source>TRANS_ENVIAR_CERTIFICACION</source>
+                <target>Enviar certificació/ns</target>
+            </trans-unit>
+
+            <trans-unit id="181">
+                <source>TRANS_ASIGNAR_TRABAJADOR</source>
+                <target>Assignar treballador a l'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="182">
+                <source>TRANS_CREAR_TRABAJADOR</source>
+                <target>Crear nou treballador</target>
+            </trans-unit>
+
+            <trans-unit id="183">
+                <source>TRANS_MAQUINARIA_PUESTO_TRABAJO</source>
+                <target>Maquinaria llocs de treball</target>
+            </trans-unit>
+
+            <trans-unit id="184">
+                <source>TRANS_FECHA_RENOVACION</source>
+                <target>Fecha renovación</target>
+            </trans-unit>
+
+            <trans-unit id="185">
+                <source>TRANS_PROCESO_PRODUCTIVO</source>
+                <target>Procés productiu</target>
+            </trans-unit>
+
+            <trans-unit id="186">
+                <source>TRANS_PRUEBAS_ESPECIALES</source>
+                <target>Proves especials</target>
+            </trans-unit>
+
+            <trans-unit id="187">
+                <source>TRANS_ACTIVO</source>
+                <target>Actiu</target>
+            </trans-unit>
+
+            <trans-unit id="188">
+                <source>TRANS_FECHA_CONTRATO</source>
+                <target>Data contracte</target>
+            </trans-unit>
+
+            <trans-unit id="189">
+                <source>TRANS_DESLOCALIZADO</source>
+                <target>Centre Itinerant</target>
+            </trans-unit>
+
+            <trans-unit id="190">
+                <source>TRANS_MANUAL_VS</source>
+                <target>Manual VS</target>
+            </trans-unit>
+
+            <trans-unit id="191">
+                <source>TRANS_AÑADIR_MANUAL_VS</source>
+                <target>Afegir Manual VS</target>
+            </trans-unit>
+
+            <trans-unit id="192">
+                <source>TRANS_IMPRIMIR_MANUAL_VS</source>
+                <target>Imprimir Manual VS</target>
+            </trans-unit>
+
+            <trans-unit id="193">
+                <source>TRANS_FECHA_ENVIO</source>
+                <target>Data enviament</target>
+            </trans-unit>
+
+            <trans-unit id="194">
+                <source>TRANS_FORMA_PAGO_RML</source>
+                <target>Forma de pagament RML</target>
+            </trans-unit>
+
+            <trans-unit id="195">
+                <source>TRANS_DIRECCION</source>
+                <target>Direcció</target>
+            </trans-unit>
+
+            <trans-unit id="196">
+                <source>TRANS_ASIGNAR_PUESTO_TRABAJO_MULTIPLE</source>
+                <target>Assignar lloc de treball multiple</target>
+            </trans-unit>
+
+            <trans-unit id="197">
+                <source>TRANS_FACTURACION_ANTERIOR</source>
+                <target>Facturació any anterior</target>
+            </trans-unit>
+
+            <trans-unit id="198">
+                <source>TRANS_ENVIAR_MODELO347</source>
+                <target>Enviar model347</target>
+            </trans-unit>
+
+            <trans-unit id="199">
+                <source>TRANS_NUEVO_PROTOCOLO_ACOSO</source>
+                <target>Nou protocol bàsic assetjament</target>
+            </trans-unit>
+
+            <trans-unit id="200">
+                <source>TRANS_PROTOCOLO_ACOSO</source>
+                <target>Protocol bàsic assetjament</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

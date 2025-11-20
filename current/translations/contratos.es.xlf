@@ -1,0 +1,598 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_CONTRATO</source>
+                <target>Contrato</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_CONTRATOS</source>
+                <target>Contratos</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_NUEVO_CONTRATO</source>
+                <target>Nuevo contrato</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_MENU_1</source>
+                <target>Datos generales</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_2</source>
+                <target>Servicios contratados</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_3</source>
+                <target>Precios de los reconocimientos</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_4</source>
+                <target>Forma de Pago del Contrato</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_5</source>
+                <target>Comisiones aplicables</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_6</source>
+                <target>Formas de pago</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_7</source>
+                <target>Resumen memoria anual</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MENU_8</source>
+                <target>Elementos asociados</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MENU_9</source>
+                <target>Observaciones</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_ORIGEN</source>
+                <target>Origen</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_REFERENCIA</source>
+                <target>Referencia</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_FECHA</source>
+                <target>Fecha</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_VENCIMIENTO</source>
+                <target>Vencimiento</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_DURACION</source>
+                <target>Duración renovación</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_TIPO_CONTRATO</source>
+                <target>Tipo de contrato</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_FASE_SITUACION</source>
+                <target>Fase/situación</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_FIRMANTE</source>
+                <target>Firmante del contrato por parte del cliente</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_NOMBRE_APELLIDOS</source>
+                <target>Nombre y apellidos</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_DNI</source>
+                <target>D.N.I</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_CALIDAD_DE</source>
+                <target>En calidad de</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CENTROS_TRABAJOS_ENGLOBADOS</source>
+                <target>Centros de trabajo englobados en este contrato</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_SERVICIOS_CONTRATADOS</source>
+                <target>Servicios contratados</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_SERV_PREV</source>
+                <target>Servicios de prevención</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SERV_MED</source>
+                <target>Servicios de vigilancia de la salud</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_OTROS_SERV</source>
+                <target>Otros servicios</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_VISITAS_INCLUIDAS</source>
+                <target>Visitas incluidas en este contrato</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_VISITAS_CONCERTADAS</source>
+                <target>Visitas concertadas</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_IMPORTE_SEGUN_SERVICIOS</source>
+                <target>Importe según los servicios</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_IMPORTE_CONTRATO</source>
+                <target>Importe contrato</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_IMPORTE_EXENTO_IVA</source>
+                <target>Importe contrato exento de IVA</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_IMPORTE_CONTRATO_SUJETO_IVA</source>
+                <target>Importe contrato sujeto a IVA</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_IMPORTE_IVA</source>
+                <target>Importe IVA</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_PRECIOS_POR_TRABAJADOR_RECONOCIMIENTOS_MEDICOS</source>
+                <target>Precios por trabajador de los reconocimientos médicos</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_PRECIOS_POR_TRABAJADOR_ANALITICAS</source>
+                <target>Precios por trabajador de las analíticas</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_TIPO_RECONOCIMIENTO_SERVICIO</source>
+                <target>Tipo de reconocimiento o servicio</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_IMPORTE</source>
+                <target>Importe</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_IVA</source>
+                <target>%IVA</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_AÑADIR_TARIFA</source>
+                <target>Añadir tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_CONCEPTO</source>
+                <target>Concepto</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_TIPO_ANALITICA</source>
+                <target>Tipo de analítica</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_FRACCIONAMIENTO_PAGOS</source>
+                <target>Fraccionamiento de los pagos</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_FRACCIONAMIENTO_PAGOS_AUTO</source>
+                <target>Fraccionamiento automático</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_NUMERO_PAGOS</source>
+                <target>Número de pagos</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_FRACCIONAMIENTO_MANUAL</source>
+                <target>Fraccionamiento manual</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_PORCENTAJE_PAGO</source>
+                <target>Porcentaje del pago</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_VENCIMIENTO_PAGOS</source>
+                <target>Vencimientos (meses)</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_FRACCIONAMIENTO_SERVICIOS</source>
+                <target>Fraccionamientos por servicios</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_FRACCIONAR</source>
+                <target>Fraccionar</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_PAGOS_SERVICIOS</source>
+                <target>Pagos por servicios</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_PORCENTAJE</source>
+                <target>Porcentaje</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_IMPORTE_SIN_IVA</source>
+                <target>Importe sin IVA</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_EXENTO_IVA</source>
+                <target>Exento de IVA</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_SUJETO_IVA</source>
+                <target>Sujeto a IVA</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_IMPORTE_TOTAL</source>
+                <target>Importe total</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_TOTAL_SIN_IVA</source>
+                <target>Total sin IVA = </target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_PAGOS_IVA</source>
+                <target>IVA = </target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_TOTAL</source>
+                <target>Total = </target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_TEXTO_FORMA_PAGO</source>
+                <target>Texto a incluir en el contrato como forma de pago</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_TEXTO_FORMA_PAGO</source>
+                <target>Texto a incluir en el contrato como forma de pago</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_EDITAR_TARIFA</source>
+                <target>Editar tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_DETALLE_COMISIONES_SERVICIO</source>
+                <target>Detalle de comisiones por servicio</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_SERVICIO</source>
+                <target>Servicio</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_COMISION_COL</source>
+                <target>Comisión colaborador</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_COL_2_AÑO</source>
+                <target>Colaborador 2ªAño</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_COMISION_COMERCIAL</source>
+                <target>Comisión comercial</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_OBTENER_COMISIONES_CONTRATO</source>
+                <target>Obtener comisiones del contrato</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_IMPORTE_COMISIONES_CALC_AUTO</source>
+                <target>Importe comisiones calculadas automáticamente</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_CONTRATO_COMI_COL</source>
+                <target>El contrato es comisionable al colaborador</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_CONTRATO_COMI_TEC</source>
+                <target>El contrato es comisionable al técnico</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_CONTRATO_COMI_COM</source>
+                <target>El contrato es comisionable al comercial</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_COMISION_1_AÑO</source>
+                <target>Comisión 1er año</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_AÑOS_SUCESIVOS</source>
+                <target>Años sucesivos</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_COPIAR_COMISIONES</source>
+                <target>Copiar comisiones</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_IMPORTE_COMISIONES_APLICAR</source>
+                <target>Importe comisiones a aplicar</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_OBTENER_FORMA_PAGO_AUTO</source>
+                <target>Obtener forma de pago automáticamente</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_IMPORTE_COMISION</source>
+                <target>Importe comisión</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_NUMERO_TRABAJADORES_CONCERTADOS</source>
+                <target>Número de trabajadores concertados</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_PREVENCION_TECNICA</source>
+                <target>En prevención técnica</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>TRANS_VIGILANCIA_SALUD</source>
+                <target>En vigilancia de la salud</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_CONCEPTO</source>
+                <target>Concepto</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_PRECIO_SERVICIO</source>
+                <target>Importe</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_TIPO_REGISTRO</source>
+                <target>Tipo</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_AÑADIR_SERVICIO</source>
+                <target>Añadir servicio</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_EDITAR_SERVICIO</source>
+                <target>Editar servicio</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_SERVICIO_OTRO</source>
+                <target>Otro</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_IMPRIMIR_CONTRATO</source>
+                <target>Imprimir contrato</target>
+            </trans-unit>
+
+            <trans-unit id="93">
+                <source>TRANS_AÑADIR_PAGO</source>
+                <target>Añadir pago</target>
+            </trans-unit>
+
+            <trans-unit id="94">
+                <source>TRANS_EDITAR_PAGO</source>
+                <target>Editar pago</target>
+            </trans-unit>
+
+            <trans-unit id="95">
+                <source>TRANS_RENOVADO</source>
+                <target>Renovado</target>
+            </trans-unit>
+
+            <trans-unit id="96">
+                <source>TRANS_RENOVAR_MULTIPLE</source>
+                <target>Renovación múltiple</target>
+            </trans-unit>
+
+            <trans-unit id="97">
+                <source>TRANS_ERROR_CONTRATOS_MULTIPLE</source>
+                <target>Debes seleccionar como mínimo un contrato a renovar.</target>
+            </trans-unit>
+
+            <trans-unit id="98">
+                <source>TRANS_AVISO_CONTRATOS_A_RENOVAR</source>
+                <target>Se van a renovar los contratos seleccionados. Si está seguro pulse el botón Renovar.</target>
+            </trans-unit>
+
+            <trans-unit id="99">
+                <source>TRANS_RENOVAR</source>
+                <target>Renovar</target>
+            </trans-unit>
+
+            <trans-unit id="100">
+                <source>TRANS_FACTURAR_MULTIPLE</source>
+                <target>Facturar múltiple</target>
+            </trans-unit>
+
+            <trans-unit id="101">
+                <source>TRANS_CONTRATOS_RENOVADOS</source>
+                <target>Contratos renovados</target>
+            </trans-unit>
+
+            <trans-unit id="102">
+                <source>TRANS_AVISO_FACTURAS_A_FACTURAR</source>
+                <target>Se van a facturar los contratos seleccionados. Si está seguro pulse el botón Facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="103">
+                <source>TRANS_FACTURAR</source>
+                <target>Facturar</target>
+            </trans-unit>
+
+            <trans-unit id="104">
+                <source>TRANS_ERROR_CONTRATOS_FACTURAR_MULTIPLE</source>
+                <target>Debes seleccionar como mínimo un contrato a facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="105">
+                <source>TRANS_FACTURADO</source>
+                <target>Facturado</target>
+            </trans-unit>
+
+            <trans-unit id="106">
+                <source>TRANS_SIN_SERVICIOS</source>
+                <target>El contrato no tiene servicios contratados</target>
+            </trans-unit>
+
+            <trans-unit id="107">
+                <source>TRANS_DIA_PAGO</source>
+                <target>Día de pago</target>
+            </trans-unit>
+
+            <trans-unit id="108">
+                <source>TRANS_MES</source>
+                <target>Mes</target>
+            </trans-unit>
+
+            <trans-unit id="109">
+                <source>TRANS_AÑO</source>
+                <target>Año</target>
+            </trans-unit>
+
+            <trans-unit id="110">
+                <source>TRANS_ENVIAR_CONTRATO</source>
+                <target>Enviar contrato/s</target>
+            </trans-unit>
+
+            <trans-unit id="111">
+                <source>TRANS_ENVIADO</source>
+                <target>Enviado</target>
+            </trans-unit>
+
+            <trans-unit id="112">
+                <source>TRANS_CANCELADO</source>
+                <target>Cancelado</target>
+            </trans-unit>
+
+            <trans-unit id="113">
+                <source>TRANS_COPIAR_DATOS_EMPRESA</source>
+                <target>Copiar datos empresa</target>
+            </trans-unit>
+
+            <trans-unit id="114">
+                <source>TRANS_PRECIO_SERVICIO_RENOVACION</source>
+                <target>Importe renovación</target>
+            </trans-unit>
+
+            <trans-unit id="115">
+                <source>TRANS_CONTRATO_NO_SERVICIO_1</source>
+                <target>La empresa</target>
+            </trans-unit>
+
+            <trans-unit id="116">
+                <source>TRANS_CONTRATO_NO_SERVICIO_2</source>
+                <target>no tiene ningún servicio asignado al contrato</target>
+            </trans-unit>
+
+            <trans-unit id="117">
+                <source>TRANS_ACTIVOS</source>
+                <target>Activos</target>
+            </trans-unit>
+
+            <trans-unit id="118">
+                <source>TRANS_CANCELADOS</source>
+                <target>Cancelados</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

@@ -1,0 +1,179 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'empresas' %}
+
+{% block title %} {% trans %}TRANS_EMPRESAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addEmpresaTecnicoSn is defined and app.session.get('privilegiosRol').addEmpresaTecnicoSn is not null %}
+        {% if app.session.get('privilegiosRol').addEmpresaTecnicoSn %}
+            <a href="{{ path('tecnico_empresa_create') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVA_EMPRESA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for empresa in empresas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                actions += '<a href="{{ path("empresa_select", { "id": empresa.id, "tipo": 2 }) }}" class="list-icons-item" data-popup="tooltip" title="Seleccionar" data-container="body"><i class="icon-select2"></i></a>';
+
+                {% if app.session.get('privilegiosRol').viewEmpresaTecnicoSn is defined and app.session.get('privilegiosRol').viewEmpresaTecnicoSn is not null %}
+                    {% if app.session.get('privilegiosRol').viewEmpresaTecnicoSn %}
+                        actions += '<a href="{{ path('tecnico_empresa_view', { "id": empresa.id }) }}" class="list-icons-item" data-popup="tooltip" title="Ver" data-container="body"><i class="icon-eye"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').editEmpresaTecnicoSn is defined and app.session.get('privilegiosRol').editEmpresaTecnicoSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEmpresaTecnicoSn %}
+                        actions += '<a href="{{ path('tecnico_empresa_update', { "id": empresa.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+{#                {% if app.session.get('privilegiosRol').deleteEmpresaTecnicoSn is defined and app.session.get('privilegiosRol').deleteEmpresaTecnicoSn is not null %}#}
+{#                    {% if app.session.get('privilegiosRol').deleteEmpresaTecnicoSn %}#}
+{#                        actions += '<a href="{{ path('empresa_delete', { "id": empresa.id, "tipo": 2 }) }}" class="list-icons-item" data-popup="tooltip" title="Dar de baja" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}\')"><i class="icon-trash"></i></a>';#}
+{#                    {% endif %}#}
+{#                {% endif %}#}
+                //Peticio 01/09/0223
+                var activa = '<span class="badge badge-flat border-danger text-danger-600">No<i class="icon-cross3"></i></span>';
+                {% if empresa.anulado == false %}
+                    activa = '<span class="badge badge-flat border-success text-success-600">Si<i class="icon-checkmark2"></i></span>';
+                {% endif %}
+
+                actions += '</div>';
+
+                var estado;
+
+                {% if empresa.estado is not empty %}
+                    {% if empresa.estadoid != 4 %}
+                        estado = '<span class="badge badge-danger">{{ empresa.estado }}</span>';
+                    {% else %}
+                        estado = '<span class="badge badge-success">{{ empresa.estado }}</span>';
+                    {% endif %}
+                {% else %}
+                    estado = '<span class="badge badge-success"><br/></span>';
+                {% endif %}
+
+                array.push(actions, activa, estado, '{{ empresa.empresa }}', '{{ empresa.marca_comercial }}', '{{ empresa.grupo }}', '{{ empresa.cif }}', '{{ empresa.fecha_renovacion }}', '{{ empresa.codigo }}', '{{ empresa.tecnico }}', '{{ empresa.localidad_postal }}', '{{ empresa.telefono1 }}', '{{ empresa.cnae }}', '{{ empresa.nombre_representante }}', '{{ empresa.email  }}');
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEmpresaTecnicoSn is defined and app.session.get('privilegiosRol').exportEmpresaTecnicoSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEmpresaTecnicoSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Activa">{% trans %}TRANS_ACTIVA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Estado">{% trans %}TRANS_ESTADO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_NOMBRE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="MarcaComercial">{% trans %}TRANS_MARCA_COMERCIAL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Grupo">{% trans %}TRANS_GRUPO_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="CIF">CIF
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="FechaRenovacion">{% trans %}TRANS_FECHA_RENOVACION{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Codigo">{% trans %}TRANS_CODIGO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tecnico">{% trans %}TRANS_TECNICO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Localidad">{% trans %}TRANS_LOCALIDAD{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Telefono">{% trans %}TRANS_TELEFONO1{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="CNAE">CNAE
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Responsable">{% trans %}TRANS_RESPONSABLE_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Correo">{% trans %}TRANS_EMAIL{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

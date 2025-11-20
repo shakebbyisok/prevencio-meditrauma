@@ -1,0 +1,1786 @@
+dashboard:
+    path: /
+    controller: App\Controller\HomeController::index
+
+dashboard_admin:
+  path: /dashboard/admin
+  controller: App\Controller\HomeController::dashboardAdmin
+#PETICIO 28/07/2023
+dashboard_admin2:
+  path: /dashboard/admin2
+  controller: App\Controller\HomeController::dashboardAdminNotify
+
+contador_dashboard_admin:
+  path: /dashboard/contador
+  controller: App\Controller\HomeController::calcularRevisionesPendientesFacturar
+#PETICIO 28/07/2023
+contador_dashboard_admin2:
+  path: /dashboard/contador2
+  controller: App\Controller\HomeController::calcularMensajesInternos
+
+marcar_mensaje_leido:
+  path: /dashboard/marcar_mensaje_leido
+  controller: App\Controller\HomeController::marcarLeido
+
+#EMPRESAS
+empresa_show:
+    path: /empresas
+    controller: App\Controller\EmpresaController::showEmpresas
+
+empresa_select:
+  path: /empresa/select/{id}/{tipo}
+  controller: App\Controller\EmpresaController::selectEmpresa
+
+empresa_deselect:
+  path: /empresa/deselect/{tipo}
+  controller: App\Controller\EmpresaController::deselectEmpresa
+
+empresa_create:
+    path: /empresa/new
+    controller: App\Controller\EmpresaController::createEmpresa
+
+empresa_view:
+    path: /empresa/view/{id}
+    controller: App\Controller\EmpresaController::viewEmpresa
+
+empresa_delete:
+    path: /bajaEmpresa
+    controller: App\Controller\EmpresaController::deleteEmpresa
+
+empresa_activar:
+  path: /activarEmpresa
+  controller: App\Controller\EmpresaController::activarEmpresa
+
+empresa_update:
+    path: /empresa/update/{id}
+    controller: App\Controller\EmpresaController::updateEmpresa
+
+empresa_add_tecnico:
+  path: /addTecnico
+  controller: App\Controller\EmpresaController::addTecnico
+
+empresa_delete_tecnico:
+  path: /deleteTecnico
+  controller: App\Controller\EmpresaController::deleteTecnico
+
+empresa_recupera_tecnicos:
+  path: /recuperaTecnicos
+  controller: App\Controller\EmpresaController::recuperaTecnicos
+
+empresa_recupera_tecnico:
+  path: /recuperaTecnico
+  controller: App\Controller\EmpresaController::recuperaTecnico
+
+empresa_update_tecnico:
+  path: /updateTecnico
+  controller: App\Controller\EmpresaController::updateTecnico
+
+empresa_add_email:
+  path: /addEmail
+  controller: App\Controller\EmpresaController::addEmail
+
+empresa_recupera_emails:
+  path: /recuperaEmails
+  controller: App\Controller\EmpresaController::recuperaEmails
+
+empresa_update_email:
+  path: /updateEmail
+  controller: App\Controller\EmpresaController::updateEmail
+
+empresa_recupera_email:
+  path: /recuperaEmail
+  controller: App\Controller\EmpresaController::recuperaEmail
+
+empresa_delete_email:
+  path: /deleteEmail
+  controller: App\Controller\EmpresaController::deleteEmail
+
+empresa_add_cnae:
+  path: /addCnae
+  controller: App\Controller\EmpresaController::addCnae
+
+empresa_delete_cnae:
+  path: /deleteCnae
+  controller: App\Controller\EmpresaController::deleteCnae
+
+empresa_update_cnae:
+  path: /updateCnae
+  controller: App\Controller\EmpresaController::updateCnae
+
+empresa_recupera_cnae:
+  path: /recuperaCnae
+  controller: App\Controller\EmpresaController::recuperaCnae
+
+empresa_recupera_cnaes:
+  path: /recuperaCnaes
+  controller: App\Controller\EmpresaController::recuperaCnaes
+
+empresa_delete_trabajador_empresa:
+  path: /deleteTrabajadorEmpresa
+  controller: App\Controller\EmpresaController::deleteTrabajadorEmpresa
+
+empresa_delete_centro_trabajo_empresa:
+  path: /deleteCentroTrabajoEmpresa
+  controller: App\Controller\EmpresaController::deleteCentroEmpresa
+
+empresa_recupera_centro_trabajo_empresa:
+  path: /recuperaCentroTrabajoEmpresa
+  controller: App\Controller\EmpresaController::recuperaCentroTrabajoEmpresa
+
+empresa_add_centro_trabajo_empresa:
+  path: /addCentroTrabajoEmpresa
+  controller: App\Controller\EmpresaController::addCentroTrabajoEmpresa
+
+empresa_add_trabajador_empresa:
+  path: /addTrabajadorEmpresa
+  controller: App\Controller\EmpresaController::addTrabajadorEmpresa
+
+empresa_comprueba_cif:
+  path: /compruebaCif
+  controller: App\Controller\EmpresaController::compruebaCif
+
+empresa_add_tarifa:
+  path: /addTarifa
+  controller: App\Controller\EmpresaController::addTarifa
+
+empresa_edit_tarifa:
+  path: /editTarifa
+  controller: App\Controller\EmpresaController::editTarifa
+
+empresa_recupera_tarifa:
+  path: /recuperaTarifa
+  controller: App\Controller\EmpresaController::recuperaTarifa
+
+empresa_delete_tarifa:
+  path: /deleteTarifa
+  controller: App\Controller\EmpresaController::deleteTarifa
+
+empresa_busca_localidad_provincia:
+  path: /buscaLocalidadProvincia
+  controller: App\Controller\EmpresaController::buscaLocalidadProvincia
+
+empresa_busca_datos_autonomo:
+  path: /buscaDatosAutonomo
+  controller: App\Controller\EmpresaController::buscarDatosAutonomo
+
+#TRABAJADORES
+trabajador_show:
+    path: /trabajadores
+    controller: App\Controller\TrabajadorController::showTrabajadores
+
+trabajador_create:
+    path: /trabajador/new
+    controller: App\Controller\TrabajadorController::createTrabajador
+
+trabajador_view:
+    path: /trabajador/{id}
+    controller: App\Controller\TrabajadorController::viewTrabajador
+
+trabajador_delete:
+    path: /trabajador/delete/{id}/{tipo}
+    controller: App\Controller\TrabajadorController::deleteTrabajador
+
+trabajador_update:
+    path: /trabajador/update/{id}
+    controller: App\Controller\TrabajadorController::updateTrabajador
+
+trabajador_add_centro_trabajo:
+  path: /addCentroTrabajoTrabajador
+  controller: App\Controller\TrabajadorController::addCentroTrabajoTrabajador
+
+trabajador_delete_centro_trabajo:
+  path: /deleteCentroTrabajoTrabajador
+  controller: App\Controller\TrabajadorController::deleteCentroTrabajoTrabajador
+
+trabajador_recupera_alta_baja:
+  path: /recuperaAltaBaja
+  controller: App\Controller\TrabajadorController::recuperaAltaBaja
+
+trabajador_update_alta_baja:
+  path: /updateAltaBaja
+  controller: App\Controller\TrabajadorController::updateAltaBaja
+
+trabajador_delete_alta_baja:
+  path: /deleteAltaBaja
+  controller: App\Controller\TrabajadorController::deleteAltaBaja
+
+#CENTROS
+centro_show:
+    path: /centros
+    controller: App\Controller\CentroController::showCentros
+
+centro_create:
+    path: /centro/new
+    controller: App\Controller\CentroController::createCentro
+
+centro_view:
+    path: /centro/{id}
+    controller: App\Controller\CentroController::viewCentro
+
+centro_delete:
+    path: /centro/delete/{id}
+    controller: App\Controller\CentroController::deleteCentro
+
+centro_update:
+    path: /centro/update/{id}
+    controller: App\Controller\CentroController::updateCentro
+
+#CONTRATOS
+contrato_show:
+    path: /contratos
+    controller: App\Controller\ContratoController::showContratos
+
+contrato_create:
+    path: /contrato/new
+    controller: App\Controller\ContratoController::createContrato
+
+contrato_view:
+    path: /contrato/{id}
+    controller: App\Controller\ContratoController::viewContrato
+
+contrato_delete:
+    path: /contrato/delete/{id}
+    controller: App\Controller\ContratoController::deleteContrato
+
+contrato_update:
+    path: /contrato/update/{id}
+    controller: App\Controller\ContratoController::updateContrato
+
+contrato_add_tarifa:
+    path: /addTarifaContracto
+    controller: App\Controller\ContratoController::addTarifa
+
+contrato_update_tarifa:
+  path: /updateTarifaContrato
+  controller: App\Controller\ContratoController::updateTarifa
+
+contrato_delete_tarifa:
+  path: /deleteTarifaContrato
+  controller: App\Controller\ContratoController::deleteTarifa
+
+contrato_recupera_tarifas:
+  path: /recuperaTarifasContrato
+  controller: App\Controller\ContratoController::recuperaTarifas
+
+contrato_recupera_tarifa:
+  path: /recuperaTarifaContrato
+  controller: App\Controller\ContratoController::recuperaTarifa
+
+contrato_add_servicio:
+  path: /addServicio
+  controller: App\Controller\ContratoController::addServicio
+
+contrato_recupera_servicios:
+  path: /recuperaServicios
+  controller: App\Controller\ContratoController::recuperaServicios
+
+contrato_delete_servicio:
+  path: /deleteServicio
+  controller: App\Controller\ContratoController::deleteServicio
+
+contrato_recupera_servicio:
+  path: /recuperaServicio
+  controller: App\Controller\ContratoController::recuperaServicio
+
+contrato_update_servicio:
+  path: /updateServicio
+  controller: App\Controller\ContratoController::updateServicio
+
+contrato_update_pago:
+  path: /updatePagoContrato
+  controller: App\Controller\ContratoController::updatePago
+
+contrato_recupera_pago:
+  path: /recuperaPagoContrato
+  controller: App\Controller\ContratoController::recuperaPago
+
+contrato_recupera_pagos:
+  path: /recuperaPagosContrato
+  controller: App\Controller\ContratoController::recuperaPagos
+
+contrato_delete_pago:
+  path: /deleteContratoPago
+  controller: App\Controller\ContratoController::deletePago
+
+contrato_fracciona_pagos_automatico:
+  path: /fraccionaPagosAutomatico
+  controller: App\Controller\ContratoController::fraccionaPagosAutomatico
+
+contrato_fracciona_pagos_manual:
+  path: /fraccionaPagosManual
+  controller: App\Controller\ContratoController::fraccionaPagosManual
+
+contrato_show_renovados_dashboard:
+  path: /dashboard/contratos/renovados
+  controller: App\Controller\ContratoController::showContratosRenovados
+
+contrato_show_no_renovados_dashboard:
+  path: /dashboard/contratos/noRenovados
+  controller: App\Controller\ContratoController::showContratosNoRenovados
+
+contrato_filtrar:
+  path: /filtrarContratos
+  controller: App\Controller\ContratoController::filtroContratos
+
+contrato_show_renovados_multiple:
+  path: /contrato/renovados/show
+  controller: App\Controller\ContratoController::showContratosRenovadosMultiple
+
+contrato_send_contrato:
+  path: /sendContrato
+  controller: App\Controller\ContratoController::sendContrato
+
+contrato_empresa_facturar:
+  path: /contrato/empresa/facturar/{id}
+  controller: App\Controller\FacturacionController::facturarEmpresaContratoAutomatico
+
+#CAMBIO IDIOMA
+cambio_idioma:
+    path: /cambioIdioma
+    controller: App\Controller\QueryController::cambioIdioma
+
+#RENOVACION
+renovacion_show:
+    path: /renovaciones
+    controller: App\Controller\RenovacionController::showRenovaciones
+
+renovacion_create:
+    path: /renovacion/new
+    controller: App\Controller\RenovacionController::createRenovacion
+
+renovacion_view:
+    path: /renovacion/{id}
+    controller: App\Controller\RenovacionController::viewRenovacion
+
+renovacion_delete:
+    path: /renovacion/delete/{id}
+    controller: App\Controller\RenovacionController::deleteRenovacion
+
+renovacion_update:
+    path: /renovacion/update/{id}
+    controller: App\Controller\RenovacionController::updateRenovacion
+
+renovacion_renovar:
+  path: /renovacion/renovar/{id}
+  controller: App\Controller\RenovacionController::renovarRenovacion
+
+renovacion_filtrar_renovaciones:
+  path: /filtrarRenovaciones
+  controller: App\Controller\RenovacionController::filtraRenovaciones
+
+renovacion_contrato_multiple:
+  path: /renovacion/contratos/multiple
+  controller: App\Controller\RenovacionController::renovarContratoMultiple
+
+#FACTURACION
+factura_show:
+  path: /facturas
+  controller: App\Controller\FacturacionController::showFacturas
+
+factura_show_pagadas_dashboard:
+  path: /dashboard/facturas/pagadas
+  controller: App\Controller\FacturacionController::showFacturasPagadas
+
+factura_show_no_pagadas_dashboard:
+  path: /dashboard/facturas/noPagadas
+  controller: App\Controller\FacturacionController::showFacturasNoPagadas
+
+factura_show_canceladas_dashboard:
+  path: /dashboard/facturas/canceladas
+  controller: App\Controller\FacturacionController::showFacturasCancelada
+
+factura_create:
+  path: /factura/new
+  controller: App\Controller\FacturacionController::createFactura
+
+factura_view:
+  path: /factura/{id}
+  controller: App\Controller\FacturacionController::viewFactura
+
+factura_delete:
+  path: /factura/delete/{id}
+  controller: App\Controller\FacturacionController::deleteFactura
+
+factura_update:
+  path: /factura/update/{id}
+  controller: App\Controller\FacturacionController::updateFactura
+
+factura_busca_datos_empresa:
+  path: /buscaDatosEmpresa
+  controller: App\Controller\FacturacionController::buscaDatosEmpresa
+
+factura_recuperar_pagos:
+  path: /recuperarPagos
+  controller: App\Controller\FacturacionController::recuperaPagos
+
+factura_add_pago:
+  path: /addPago
+  controller: App\Controller\FacturacionController::addPago
+
+factura_update_pago:
+  path: /updatePago
+  controller: App\Controller\FacturacionController::updatePago
+
+factura_recupera_pago:
+  path: /recuperaPago
+  controller: App\Controller\FacturacionController::recuperaPago
+
+factura_delete_pago:
+  path: /deletePago
+  controller: App\Controller\FacturacionController::deletePago
+
+factura_recuperar_conceptos:
+  path: /recuperarConceptos
+  controller: App\Controller\FacturacionController::recuperaConceptos
+
+factura_add_concepto:
+  path: /addConcepto
+  controller: App\Controller\FacturacionController::addConcepto
+
+factura_update_concepto:
+  path: /updateConcepto
+  controller: App\Controller\FacturacionController::updateConcepto
+
+factura_recupera_concepto:
+  path: /recuperaConcepto
+  controller: App\Controller\FacturacionController::recuperaConcepto
+
+factura_delete_concepto:
+  path: /deleteConcepto
+  controller: App\Controller\FacturacionController::deleteConcepto
+
+factura_filtrar_facturas:
+  path: /filtrarFacturas
+  controller: App\Controller\FacturacionController::filtroFacturas
+
+factura_recupera_numeracion:
+  path: /recuperaNumeracion
+  controller: App\Controller\FacturacionController::recuperaNumeracion
+
+factura_generar_abono:
+  path: /generarAbono
+  controller: App\Controller\FacturacionController::generarAbono
+
+factura_send_factura:
+  path: /sendFactura
+  controller: App\Controller\FacturacionController::sendFactura
+
+factura_genera_vencimiento_manual:
+  path: /generaVencimientoManual
+  controller: App\Controller\FacturacionController::generaVencimientoManual
+
+factura_genera_vencimiento_automatico:
+  path: /generaVencimientoAutomatico/{id}
+  controller: App\Controller\FacturacionController::generaVencimientoAutomatico
+
+factura_delete_vencimiento:
+  path: /deleteVencimiento
+  controller: App\Controller\FacturacionController::deleteVencimiento
+
+factura_confirmar_vencimiento:
+  path: /confirmarVencimiento/{id}
+  controller: App\Controller\FacturacionController::confirmarCobroVencimiento
+
+factura_contrato_multiple:
+  path: /factura/contratos/multiple
+  controller: App\Controller\FacturacionController::renovarFacturaMultiple
+
+factura_show_contratos_facturados_multiple:
+  path: /factura/show/contratos/facturados
+  controller: App\Controller\FacturacionController::showContratosFacturadosMultiple
+
+factura_generar_vencimiento_multiple:
+  path: /generarVencimientoMultiple
+  controller: App\Controller\FacturacionController::generarVencimientoFacturaMultiple
+
+factura_show_vencimientos:
+  path: /factura/show/vencimientos
+  controller: App\Controller\FacturacionController::showVencimientosGeneradosMultiple
+
+factura_enviar_aviso_factura:
+  path: /enviarAvisoNuevaFacturaMultiple
+  controller: App\Controller\GdocController::enviarAvisoMultipleFactura
+
+factura_enviar_aviso_factura_revision:
+  path: /enviarAvisoNuevaFacturaRevisionMultiple
+  controller: App\Controller\GdocController::enviarAvisoMultipleFacturaRevision
+
+factura_enviar_aviso_factura_manual:
+  path: /enviarAvisoNuevaFacturaMultipleManual
+  controller: App\Controller\GdocController::enviarAvisoMultipleFacturaManual
+
+factura_pre_enviar_aviso_factura_manual:
+  path: /preEnviarAvisoNuevaFacturaMultipleManual
+  controller: App\Controller\FacturacionController::preSendFactura
+
+factura_busca_contratos_empresa:
+  path: /buscaContratosEmpresa
+  controller: App\Controller\FacturacionController::recuperaContratos
+
+factura_busca_precio_concepto:
+  path: /buscaPrecioConcepto
+  controller: App\Controller\FacturacionController::recuperaPrecioConcepto
+
+factura_generar_recibo_devolucion:
+  path: /generarReciboDevolucion/{id}
+  controller: App\Controller\FacturacionController::generarReciboDevolucion
+
+factura_huecos_show:
+  path: /huecosFactura/show
+  controller: App\Controller\FacturacionController::showHuecosFacturas
+
+factura_huecos_filtrar:
+  path: /huecosFactura/filtrar
+  controller: App\Controller\FacturacionController::filtraHuecosFactura
+
+factura_vencidas_show:
+  path: /dashboard/facturas/vencidas
+  controller: App\Controller\FacturacionController::showFacturasVencidas
+
+factura_giros_devueltos_show:
+  path: /dashboard/giros/devueltos
+  controller: App\Controller\FacturacionController::showGirosDevueltos
+
+factura_datatable:
+  path: /dataFacturas
+  controller: App\Controller\FacturacionController::dataFacturas
+
+factura_filtra_datatable:
+  path: /filtraFacturas
+  controller: App\Controller\FacturacionController::filtraFacturas
+
+#PAGOS PENDIENTES
+pago_pendiente_show:
+  path: /pagosPendientes
+  controller: App\Controller\PagoPendienteController::showPagosPendientes
+
+pago_por_facturar_show:
+  path: /pagosPorFacturar
+  controller: App\Controller\PagoPendienteController::showPagosPorFacturar
+
+pago_pendiente_show_pendientes_dashboard:
+  path: /dashboard/pagosPendientes/pendientes
+  controller: App\Controller\PagoPendienteController::showPagosPendientesPendientesDashboard
+
+pago_pendiente_show_pagados_dashboard:
+  path: /dashboard/pagosPendientes/pagados
+  controller: App\Controller\PagoPendienteController::showPagosPendientesPagadosDashboard
+
+pago_pendiente_create:
+  path: /pagoPendiente/new
+  controller: App\Controller\PagoPendienteController::createPagoPendiente
+
+pago_pendiente_view:
+  path: /pagoPendiente/{id}
+  controller: App\Controller\PagoPendienteController::viewPagoPendiente
+
+pago_pendiente_delete:
+  path: /pagoPendiente/delete/{id}
+  controller: App\Controller\PagoPendienteController::deletePagoPendiente
+
+pago_pendiente_update:
+  path: /pagoPendiente/update/{id}
+  controller: App\Controller\PagoPendienteController::updatePagoPendiente
+
+pago_pendiente_facturar_multiple:
+  path: /pagoPendiente/facturar/multiple
+  controller: App\Controller\FacturacionController::facturarPagosMultiple
+
+pago_pendiente_show_facturados:
+  path: /pagoPendiente/show/facturados
+  controller: App\Controller\PagoPendienteController::showPagosFacturadosMultiple
+
+pago_pendiente_show_vencimientos:
+  path: /pagoPendiente/show/vencimientos
+  controller: App\Controller\PagoPendienteController::showVencimientosGeneradosMultiple
+
+pago_pendiente_filtro_pendientes:
+  path: /filtroPagosPendientes
+  controller: App\Controller\PagoPendienteController::filtroPagosPendientesPendientes
+
+#DATOS BANCARIOS
+datos_bancarios_show:
+  path: /datosBancarios
+  controller: App\Controller\DatosBancariosController::showDatosBancarios
+
+datos_bancarios_create:
+  path: /datosBancarios/new
+  controller: App\Controller\DatosBancariosController::createDatoBancario
+
+datos_bancarios_view:
+  path: /datosBancarios/{id}
+  controller: App\Controller\DatosBancariosController::viewDatoBancario
+
+datos_bancarios_delete:
+  path: /datosBancarios/delete/{id}
+  controller: App\Controller\DatosBancariosController::deleteDatoBancario
+
+datos_bancarios_update:
+  path: /datosBancarios/update/{id}
+  controller: App\Controller\DatosBancariosController::updateDatoBancario
+
+datos_bancarios_add_mandato:
+  path: /addMandato
+  controller: App\Controller\DatosBancariosController::generarMandato
+
+datos_bancarios_recupera_mandatos:
+  path: /recuperaMandatos
+  controller: App\Controller\DatosBancariosController::recuperaMandatos
+
+datos_bancarios_recupera_mandato:
+  path: /recuperaMandato
+  controller: App\Controller\DatosBancariosController::recuperaMandato
+
+datos_bancarios_update_mandato:
+  path: /updateMandato
+  controller: App\Controller\DatosBancariosController::updateMandato
+
+datos_bancarios_delete_mandato:
+  path: /deleteMandato
+  controller: App\Controller\DatosBancariosController::deleteMandato
+
+datos_bancarios_recupera_bic_nrb:
+  path: /recuperaBICNrb
+  controller: App\Controller\DatosBancariosController::recuperaBicNrb
+
+datos_bancarios_recupera_codigo_pais:
+  path: /recuperaCodigoPais
+  controller: App\Controller\DatosBancariosController::recuperaCodigoPais
+
+datos_bancarios_valida_iban:
+  path: /validaIban
+  controller: App\Controller\DatosBancariosController::validarIban
+
+datos_bancarios_comprueba_iban:
+  path: /compruebaIBAN
+  controller: App\Controller\DatosBancariosController::compruebaIBAN
+
+#BALANCE ECONOMICO
+balance_economico_show:
+  path: /balanceEconomico
+  controller: App\Controller\BalanceEconomicoController::showBalanceEconomico
+
+balance_economico_view:
+  path: /balanceEconomico/view
+  controller: App\Controller\BalanceEconomicoController::viewBalanceEconomico
+
+balance_economico_edit_giro:
+  path: /balanceEconomico/editGiro/{id}
+  controller: App\Controller\BalanceEconomicoController::updateGiroBalanceEconomico
+
+balance_economico_add_giro:
+  path: /balanceEconomico/addGiro/{facturaId}
+  controller: App\Controller\BalanceEconomicoController::addGiroBalanceEconomico
+
+balance_economico_delete_giro_transferencia:
+  path: /balanceEconomico/deleteGiroTransferencia
+  controller: App\Controller\BalanceEconomicoController::deleteGiroTransferenciaBalanceEconomico
+
+balance_economico_update_giro_bancario_devolucion:
+  path: /balanceEconomico/giroBancarioDevolucion/update/{id}
+  controller: App\Controller\BalanceEconomicoController::updateGiroBancarioDevolucion
+
+balance_economico_delete_giro_bancario_devolucion:
+  path: /balanceEconomico/deleteGiroBancarioDevolucion
+  controller: App\Controller\BalanceEconomicoController::deleteGiroBancarioDevolucion
+
+balance_economico_marcar_girado_giro:
+  path: /balanceEconomico/marcarGiro/{id}
+  controller: App\Controller\BalanceEconomicoController::marcarGiroGiradoBalanceEconomico
+
+balance_economico_recupera_datos_factura:
+  path: /balanceEconomico/recuperaImporteFactura
+  controller: App\Controller\BalanceEconomicoController::buscaDatosFactura
+
+balance_economico_add_transferencia:
+  path: /balanceEconomico/addTransferencia
+  controller: App\Controller\BalanceEconomicoController::addTransferenciaBalanceEconomico
+
+balance_economico_giros_remesados_dashboard:
+  path: /dashboard/balanceEconomico/giros/remesados
+  controller: App\Controller\BalanceEconomicoController::showGirosRemesados
+
+balance_economico_giros_no_remesados_dashboard:
+  path: /dashboard/balanceEconomico/giros/noRemesados
+  controller: App\Controller\BalanceEconomicoController::showGirosNoRemesados
+
+balance_economico_giros_girados_dashboard:
+  path: /dashboard/balanceEconomico/giros/girados
+  controller: App\Controller\BalanceEconomicoController::showGirosGirados
+
+balance_economico_giros_no_girados_dashboard:
+  path: /dashboard/balanceEconomico/giros/noGirados
+  controller: App\Controller\BalanceEconomicoController::showGirosNoGirados
+
+balance_economico_add_entrada:
+  path: /balanceEconomico/entrada/add
+  controller: App\Controller\BalanceEconomicoController::addEntradaBalance
+
+balance_economico_update_entrada:
+  path: /balanceEconomico/entrada/update/{id}
+  controller: App\Controller\BalanceEconomicoController::updateEntradaBalance
+
+balance_economico_delete_entrada:
+  path: /balanceEconomico/entrada/delete
+  controller: App\Controller\BalanceEconomicoController::deleteEntradaBalanceEconomico
+
+balance_economico_update_facturacion_vencimiento:
+  path: /balanceEconomico/facturacionVencimiento/update/{id}
+  controller: App\Controller\BalanceEconomicoController::updateFacturaVencimiento
+
+#REMESAS
+remesa_show:
+  path: /remesas
+  controller: App\Controller\RemesaController::showRemesas
+
+remesas_generadas_show:
+  path: /remesas/generadas
+  controller: App\Controller\RemesaController::showRemesasGeneradas
+
+remesa_recupera_datos:
+  path: /remesa/recuperaDatos
+  controller: App\Controller\RemesaController::recuperateDatosRemesa
+
+remesa_genera:
+  path: /remesa/genera
+  controller: App\Controller\RemesaController::generaFicheroRemesa
+
+remesas_generadas_down:
+  path: /remesas/generadas/down/{id}
+  controller: App\Controller\RemesaController::downRemesaGenerada
+
+remesas_filtra_remesas:
+  path: /filtraRemesas
+  controller: App\Controller\RemesaController::filtraRemesas
+
+remesas_exportar:
+  path: /exportarRemesas
+  controller: App\Controller\RemesaController::exportExcelRemesas
+
+remesas_generadas_delete:
+  path: /remesas/generadas/delete/{id}
+  controller: App\Controller\RemesaController::deleteRemesaGenerada
+
+#BUSCADORES
+buscadores_show:
+  path: /buscadores
+  controller: App\Controller\BuscadorController::showBuscadores
+
+buscadores_add:
+  path: /buscadores/new
+  controller: App\Controller\BuscadorController::createBuscador
+
+buscadores_update:
+  path: /buscadores/update/{id}
+  controller: App\Controller\BuscadorController::updateBuscador
+
+buscadores_condiciones:
+  path: /buscadores/condiciones/{id}
+  controller: App\Controller\BuscadorController::condiciones
+
+buscadores_execute:
+  path: /buscadores/execute/{id}
+  controller: App\Controller\BuscadorController::execute
+
+buscadores_copy:
+  path: /buscadores/copy/{id}
+  controller: App\Controller\BuscadorController::copy
+
+buscadores_delete:
+  path: /buscadores/delete/{id}
+  controller: App\Controller\BuscadorController::delete
+
+#ERRORES
+error_403:
+  path: /error403
+  controller: App\Controller\ErrorController::error403
+
+error_down_resumen_revision:
+  path: /errorDownResumenRevision
+  controller: App\Controller\ErrorController::errorDescargaResumenRevision
+
+#AJAX QUERY
+busca_ajax_query:
+  path: /ajaxQuery/{option}
+  controller: App\Controller\QueryController::buscaAjax
+
+#GODC
+gdoc_index:
+  path: /plantillas
+  controller: App\Controller\GdocController::index
+
+gdoc_plantilla_view:
+  path: /plantillas/plantilla/view
+  controller: App\Controller\GdocController::viewPlantilla
+
+gdoc_plantilla_delete:
+  path: /plantillas/plantilla/delete
+  controller: App\Controller\GdocController::deletePlantilla
+
+gdoc_carpeta_add:
+  path: /plantillas/carpeta/add
+  controller: App\Controller\GdocController::addCarpeta
+
+gdoc_carpeta_update:
+  path: /updateCarpeta
+  controller: App\Controller\GdocController::updateCarpeta
+
+gdoc_carpeta_delete:
+  path: /deleteCarpeta
+  controller: App\Controller\GdocController::deleteCarpeta
+
+gdoc_recupera_carpeta:
+  path: /recuperaCarpeta
+  controller: App\Controller\GdocController::recuperaCarpeta
+
+gdoc_open_plantilla:
+  path: /openPlantilla
+  controller: App\Controller\GdocController::openPlantilla
+
+gdoc_down_plantilla:
+  path: /downPlantilla
+  controller: App\Controller\GdocController::downPlantilla
+
+gdoc_open_file:
+  path: /openFile
+  controller: App\Controller\GdocController::openFile
+
+gdoc_open_file_solo_centros:
+  path: /openFile2
+  controller: App\Controller\GdocController::openFileSoloCentros
+
+gdoc_delete_file:
+  path: /deleteFile
+  controller: App\Controller\GdocController::deleteFile
+
+gdoc_delete_file_2:
+  path: /deleteFile2
+  controller: App\Controller\GdocController::deleteFile2
+
+gdoc_generar_file:
+  path: /generarFichero
+  controller: App\Controller\GdocController::generarFile
+
+gdoc_generar_file_solo_centro:
+  path: /generarFichero2
+  controller: App\Controller\GdocController::generarFileSoloCentro
+
+gdoc_recuperar_texto_plantilla:
+  path: /recuperarTextoPlantilla
+  controller: App\Controller\GdocController::recuperarTextoPlantilla
+
+#MONITOR DE AUDITORIA
+monitor_auditoria_index:
+  path: /monitorAuditoria
+  controller: App\Controller\AuditoriaController::index
+
+monitor_auditoria_filtrar:
+  path: /filtraMonitorAuditoria
+  controller: App\Controller\AuditoriaController::filtraMonitorAuditoria
+
+monitor_auditoria_datatable:
+  path: /monitorAuditoria/data
+  controller: App\Controller\AuditoriaController::dataAuditoria
+
+#EMPRESA TECNICO
+tecnico_empresa_select:
+  path: /tecnico/empresa/select/{id}
+  controller: App\Controller\EmpresaController::selectEmpresa
+
+tecnico_empresa_deselect:
+  path: /tecnico/empresa/deselect
+  controller: App\Controller\EmpresaController::deselectEmpresa
+
+tecnico_empresa_show:
+  path: /tecnico/empresas
+  controller: App\Controller\EmpresaController::showEmpresasTecnico
+
+tecnico_empresa_view:
+  path: /tecnico/empresa/view/{id}
+  controller: App\Controller\EmpresaController::viewEmpresaTecnico
+
+tecnico_empresa_create:
+  path: /tecnico/empresa/add
+  controller: App\Controller\EmpresaController::createEmpresaTecnico
+
+tecnico_empresa_update:
+  path: /tecnico/empresa/update/{id}
+  controller: App\Controller\EmpresaController::updateEmpresaTecnico
+
+tecnico_empresa_maquina_create:
+  path: /tecnico/empresa/maquina/add
+  controller: App\Controller\EmpresaController::addMaquinaEmpresa
+
+tecnico_empresa_maquina_update:
+  path: /tecnico/empresa/maquina/edit/{id}
+  controller: App\Controller\EmpresaController::updateMaquinaEmpresa
+
+tecnico_empresa_maquina_delete:
+  path: /deleteMaquinaEmpresa
+  controller: App\Controller\EmpresaController::deleteMaquinaEmpresa
+
+tecnico_empresa_busca_centros:
+  path: /buscaCentroEmpresa
+  controller: App\Controller\EmpresaController::buscaCentrosEmpresa
+
+tecnico_empresa_busca_puesto_trabajo:
+  path: /buscaPuestoTrabajo
+  controller: App\Controller\EmpresaController::buscaPuestoTrabajoEmpresa
+
+tecnico_empresa_asignar_puesto_trabajo_trabajador_multiple:
+  path: /addPuestoTrabajoTrabajadorMultiple
+  controller: App\Controller\EmpresaController::addPuestoTrabajoTrabajadorMultiple
+
+#GRUPO EMPRESA
+tecnico_grupo_empresa_show:
+  path: /tecnico/gruposEmpresa
+  controller: App\Controller\GrupoEmpresaController::showGrupoEmpresa
+
+tecnico_grupo_empresa_create:
+  path: /tecnico/grupoEmpresa/add
+  controller: App\Controller\GrupoEmpresaController::createGrupoEmpresa
+
+tecnico_grupo_empresa_update:
+  path: /tecnico/grupoEmpresa/update/{id}
+  controller: App\Controller\GrupoEmpresaController::updateGrupoEmpresa
+
+tecnico_grupo_empresa_delete:
+  path: /tecnico/grupoEmpresa/delete/{id}
+  controller: App\Controller\GrupoEmpresaController::deleteGrupoEmpresa
+
+tecnico_grupo_empresa_add_empresa_grupo:
+  path: /tecnico/grupoEmpresa/addEmpresaGrupo
+  controller: App\Controller\GrupoEmpresaController::addEmpresaGrupo
+
+tecnico_grupo_empresa_delete_empresa_grupo:
+  path: /tecnico/grupoEmpresa/deleteEmpresaGrupo
+  controller: App\Controller\GrupoEmpresaController::deleteEmpresaGrupo
+
+#TRABAJADOR TECNICO
+tecnico_trabajador_show:
+  path: /tecnico/trabajadores
+  controller: App\Controller\TrabajadorController::showTrabajadoresTecnico
+
+tecnico_trabajador_create:
+  path: /tecnico/trabajador/add
+  controller: App\Controller\TrabajadorController::createTrabajadorTecnico
+
+tecnico_trabajador_update:
+  path: /tecnico/trabajador/update/{id}
+  controller: App\Controller\TrabajadorController::updateTrabajadorTecnico
+
+tecnico_trabajador_check_dni:
+  path: /checkDni
+  controller: App\Controller\TrabajadorController::comprobarDniTrabajador
+
+tecnico_trabajador_datatable:
+  path: /tecnico/trabajadores/data
+  controller: App\Controller\TrabajadorController::dataTrabajadoresTecnico
+
+#PUESTOS DE TRABAJO
+tecnico_puesto_trabajo_show:
+  path: /tecnico/puestosTrabajo
+  controller: App\Controller\PuestoTrabajoController::showPuestosTrabajo
+
+tecnico_puesto_trabajo_edit:
+  path: /tecnico/puestosTrabajo/edit/{empresaId}
+  controller: App\Controller\PuestoTrabajoController::editPuestosTrabajo
+
+tecnico_puesto_trabajo_create_zona_trabajo:
+  path: /addZonaTrabajo
+  controller: App\Controller\PuestoTrabajoController::addZonaTrabajo
+
+tecnico_puesto_trabajo_update_zona_trabajo:
+  path: /updateZonaTrabajo
+  controller: App\Controller\PuestoTrabajoController::updateZonaTrabajo
+
+tecnico_puesto_trabajo_recuperate_zona_trabajo:
+  path: /recuperateZonaTrabajo
+  controller: App\Controller\PuestoTrabajoController::recuperateZonaTrabajo
+
+tecnico_puesto_trabajo_delete_zona_trabajo:
+  path: /deleteZonaTrabajo
+  controller: App\Controller\PuestoTrabajoController::deleteZonaTrabajo
+
+tecnico_puesto_trabajo_create_puesto_trabajo:
+  path: /addZonaPuestoTrabajo
+  controller: App\Controller\PuestoTrabajoController::addPuestoTrabajo
+
+tecnico_puesto_trabajo_update_puesto_trabajo:
+  path: /updatePuestoTrabajo
+  controller: App\Controller\PuestoTrabajoController::updatePuestoTrabajo
+
+tecnico_puesto_trabajo_recuperate_puesto_trabajo:
+  path: /recuperatePuestoTrabajo
+  controller: App\Controller\PuestoTrabajoController::recuperatePuestoTrabajo
+
+tecnico_puesto_trabajo_delete_puesto_trabajo:
+  path: /deletePuestoTrabajo
+  controller: App\Controller\PuestoTrabajoController::deletePuestoTrabajo
+
+tecnico_puesto_trabajo_add_maquina_generica:
+  path: /addMaquinaGenericaPuestoTrabajo
+  controller: App\Controller\PuestoTrabajoController::addMaquinaGenerica
+
+tecnico_puesto_trabajo_delete_maquina_generica:
+  path: /deleteMaquinaGenericaPuestoTrabajo
+  controller: App\Controller\PuestoTrabajoController::deleteMaquinaGenerica
+
+#EVALUACIONES
+tecnico_evaluaciones_show:
+  path: /tecnico/evaluaciones
+  controller: App\Controller\EvaluacionController::showEmpresaCentro
+
+import_excel_maquinas:
+  path: /tecnico/evaluaciones/maquinas2
+  controller: App\Controller\EvaluacionController::importDataFromXLSX
+
+import_excel_quimicos:
+  path: /tecnico/evaluaciones/quimicos2
+  controller: App\Controller\EvaluacionController::importDataFromXLSXQuimicos
+
+riesgo_causas_select:
+  path: /tecnico/evaluaciones2
+  controller: App\Controller\EvaluacionController::selectRiesgoCausas
+
+ruta_del_controlador_que_devuelve_centros:
+  path: /empresatecnico/evaluaciones2
+  controller: App\Controller\EvaluacionController::cargarCentrosAction
+
+tecnico_evaluaciones_evaluacion_pre_create:
+  path: /tecnico/evaluacion/preNew
+  controller: App\Controller\EvaluacionController::preCrearEvaluacion
+
+tecnico_evaluaciones_evaluacion_create:
+  path: /tecnico/evaluacion/new
+  controller: App\Controller\EvaluacionController::createEvaluacion
+
+tecnico_evaluaciones_evaluacion_update:
+  path: /tecnico/evaluacion/update/{id}
+  controller: App\Controller\EvaluacionController::updateEvaluacion
+
+tecnico_evaluaciones_evaluacion_delete:
+  path: /tecnico/deleteEvaluacion/{id}
+  controller: App\Controller\EvaluacionController::deleteEvaluacion
+
+tecnico_evaluaciones_evaluacion_finalizar:
+  path: /tecnico/evaluacion/finalizar/{id}
+  controller: App\Controller\EvaluacionController::finalizarEvaluacion
+
+tecnico_evaluaciones_evaluacion_create_tecnico:
+  path: /addTecnicoEvaluacion
+  controller: App\Controller\EvaluacionController::addTecnicoEvaluacion
+
+tecnico_evaluaciones_evaluacion_delete_tecnico:
+  path: /deleteTecnicoEvaluacion
+  controller: App\Controller\EvaluacionController::deleteTecnicoEvaluacion
+
+tecnico_evaluaciones_evaluacion_add_persona:
+  path: /addPersonaEvaluacion
+  controller: App\Controller\EvaluacionController::addPersonaEvaluacion
+
+tecnico_evaluaciones_evaluacion_delete_persona:
+  path: /deletePersonaEvaluacion
+  controller: App\Controller\EvaluacionController::deletePersonaEvaluacion
+
+tecnico_evaluaciones_evaluacion_add_puesto_trabajo_evaluar:
+  path: /addPuestoTrabajoEvaluar
+  controller: App\Controller\EvaluacionController::addPuestoTrabajoEvaluar
+
+tecnico_evaluaciones_evaluacion_delete_puesto_trabajo_evaluar:
+  path: /deletePuestoTrabajoEvaluar
+  controller: App\Controller\EvaluacionController::deletePuestoTrabajoEvaluar
+
+tecnico_evaluaciones_evaluacion_puesto_trabajo_evaluar:
+  path: /tecnico/evaluacion/puestoTrabajoEvaluar/{id}
+  controller: App\Controller\EvaluacionController::puestoTrabajoEvaluar
+
+tecnico_evaluaciones_evaluacion_puesto_trabajo_add_trabajador:
+  path: /tecnico/puestoTrabajoTrabajador/new
+  controller: App\Controller\EvaluacionController::addTrabajadorPuestoTrabajo
+
+tecnico_evaluaciones_evaluacion_puesto_trabajo_update_trabajador:
+  path: /tecnico/puestoTrabajoTrabajador/update/{id}/{empresaId}
+  controller: App\Controller\EvaluacionController::updateTrabajadorPuestoTrabajo
+
+tecnico_evaluaciones_evaluacion_puesto_trabajo_delete_trabajador:
+  path: /PuestoTrabajoTrabajadorDelete
+  controller: App\Controller\EvaluacionController::deleteTrabajadorPuestoTrabajo
+
+tecnico_evaluaciones_evaluacion_create_riesgo_causa:
+  path: /tecnico/evaluacion/riesgoCausa/new
+  controller: App\Controller\EvaluacionController::createRiesgoCausa
+
+tecnico_evaluaciones_evaluacion_update_riesgo_causa:
+  path: /tecnico/evaluacion/riesgoCausa/edit/{id}
+  controller: App\Controller\EvaluacionController::updateRiesgoCausa
+
+tecnico_evaluaciones_evaluacion_delete_riesgo_causa:
+  path: /tecnico/evaluacion/riesgoCausa/delete
+  controller: App\Controller\EvaluacionController::deleteRiesgoCausa
+
+tecnico_evaluaciones_evaluacion_create_zona_trabajo_evaluar:
+  path: /addZonaTrabajoEvaluar
+  controller: App\Controller\EvaluacionController::addZonaTrabajoEvaluar
+
+tecnico_evaluaciones_evaluacion_delete_zona_trabajo_evaluar:
+  path: /deleteZonaTrabajoEvaluar
+  controller: App\Controller\EvaluacionController::deleteZonaTrabajoEvaluar
+
+tecnico_evaluaciones_evaluacion_zona_trabajo_evaluar:
+  path: /tecnico/evaluacion/zonaTrabajoEvaluar/{id}
+  controller: App\Controller\EvaluacionController::zonaTrabajoEvaluar
+
+tecnico_evaluaciones_evaluacion_busca_valor_riesgo:
+  path: /buscaValorRiesgo
+  controller: App\Controller\EvaluacionController::buscaValorRiesgo
+
+tecnico_evaluaciones_evaluacion_create_accion_preventiva_empresa:
+  path: /tecnico/evaluacion/accionPreventivaEmpresa/new
+  controller: App\Controller\EvaluacionController::createAccionPreventivaEmpresa
+
+tecnico_evaluaciones_evaluacion_update_accion_preventiva_empresa:
+  path: /tecnico/evaluacion/accionPreventivaEmpresa/edit/{id}
+  controller: App\Controller\EvaluacionController::updateAccionPreventivaEmpresa
+
+tecnico_evaluaciones_evaluacion_delete_accion_preventiva_empresa:
+  path: /tecnico/evaluacion/accionPreventivaEmpresa/delete
+  controller: App\Controller\EvaluacionController::deleteAccionPreventivaEmpresa
+
+tecnico_evaluaciones_evaluacion_create_accion_preventiva_trabajador:
+  path: /tecnico/evaluacion/accionPreventivaTrabajador/new
+  controller: App\Controller\EvaluacionController::createAccionPreventivaTrabajador
+
+tecnico_evaluaciones_evaluacion_update_accion_preventiva_trabajador:
+  path: /tecnico/evaluacion/accionPreventivaTrabajador/edit/{id}
+  controller: App\Controller\EvaluacionController::updateAccionPreventivaTrabajador
+
+tecnico_evaluaciones_evaluacion_delete_accion_preventiva_trabajador:
+  path: /tecnico/evaluacion/accionPreventivaTrabajador/delete
+  controller: App\Controller\EvaluacionController::deleteAccionPreventivaTrabajador
+
+tecnico_evaluaciones_evaluacion_busca_riesgos:
+  path: /buscaRiesgos
+  controller: App\Controller\EvaluacionController::buscaRiesgos
+
+tecnico_evaluaciones_evaluacion_busca_causas:
+  path: /buscaCausas
+  controller: App\Controller\EvaluacionController::buscaCausas
+
+tecnico_evaluaciones_evaluacion_create_epc_preventiva_empresa:
+  path: /addEpcPreventivaEmpresa
+  controller: App\Controller\EvaluacionController::addEpcEmpresa
+
+tecnico_evaluaciones_evaluacion_delete_epc_preventiva_empresa:
+  path: /deleteEpcPreventivaEmpresa
+  controller: App\Controller\EvaluacionController::deleteEpcEmpresa
+
+tecnico_evaluaciones_evaluacion_create_epi_preventiva_trabajador:
+  path: /addEpiPreventivaTrabajador
+  controller: App\Controller\EvaluacionController::addEpiTrabajador
+
+tecnico_evaluaciones_evaluacion_delete_epi_preventiva_trabajador:
+  path: /deleteEpiPreventivaTrabajador
+  controller: App\Controller\EvaluacionController::deleteEpiTrabajador
+
+tecnico_evaluaciones_evaluacion_create_normativa_evaluacion:
+  path: /addGrupoNormativaEvaluacion
+  controller: App\Controller\EvaluacionController::addGrupoNormativa
+
+tecnico_evaluaciones_evaluacion_delete_normativa_evaluacion:
+  path: /deleteGrupoNormativaEvaluacion
+  controller: App\Controller\EvaluacionController::deleteGrupoNormativa
+
+tecnico_evaluaciones_evaluacion_create_visita_evaluacion:
+  path: /addVisitaEvaluacion
+  controller: App\Controller\EvaluacionController::createVisita
+
+tecnico_evaluaciones_evaluacion_delete_visita_evaluacion:
+  path: /deleteVisitaEvaluacion
+  controller: App\Controller\EvaluacionController::deleteVisita
+
+tecnico_evaluaciones_evaluacion_create_img_riesgo_causa:
+  path: /addImgRiesgoCausa
+  controller: App\Controller\EvaluacionController::addImgRiesgoCausa
+
+tecnico_evaluaciones_evaluacion_delete_img_riesgo_causa:
+  path: /deleteImgRiesgoCausa
+  controller: App\Controller\EvaluacionController::deleteImgRiesgoCausa
+
+tecnico_evaluaciones_evaluacion_down_img_riesgo_causa:
+  path: /tecnico/evaluacion/riesgoCausa/printImg/{id}
+  controller: App\Controller\EvaluacionController::downImgRiesgoCausa
+
+tecnico_evaluaciones_evaluacion_add_maquina_empresa_trabajador:
+  path: /addMaquinaEmpresaTrabajador
+  controller: App\Controller\EvaluacionController::addMaquinaEmpresaTrabajador
+
+tecnico_evaluaciones_evaluacion_delete_maquina_empresa_trabajador:
+  path: /deleteMaquinaEmpresaTrabajador
+  controller: App\Controller\EvaluacionController::deleteMaquinaEmpresaTrabajador
+
+tecnico_evaluaciones_evaluacion_busca_plantilla:
+  path: /tecnico/evaluacion/buscaPlantillaEvaluacion
+  controller: App\Controller\EvaluacionController::buscaPlantillaEvaluacion
+
+tecnico_evaluaciones_evaluacion_busca_plantilla_solo_centros:
+  path: /tecnico/evaluacion/buscaPlantillaEvaluacion2
+  controller: App\Controller\EvaluacionController::buscaPlantillaEvaluacionSoloCentroTrabajo
+
+tecnico_firma_tecnicos_show:
+  path: /tecnico/firmas
+  controller: App\Controller\FirmaTecnicoController::showFirmas
+
+tecnico_firma_tecnicos_update:
+  path: /tecnico/firmas/edit/{id}
+  controller: App\Controller\FirmaTecnicoController::updateFirmas
+
+tecnico_evaluaciones_evaluacion_create_producto_quimico_puesto_trabajo:
+  path: /tecnico/evaluacion/puestoTrabajoEvaluar/productoQuimico/create
+  controller: App\Controller\EvaluacionController::createProductoQuimico
+
+tecnico_evaluaciones_evaluacion_update_producto_quimico_puesto_trabajo:
+  path: /tecnico/evaluacion/puestoTrabajoEvaluar/productoQuimico/update/{id}
+  controller: App\Controller\EvaluacionController::updateProductoQuimico
+
+tecnico_evaluaciones_evaluacion_delete_producto_quimico_puesto_trabajo:
+  path: /tecnico/evaluacion/puestoTrabajoEvaluar/productoQuimico/delete/{id}
+  controller: App\Controller\EvaluacionController::deleteProductoQuimico
+
+tecnico_evaluaciones_evaluacion_delete_quimicos2_empresa_trabajador:
+  path: /deleteQuimicosTrabajador2
+  controller: App\Controller\EvaluacionController::deleteQuimicosTrabajador2
+
+tecnico_evaluaciones_copiar_riesgos_causas_medidas:
+  path: /tecnico/evaluacion/puestoTrabajo/copiarDatos
+  controller: App\Controller\EvaluacionController::copiarRiesgosCausasMedidas
+
+tecnico_evaluaciones_copiar_riesgos_causas_medidas_zona_trabajo:
+  path: /tecnico/evaluacion/zonaTrabajo/copiarDatos
+  controller: App\Controller\EvaluacionController::copiarRiesgosCausasMedidasZonaTrabajo
+
+#TRABAJADOR MEDICO
+medico_trabajador_show:
+  path: /medico/trabajadores
+  controller: App\Controller\TrabajadorController::showTrabajadoresMedico
+
+medico_trabajador_update:
+  path: /medico/trabajador/update/{id}
+  controller: App\Controller\TrabajadorController::updateTrabajadorMedico
+
+medico_trabajador_historial_laboral:
+  path: /medico/trabajador/historialLaboral/{id}
+  controller: App\Controller\TrabajadorController::historialLaboral
+
+medico_trabajador_puesto_trabajo_evaluar:
+  path: /medico/trabajador/puestoTrabajoEvaluar/{id}
+  controller: App\Controller\TrabajadorController::puestoTrabajoEvaluar
+
+medico_trabajador_puesto_trabajo_riesgo_causa_add:
+  path: /medico/trabajador/puestoTrabajoEvaluar/riesgoCausa/create
+  controller: App\Controller\TrabajadorController::createPuestoTrabajoEvaluarRiesgoCausa
+
+medico_trabajador_puesto_trabajo_riesgo_causa_update:
+  path: /medico/trabajador/puestoTrabajoEvaluar/riesgoCausa/update/{id}
+  controller: App\Controller\TrabajadorController::updatePuestoTrabajoEvaluarRiesgoCausa
+
+medico_trabajador_datatable:
+  path: /medico/trabajador/data
+  controller: App\Controller\TrabajadorController::dataTrabajadoresMedico
+
+#EMPRESA MEDICO
+medico_empresa_show:
+  path: /medico/empresas
+  controller: App\Controller\EmpresaController::showEmpresasMedico
+
+medico_empresa_update:
+  path: /medico/empresa/update/{id}
+  controller: App\Controller\EmpresaController::updateEmpresaMedico
+
+medico_empresa_view:
+  path: /medico/empresa/view/{id}
+  controller: App\Controller\EmpresaController::viewEmpresaMedico
+
+#CITACIONES
+citacion_show:
+  path: /citaciones
+  controller: App\Controller\CitacionController::showCitacion
+
+citacion_add:
+  path: /citaciones/create
+  controller: App\Controller\CitacionController::createCitacion
+
+citacion_update:
+  path: /citaciones/update/{id}
+  controller: App\Controller\CitacionController::updateCitacion
+
+citacion_busca_trabajador_empresa:
+  path: /buscaTrabajadorEmpresa
+  controller: App\Controller\CitacionController::buscaTrabajadorEmpresa
+
+citacion_busca_citas:
+  path: /buscaCitas
+  controller: App\Controller\CitacionController::buscaCitas
+
+citacion_deselect_empresa:
+  path: /deselectEmpresaCitacion
+  controller: App\Controller\CitacionController::deselectEmpresa
+
+citacion_busca_observaciones_empresa:
+  path: /buscaObservacionesEmpresa
+  controller: App\Controller\CitacionController::buscaObservacionesEmpresa
+
+citacion_show_lista:
+  path: /citaciones/lista
+  controller: App\Controller\CitacionController::showCitaciones
+
+citacion_show_lista_filtra:
+  path: /filtraCitacionesLista
+  controller: App\Controller\CitacionController::filtroCitaciones
+
+#MANTENIMIENTO DE RECONOCIMIENTOS
+mantenimiento_reconocimientos:
+  path: /mantenimientoReconocimientos
+  controller: App\Controller\MantenimientoReconocimientosController::index
+
+mantenimiento_reconocimientos_serie_respuesta_add:
+  path: /mantenimientoReconocimientos/serieRespuesta/create
+  controller: App\Controller\MantenimientoReconocimientosController::createSerieRespuesta
+
+mantenimiento_reconocimientos_serie_respuesta_update:
+  path: /mantenimientoReconocimientos/serieRespuesta/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updateSerieRespuesta
+
+mantenimiento_reconocimientos_serie_respuesta_delete:
+  path: /deleteSerieRespuesta
+  controller: App\Controller\MantenimientoReconocimientosController::deleteSerieRespuesta
+
+mantenimiento_reconocimientos_consejo_medico_add:
+  path: /mantenimientoReconocimientos/consejoMedico/create
+  controller: App\Controller\MantenimientoReconocimientosController::createConsejoMedico
+
+mantenimiento_reconocimientos_consejo_medico_update:
+  path: /mantenimientoReconocimientos/consejoMedico/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updateConsejoMedico
+
+mantenimiento_reconocimientos_consejo_medico_delete:
+  path: /deleteConsejoMedico
+  controller: App\Controller\MantenimientoReconocimientosController::deleteConsejoMedico
+
+mantenimiento_reconocimientos_consejo_medico_documento_delete:
+  path: /deleteDocumentoConsejoMedico/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::deleteDocumentoConsejoMedico
+
+mantenimiento_reconocimientos_pregunta_add:
+  path: /mantenimientoReconocimientos/pregunta/create
+  controller: App\Controller\MantenimientoReconocimientosController::createPregunta
+
+mantenimiento_reconocimientos_pregunta_update:
+  path: /mantenimientoReconocimientos/pregunta/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updatePregunta
+
+mantenimiento_reconocimientos_pregunta_delete:
+  path: /deletePregunta
+  controller: App\Controller\MantenimientoReconocimientosController::deletePregunta
+
+mantenimiento_reconocimientos_respuesta_add:
+  path: /mantenimientoReconocimientos/respuesta/create
+  controller: App\Controller\MantenimientoReconocimientosController::createRespuesta
+
+mantenimiento_reconocimientos_respuesta_update:
+  path: /mantenimientoReconocimientos/respuesta/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updateRespuesta
+
+mantenimiento_reconocimientos_respuesta_delete:
+  path: /deleteRespuesta
+  controller: App\Controller\MantenimientoReconocimientosController::deleteRespuesta
+
+mantenimiento_reconocimientos_formula_add:
+  path: /mantenimientoReconocimientos/formula/create
+  controller: App\Controller\MantenimientoReconocimientosController::createFormula
+
+mantenimiento_reconocimientos_formula_update:
+  path: /mantenimientoReconocimientos/formula/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updateFormula
+
+mantenimiento_reconocimientos_formula_delete:
+  path: /deleteFormula
+  controller: App\Controller\MantenimientoReconocimientosController::deleteFormula
+
+mantenimiento_reconocimientos_variable_add:
+  path: /mantenimientoReconocimientos/variable/create
+  controller: App\Controller\MantenimientoReconocimientosController::createVariable
+
+mantenimiento_reconocimientos_variable_recupera:
+  path: /recuperaFormulaVariable
+  controller: App\Controller\MantenimientoReconocimientosController::recuperaVariable
+
+mantenimiento_reconocimientos_variable_update:
+  path: /mantenimientoReconocimientos/variable/update
+  controller: App\Controller\MantenimientoReconocimientosController::updateVariable
+
+mantenimiento_reconocimientos_variable_delete:
+  path: /deleteVariable
+  controller: App\Controller\MantenimientoReconocimientosController::deleteVariable
+
+mantenimiento_reconocimientos_cuestionario_add:
+  path: /mantenimientoReconocimientos/cuestionario/create
+  controller: App\Controller\MantenimientoReconocimientosController::createCuestionario
+
+mantenimiento_reconocimientos_cuestionario_update:
+  path: /mantenimientoReconocimientos/cuestionario/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updateCuestionario
+
+mantenimiento_reconocimientos_cuestionario_delete:
+  path: /deleteCuestionario
+  controller: App\Controller\MantenimientoReconocimientosController::deleteCuestionario
+
+mantenimiento_reconocimientos_pregunta_cuestionario_add:
+  path: /mantenimientoReconocimientos/cuestionario/pregunta/create
+  controller: App\Controller\MantenimientoReconocimientosController::createPreguntaCuestionario
+
+mantenimiento_reconocimientos_pregunta_cuestionario_update:
+  path: /mantenimientoReconocimientos/cuestionario/pregunta/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updatePreguntaCuestionario
+
+mantenimiento_reconocimientos_pregunta_cuestionario_delete:
+  path: /deletePreguntaCuestionario
+  controller: App\Controller\MantenimientoReconocimientosController::deletePreguntaCuestionario
+
+mantenimiento_reconocimientos_subpregunta_add:
+  path: /mantenimientoReconocimientos/subpregunta/create
+  controller: App\Controller\MantenimientoReconocimientosController::createSubPregunta
+
+mantenimiento_reconocimientos_subpregunta_update:
+  path: /mantenimientoReconocimientos/subpregunta/update/{id}
+  controller: App\Controller\MantenimientoReconocimientosController::updateSubPregunta
+
+mantenimiento_reconocimientos_subpregunta_delete:
+  path: /deleteSubPregunta
+  controller: App\Controller\MantenimientoReconocimientosController::deleteSubPregunta
+
+#PUESTO TRABAJO - PROTOCOLOS - CUESTIONARIOS
+puesto_trabajo_protocolo_cuestionario:
+  path: /puestoTrabajoProtocoloCuestionario
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::index
+
+puesto_trabajo_protocolo_cuestionario_protocolo_add:
+  path: /puestoTrabajoProtocoloCuestionario/protocolo/create
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::createProtocolo
+
+puesto_trabajo_protocolo_cuestionario_protocolo_update:
+  path: /puestoTrabajoProtocoloCuestionario/protocolo/update/{id}
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::updateProtocolo
+
+puesto_trabajo_protocolo_cuestionario_protocolo_delete:
+  path: /deleteProtocolo
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::deleteProtocolo
+
+puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_add:
+  path: /puestoTrabajoProtocoloCuestionario/protocolo/cuestionario/create
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::createProtocoloCuestionario
+
+puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_update:
+  path: /puestoTrabajoProtocoloCuestionario/protocolo/cuestionario/update
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::updateProtocoloCuestionario
+
+puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_recupera:
+  path: /recuperaCuestionarioProtocolo
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::recuperaProtocoloCuestionario
+
+puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_delete:
+  path: /deleteCuestionarioProtocolo
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::deleteProtocoloCuestionario
+
+puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_preguntas_recupera:
+  path: /recuperaPreguntas
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::recuperaPreguntasCuestionario
+
+puesto_trabajo_protocolo_cuestionario_puesto_trabajo_protocolo_add:
+  path: /puestoTrabajoProtocoloCuestionario/puestoTrabajoProtocolo/create
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::createPuestoTrabajoProtocolo
+
+puesto_trabajo_protocolo_cuestionario_puesto_trabajo_protocolo_update:
+  path: /puestoTrabajoProtocoloCuestionario/puestoTrabajoProtocolo/update/{empresaId}/{puestoTrabajoId}
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::updatePuestoTrabajoProtocolo
+
+puesto_trabajo_protocolo_cuestionario_puesto_trabajo_protocolo_delete:
+  path: /deletePuestoTrabajoProtocolo
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::deletePuestoTrabajoProtocolo
+
+puesto_trabajo_protocolo_cuestionario_buscar_puesto_trabajo_empresa:
+  path: /buscaPuestoTrabajoEmpresa
+  controller: App\Controller\PuestoTrabajoProtocoloCuestionarioController::buscaPuestoTrabajosEmpresa
+
+#REVISIONES
+medico_revision_show:
+  path: /medico/revisiones
+  controller: App\Controller\RevisionController::showRevision
+
+medico_revision_add:
+  path: /medico/revision/create
+  controller: App\Controller\RevisionController::createRevision
+
+medico_revision_update:
+  path: /medico/revision/update/{id}
+  controller: App\Controller\RevisionController::updateRevision
+
+medico_revision_delete:
+  path: /medico/revision/delete/{id}
+  controller: App\Controller\RevisionController::deleteRevision
+
+medico_revision_busca_cuestionarios:
+  path: /buscaCuestionarios
+  controller: App\Controller\RevisionController::buscaCuestionarios
+
+medico_revision_busca_preguntas:
+  path: /buscaPreguntas
+  controller: App\Controller\RevisionController::buscaPreguntas
+
+medico_revision_busca_puesto_trabajo:
+  path: /buscaPuestoTrabajoTrabajador
+  controller: App\Controller\RevisionController::buscaPuestoTrabajoTrabajador
+
+medico_revision_busca_pregunta_respuesta:
+  path: /buscaPreguntaRespuesta
+  controller: App\Controller\RevisionController::buscaPreguntasRespuestas
+
+medico_revision_guardar_respuestas:
+  path: /guardarRespuestas
+  controller: App\Controller\RevisionController::guardarRespuesta
+
+medico_revision_enviar_cuestionario:
+  path: /sendCuestionarioRevision
+  controller: App\Controller\RevisionController::sendCuestionarioRevision
+
+medico_revision_busca_trabajador_empresa:
+  path: /buscaTrabajadoresEmpresa
+  controller: App\Controller\RevisionController::buscaTrabajadorEmpresa
+
+medico_revision_facturar:
+  path: /medico/revision/facturar
+  controller: App\Controller\FacturacionController::revisionFacturar
+
+medico_revision_incluir:
+  path: /medico/revision/incluir
+  controller: App\Controller\FacturacionController::revisionIncluir
+
+medico_revision_show_pendientes:
+  path: /medico/revisiones/pendientes
+  controller: App\Controller\RevisionController::showRevisionePendientes
+
+medico_revision_filtra_pendientes:
+  path: /filtraRevisionesPendientes
+  controller: App\Controller\RevisionController::filtraRevisionesPendientes
+
+medico_revision_delete_fecha_analitica:
+  path: /deleteFechaAnalitica
+  controller: App\Controller\RevisionController::deleteFechaAnalitica
+
+medico_revision_delete_imagen_electrocardiograma:
+  path: /deleteImagenElectrocardiograma
+  controller: App\Controller\RevisionController::deleteImagenElectrocardiograma
+
+medico_revision_enviar_aptitud:
+  path: /medico/revision/enviarAptitud
+  controller: App\Controller\RevisionController::enviarAptitud
+
+medico_revision_marcar_aptitud_enviada:
+  path: /medico/revision/marcarAptitudEnviada
+  controller: App\Controller\RevisionController::marcarAptitudEnviada
+
+medico_revision_descargar_resumen:
+  path: /revision/down/{token}
+  controller: App\Controller\RevisionController::downResumen
+
+medico_revision_descargar_analitica:
+  path: /revision/down/analitica/{id}
+  controller: App\Controller\RevisionController::downAnalitica
+
+medico_revision_datatable:
+  path: /medico/revision/data
+  controller: App\Controller\RevisionController::dataRevisiones
+
+medico_revision_datatable_filtrar:
+  path: /medico/revision/data/filtrar
+  controller: App\Controller\RevisionController::filtraRevisiones
+
+medico_revision_descargar_resumen_check:
+  path: /revision/down/check/{token}
+  controller: App\Controller\RevisionController::downResumenCheck
+
+medico_revision_busca_citas_trabajador:
+  path: /buscaCitacionesTrabajador
+  controller: App\Controller\RevisionController::buscaCitacionesTrabajador
+
+medico_revision_add_documento_adjunto:
+  path: /addDocumentoAdjuntoRevision
+  controller: App\Controller\RevisionController::addDocumentoAdjunto
+
+medico_revision_mostrar_documento_adjunto:
+  path: /mostrarDocumentoAdjuntoRevision/{id}
+  controller: App\Controller\RevisionController::mostrarDocumentoAdjunto
+
+medico_revision_no_mostrar_documento_adjunto:
+  path: /noMostrarDocumentoAdjuntoRevision/{id}
+  controller: App\Controller\RevisionController::noMostrarDocumentoAdjunto
+
+medico_revision_delete_documento_adjunto:
+  path: /deleteDocumentoAdjuntoRevision
+  controller: App\Controller\RevisionController::deleteDocumentoAdjunto
+
+medico_revision_view_documento_adjunto:
+  path: /viewDocumentoAdjuntoRevision/{id}
+  controller: App\Controller\RevisionController::viewDocumentoAdjunto
+
+#ENFERMEDADES
+medico_enfermedad_show:
+  path: /medico/enfermedades
+  controller: App\Controller\EnfermedadController::show
+
+medico_enfermedad_add:
+  path: /medico/enfermedad/create
+  controller: App\Controller\EnfermedadController::createEnfermedad
+
+medico_enfermedad_update:
+  path: /medico/enfermedad/update/{id}
+  controller: App\Controller\EnfermedadController::updateEnfermedad
+
+medico_enfermedad_delete:
+  path: /medico/enfermedad/delete/{id}
+  controller: App\Controller\EnfermedadController::deleteEnfermedad
+
+medico_enfermedad_add_trabajador:
+  path: /addEnfermedadTrabajador
+  controller: App\Controller\EnfermedadController::addEnfermedadTrabajador
+
+medico_enfermedad_recupera_trabajador:
+  path: /recuperaEnfermedadTrabajador
+  controller: App\Controller\EnfermedadController::recuperaEnfermedadTrabajador
+
+medico_enfermedad_update_trabajador:
+  path: /updateEnfermedadTrabajador
+  controller: App\Controller\EnfermedadController::updateEnfermedadTrabajador
+
+medico_enfermedad_delete_trabajador:
+  path: /deleteEnfermedadTrabajador
+  controller: App\Controller\EnfermedadController::deleteEnfermedadTrabajador
+
+#LOGOUT
+ulogout:
+  path: /ulogout
+  controller: App\Controller\ULogoutController::index
+
+#CAMBIAR PASSOWRD
+change_password_otic:
+  path: /change-password
+  controller: App\Controller\ChangePasswordController::changePasswordAction
+
+#ENVIO DE MAILS
+empresa_send_notificacion:
+  path: /sendNotificacion
+  controller: App\Controller\EmpresaController::sendNotificacion
+
+empresa_send_certificacion:
+  path: /sendCertificacion
+  controller: App\Controller\EmpresaController::sendCertificacion
+
+empresa_send_modelo347:
+  path: /sendModelo347
+  controller: App\Controller\EmpresaController::sendModelo347
+
+#AGENDA TECNICO
+tecnico_agenda_show:
+  path: /tecnico/agenda
+  controller: App\Controller\AgendaTecnicoController::showAgenda
+
+tecnico_agenda_tarea_add:
+  path: /tecnico/agenda/tarea/create
+  controller: App\Controller\AgendaTecnicoController::createTarea
+
+tecnico_agenda_tarea_update:
+  path: /tecnico/agenda/tarea/update/{id}
+  controller: App\Controller\AgendaTecnicoController::updateTarea
+
+tecnico_agenda_busca_tareas:
+  path: /buscaTareas
+  controller: App\Controller\AgendaTecnicoController::buscaTareas
+
+log_envio_mail:
+  path: /logEnvioMail
+  controller: App\Controller\LogEnvioMailController::index
+
+#FIRMAS MEDICOS
+medico_firma_medicos_show:
+  path: /medico/firmas
+  controller: App\Controller\FirmaMedicoController::showFirmas
+
+medico_firma_medicos_update:
+  path: /medico/firmas/edit/{id}
+  controller: App\Controller\FirmaMedicoController::updateFirmas
+
+
+#ANALITICAS
+analiticas_cron:
+  path: /cronanaliticas
+  controller: App\Controller\AnaliticasController::recuperaAnaliticas
+
+#ENVIO MASIVO CORREO
+envio_masivo_correo_show:
+  path: /correoMasivo/show
+  controller: App\Controller\CorreoMasivoController::show
+
+envio_masivo_correo_filtra_empresas:
+  path: /correoMasivo/filtrarEmpresas
+  controller: App\Controller\CorreoMasivoController::filtroEmpresas
+
+envio_masivo_pre_correo_enviar:
+  path: /correoMasivo/preEnviar
+  controller: App\Controller\CorreoMasivoController::preSendCorreoMasivo
+
+envio_masivo_correo_enviar:
+  path: /correoMasivo/enviar
+  controller: App\Controller\CorreoMasivoController::sendCorreoMasivo
+
+#ENVIO MASIVO CORREO 2 Peticio 28/07/2023
+envio_masivo_correo_show2:
+  path: /correoMasivo/show2
+  controller: App\Controller\CorreoMasivoController::show2
+
+envio_masivo_correo_filtra_empresas2:
+  path: /correoMasivo/filtrarEmpresas2
+  controller: App\Controller\CorreoMasivoController::filtroEmpresas2
+
+envio_masivo_pre_correo_enviar2:
+  path: /correoMasivo/preEnviar2
+  controller: App\Controller\CorreoMasivoController::preSendCorreoMasivo2
+
+envio_masivo_correo_enviar2:
+  path: /correoMasivo/enviar2
+  controller: App\Controller\CorreoMasivoController::sendCorreoMasivo2
+
+#AVISO VENCIMIENTO APTITUDES
+aviso_vencimiento_aptitud_show:
+  path: /avisoVencimientoAptitud
+  controller: App\Controller\AvisoVencimientoAptitudController::show
+
+aviso_vencimiento_aptitud_data:
+  path: /avisoVencimientoAptitud/data
+  controller: App\Controller\AvisoVencimientoAptitudController::dataRevisiones
+
+aviso_vencimiento_aptitud_filtrar:
+  path: /avisoVencimientoAptitud/filtrar
+  controller: App\Controller\AvisoVencimientoAptitudController::filtrarRevisiones
+
+aviso_vencimiento_aptitud_pre_enviar:
+  path: /avisoVencimientoAptitud/preEnviar
+  controller: App\Controller\AvisoVencimientoAptitudController::preSendAviso
+
+aviso_vencimiento_aptitud_enviar:
+  path: /avisoVencimientoAptitud/enviar
+  controller: App\Controller\AvisoVencimientoAptitudController::sendAvisoVencimientoAptitud
+
+carga_analiticas_manual:
+  path: /cargaAnaliticasManual
+  controller: App\Controller\AnaliticasController::recuperaAnaliticas
+  methods: [GET, POST]

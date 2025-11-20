@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_DASHBOARD</source>
+                <target>Dashboard</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_INICIO</source>
+                <target>Inici</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_CONTRATOS</source>
+                <target>Contractes</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_FACTURAS</source>
+                <target>Factures</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CONTRATOS_GENERADOS</source>
+                <target>Generats</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_FACTURAS_EMITIDAS</source>
+                <target>Emitides</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

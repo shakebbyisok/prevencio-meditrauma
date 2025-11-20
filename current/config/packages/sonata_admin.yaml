@@ -1,0 +1,13 @@
+sonata_admin:
+    title: 'MDT Prevención'
+    dashboard:
+        blocks:
+            - { type: sonata.admin.block.admin_list, position: left }
+    title_logo: images/logo_mdt_blanc.PNG
+
+sonata_block:
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts: [admin]
+
+

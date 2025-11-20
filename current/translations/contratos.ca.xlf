@@ -1,0 +1,598 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_CONTRATO</source>
+                <target>Contracte</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_CONTRATOS</source>
+                <target>Contractes</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_NUEVO_CONTRATO</source>
+                <target>Nou contracte</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_MENU_1</source>
+                <target>Dades generals</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_MENU_2</source>
+                <target>Serveis contractats</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_MENU_3</source>
+                <target>Preus dels reconeixements</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_MENU_4</source>
+                <target>Forma de Pagament del Contracte</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_MENU_5</source>
+                <target>Comissions aplicables</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_MENU_6</source>
+                <target>Formes de pagament</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_MENU_7</source>
+                <target>Resumn memòria anual</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_MENU_8</source>
+                <target>Elements associats</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_MENU_9</source>
+                <target>Observacions</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_ORIGEN</source>
+                <target>Origen</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_REFERENCIA</source>
+                <target>Referència</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_FECHA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_VENCIMIENTO</source>
+                <target>Venciment</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_DURACION</source>
+                <target>Duració renovació</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_TIPO_CONTRATO</source>
+                <target>Tipus de contracte</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_FASE_SITUACION</source>
+                <target>Fase/situació</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_FIRMANTE</source>
+                <target>Signant del contracte per part del client</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_NOMBRE_APELLIDOS</source>
+                <target>Nom i cognoms</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_DNI</source>
+                <target>D.N.I</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_CALIDAD_DE</source>
+                <target>En qualitat de</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CENTROS_TRABAJOS_ENGLOBADOS</source>
+                <target>Centres de treball englobats en aquest contracte</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_SERVICIOS_CONTRATADOS</source>
+                <target>Serveis contractats</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_SERV_PREV</source>
+                <target>Serveis de prevenció</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SERV_MED</source>
+                <target>Serveis de vigilància de la salut</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_OTROS_SERV</source>
+                <target>Altres serveis</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_VISITAS_INCLUIDAS</source>
+                <target>Visites incloses en aquest contracte</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_VISITAS_CONCERTADAS</source>
+                <target>Visites concertades</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_IMPORTE_SEGUN_SERVICIOS</source>
+                <target>Import segons els serveis</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_IMPORTE_CONTRATO</source>
+                <target>Import contracte</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_IMPORTE_EXENTO_IVA</source>
+                <target>Import contracte exempt d'IVA</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_IMPORTE_CONTRATO_SUJETO_IVA</source>
+                <target>Import contracte subjece a IVA</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_IMPORTE_IVA</source>
+                <target>Import IVA</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_PRECIOS_POR_TRABAJADOR_RECONOCIMIENTOS_MEDICOS</source>
+                <target>Preus per treballador dels reconeixements mèdics</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_PRECIOS_POR_TRABAJADOR_ANALITICAS</source>
+                <target>Preus per treballador de les analitiques</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_TIPO_RECONOCIMIENTO_SERVICIO</source>
+                <target>Tipus de reconeixement o servei</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_IMPORTE</source>
+                <target>Import</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_IVA</source>
+                <target>%IVA</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_AÑADIR_TARIFA</source>
+                <target>Afegir tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_CONCEPTO</source>
+                <target>Concepte</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_TIPO_ANALITICA</source>
+                <target>Tipus d'analitica</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_FRACCIONAMIENTO_PAGOS</source>
+                <target>Fraccionament dels pagaments</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_FRACCIONAMIENTO_PAGOS_AUTO</source>
+                <target>Fraccionament automàtic</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_NUMERO_PAGOS</source>
+                <target>Numero de pagaments</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_FRACCIONAMIENTO_MANUAL</source>
+                <target>Fraccionament manual</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_PORCENTAJE_PAGO</source>
+                <target>Percentatge del pagament</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_VENCIMIENTO_PAGOS</source>
+                <target>Venciments (mesos)</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_FRACCIONAMIENTO_SERVICIOS</source>
+                <target>Fraccionaments per serveis</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_FRACCIONAR</source>
+                <target>Fraccionar</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_PAGOS_SERVICIOS</source>
+                <target>Pagaments per serveis</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_PORCENTAJE</source>
+                <target>Percentatge</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_IMPORTE_SIN_IVA</source>
+                <target>Import sense IVA</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_EXENTO_IVA</source>
+                <target>Exempt d'IVA</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_SUJETO_IVA</source>
+                <target>Subjecte a IVA</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_IMPORTE_TOTAL</source>
+                <target>Import total</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_TOTAL_SIN_IVA</source>
+                <target>Total sense IVA = </target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_PAGOS_IVA</source>
+                <target>IVA = </target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_TOTAL</source>
+                <target>Total = </target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_TEXTO_FORMA_PAGO</source>
+                <target>Text a incloure en el contracte com a forma de pagament</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_TEXTO_FORMA_PAGO</source>
+                <target>Text a incloure en el contracte com a forma de pagament</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_EDITAR_TARIFA</source>
+                <target>Editar tarifa</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_DETALLE_COMISIONES_SERVICIO</source>
+                <target>Detall de comissions per servei</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_SERVICIO</source>
+                <target>Servei</target>
+            </trans-unit>
+
+            <trans-unit id="69">
+                <source>TRANS_COMISION_COL</source>
+                <target>Comissió col·laborador</target>
+            </trans-unit>
+
+            <trans-unit id="70">
+                <source>TRANS_COL_2_AÑO</source>
+                <target>Col·laborador 2ªAny</target>
+            </trans-unit>
+
+            <trans-unit id="71">
+                <source>TRANS_COMISION_COMERCIAL</source>
+                <target>Comissió comercial</target>
+            </trans-unit>
+
+            <trans-unit id="72">
+                <source>TRANS_OBTENER_COMISIONES_CONTRATO</source>
+                <target>Obtenir comissions del contracte</target>
+            </trans-unit>
+
+            <trans-unit id="73">
+                <source>TRANS_IMPORTE_COMISIONES_CALC_AUTO</source>
+                <target>Import comissions calculadas automàticament</target>
+            </trans-unit>
+
+            <trans-unit id="74">
+                <source>TRANS_CONTRATO_COMI_COL</source>
+                <target>El contracte és comissionable al col·laborador</target>
+            </trans-unit>
+
+            <trans-unit id="75">
+                <source>TRANS_CONTRATO_COMI_TEC</source>
+                <target>El contracte és comissionable al tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="76">
+                <source>TRANS_CONTRATO_COMI_COM</source>
+                <target>El contracte és comissionable al comercial</target>
+            </trans-unit>
+
+            <trans-unit id="77">
+                <source>TRANS_COMISION_1_AÑO</source>
+                <target>Comissió 1er any</target>
+            </trans-unit>
+
+            <trans-unit id="78">
+                <source>TRANS_AÑOS_SUCESIVOS</source>
+                <target>Anys successius</target>
+            </trans-unit>
+
+            <trans-unit id="79">
+                <source>TRANS_COPIAR_COMISIONES</source>
+                <target>Copiar comissions</target>
+            </trans-unit>
+
+            <trans-unit id="80">
+                <source>TRANS_IMPORTE_COMISIONES_APLICAR</source>
+                <target>Import comissions a aplicar</target>
+            </trans-unit>
+
+            <trans-unit id="81">
+                <source>TRANS_OBTENER_FORMA_PAGO_AUTO</source>
+                <target>Obtenir forma de pagament automàticament</target>
+            </trans-unit>
+
+            <trans-unit id="82">
+                <source>TRANS_IMPORTE_COMISION</source>
+                <target>Import comissió</target>
+            </trans-unit>
+
+            <trans-unit id="83">
+                <source>TRANS_NUMERO_TRABAJADORES_CONCERTADOS</source>
+                <target>Numero de treballadors concertats</target>
+            </trans-unit>
+
+            <trans-unit id="84">
+                <source>TRANS_PREVENCION_TECNICA</source>
+                <target>En prevenció tècnica</target>
+            </trans-unit>
+
+            <trans-unit id="85">
+                <source>TRANS_VIGILANCIA_SALUD</source>
+                <target>En vigilància de la salut</target>
+            </trans-unit>
+
+            <trans-unit id="86">
+                <source>TRANS_CONCEPTO</source>
+                <target>Concepte</target>
+            </trans-unit>
+
+            <trans-unit id="87">
+                <source>TRANS_PRECIO_SERVICIO</source>
+                <target>Import</target>
+            </trans-unit>
+
+            <trans-unit id="88">
+                <source>TRANS_TIPO_REGISTRO</source>
+                <target>Tipus</target>
+            </trans-unit>
+
+            <trans-unit id="89">
+                <source>TRANS_AÑADIR_SERVICIO</source>
+                <target>Afegir servei</target>
+            </trans-unit>
+
+            <trans-unit id="90">
+                <source>TRANS_EDITAR_SERVICIO</source>
+                <target>Editar servei</target>
+            </trans-unit>
+
+            <trans-unit id="91">
+                <source>TRANS_SERVICIO_OTRO</source>
+                <target>Altre</target>
+            </trans-unit>
+
+            <trans-unit id="92">
+                <source>TRANS_IMPRIMIR_CONTRATO</source>
+                <target>Imprimir contracte</target>
+            </trans-unit>
+
+            <trans-unit id="93">
+                <source>TRANS_AÑADIR_PAGO</source>
+                <target>Afegir pagament</target>
+            </trans-unit>
+
+            <trans-unit id="94">
+                <source>TRANS_EDITAR_PAGO</source>
+                <target>Editar pagament</target>
+            </trans-unit>
+
+            <trans-unit id="95">
+                <source>TRANS_RENOVADO</source>
+                <target>Renovat</target>
+            </trans-unit>
+
+            <trans-unit id="96">
+                <source>TRANS_RENOVAR_MULTIPLE</source>
+                <target>Renovació múltiple</target>
+            </trans-unit>
+
+            <trans-unit id="97">
+                <source>TRANS_ERROR_CONTRATOS_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim un contracte a renovar.</target>
+            </trans-unit>
+
+            <trans-unit id="98">
+                <source>TRANS_AVISO_CONTRATOS_A_RENOVAR</source>
+                <target>Es renovaran els contractes seleccionats. Si està segur premi el botó Renovar.</target>
+            </trans-unit>
+
+            <trans-unit id="99">
+                <source>TRANS_RENOVAR</source>
+                <target>Renovar</target>
+            </trans-unit>
+
+            <trans-unit id="100">
+                <source>TRANS_FACTURAR_MULTIPLE</source>
+                <target>Facturar múltiple</target>
+            </trans-unit>
+
+            <trans-unit id="101">
+                <source>TRANS_CONTRATOS_RENOVADOS</source>
+                <target>Contractes renovats</target>
+            </trans-unit>
+
+            <trans-unit id="102">
+                <source>TRANS_AVISO_FACTURAS_A_FACTURAR</source>
+                <target>Es facturaran els contractes seleccionats. Si està segur premi el botó Facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="103">
+                <source>TRANS_FACTURAR</source>
+                <target>Facturar</target>
+            </trans-unit>
+
+            <trans-unit id="104">
+                <source>TRANS_ERROR_CONTRATOS_FACTURAR_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim un contracte a facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="105">
+                <source>TRANS_FACTURADO</source>
+                <target>Facturat</target>
+            </trans-unit>
+
+            <trans-unit id="106">
+                <source>TRANS_SIN_SERVICIOS</source>
+                <target>El contracte no té serveis contractats</target>
+            </trans-unit>
+
+            <trans-unit id="107">
+                <source>TRANS_DIA_PAGO</source>
+                <target>Dia de pagament</target>
+            </trans-unit>
+
+            <trans-unit id="108">
+                <source>TRANS_MES</source>
+                <target>Mes</target>
+            </trans-unit>
+
+            <trans-unit id="109">
+                <source>TRANS_AÑO</source>
+                <target>Any</target>
+            </trans-unit>
+
+            <trans-unit id="110">
+                <source>TRANS_ENVIAR_CONTRATO</source>
+                <target>Enviar contracte/s</target>
+            </trans-unit>
+
+            <trans-unit id="111">
+                <source>TRANS_ENVIADO</source>
+                <target>Enviat</target>
+            </trans-unit>
+
+            <trans-unit id="112">
+                <source>TRANS_CANCELADO</source>
+                <target>Cancel·lat</target>
+            </trans-unit>
+
+            <trans-unit id="113">
+                <source>TRANS_COPIAR_DATOS_EMPRESA</source>
+                <target>Copiar dades empresa</target>
+            </trans-unit>
+
+            <trans-unit id="114">
+                <source>TRANS_PRECIO_SERVICIO_RENOVACION</source>
+                <target>Import renovació</target>
+            </trans-unit>
+
+            <trans-unit id="115">
+                <source>TRANS_CONTRATO_NO_SERVICIO_1</source>
+                <target>L'empresa</target>
+            </trans-unit>
+
+            <trans-unit id="116">
+                <source>TRANS_CONTRATO_NO_SERVICIO_2</source>
+                <target>no té cap servei assignat al contracte</target>
+            </trans-unit>
+
+            <trans-unit id="117">
+                <source>TRANS_ACTIVOS</source>
+                <target>Actius</target>
+            </trans-unit>
+
+            <trans-unit id="118">
+                <source>TRANS_CANCELADOS</source>
+                <target>Cancel·lats</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

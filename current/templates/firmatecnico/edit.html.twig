@@ -1,0 +1,52 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'firmastecnicos' %}
+
+{% block arrow %}<a href="{{ path('tecnico_firma_tecnicos_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_FIRMA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {{ nombreTecnico }}
+{% endblock %}
+
+{% block card %}
+
+    <style>
+        .custom-file-label { opacity: 0; }
+        .custom-file-input { opacity: 1; }
+    </style>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.firma) }}
+                    {% if firma is defined and firma is not empty %}
+                        <label style="font-weight: bolder;">{% trans %}TRANS_FIRMA_ACTUAL{% endtrans %}</label>
+                        <img src="../upload/media/firmas/tecnico/{{ firma }}" width="255px" />
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').firmaTecnicoSn is defined and app.session.get('privilegiosRol').firmaTecnicoSn is not null %}
+                {% if app.session.get('privilegiosRol').firmaTecnicoSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,348 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_MANTENIMIENTO_RECONOCIMIENTOS</source>
+                <target>Manteniment de reconeixements</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_SERIES_DE_RESPUESTA</source>
+                <target>Sèrie de resposta</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_PREGUNTAS</source>
+                <target>Preguntes</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CODIGO_SERIE</source>
+                <target>Codi sèrie</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_DESCRIPCION</source>
+                <target>Descripció</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_INDICADOR</source>
+                <target>Indicador</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_NUMERO_PREGUNTA</source>
+                <target>N. Pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_TEXTO_PREGUNTA</source>
+                <target>Pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_TIPO_RESPUESTA</source>
+                <target>Tipus de resposta</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_RESPUESTAS</source>
+                <target>Respostes</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_RESPUESTA</source>
+                <target>Resposta</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_AÑADIR_RESPUESTA</source>
+                <target>Afegir resposta</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_EDITAR_RESPUESTA</source>
+                <target>Modificar resposta</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_CONSEJOS_MEDICOS</source>
+                <target>Consells mèdics</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_INFO_INDICADOR</source>
+                <target>0 = Possibles diverses opcions / 1 = Una sola opció de resposta</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_CODIGO_CONSEJO_MEDICO</source>
+                <target>Codi</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_TEXTO_CONSEJO</source>
+                <target>Consell</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_INDICAR_RESUMEN</source>
+                <target>Indicar resum</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_INDICAR_INFORME</source>
+                <target>Indicar informe</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_DOCUMENTO</source>
+                <target>Document</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_DOCUMENTO_ACTUAL</source>
+                <target>Document actual</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_ELIMINAR_DOCUMENTO</source>
+                <target>Eliminar document</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_INDICAR_HISTORICO</source>
+                <target>Indicar històric</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_RESPUESTA_NORMAL</source>
+                <target>Resposta a Normal</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_VALOR_POR_DEFECTO</source>
+                <target>Valor per defecte</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_FAMILIA</source>
+                <target>Família</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_SUB_FAMILIA</source>
+                <target>Subfamília</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_RESPUESTA_ENTRE_VALORES_PERMITIDOS</source>
+                <target>Text si la resposta està entre els valors permesos</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_SUB</source>
+                <target>Sub</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_VALOR_DESDE</source>
+                <target>Valor des de</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_VALOR_DESDE_NUMERICO</source>
+                <target>Valor des de numèric</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_VALOR_HASTA</source>
+                <target>Valor fins</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_VALOR_HASTA_NUMERICO</source>
+                <target>Valor fins numèric</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_INFORME_MEDICO</source>
+                <target>Informe mèdic</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_INFORME_FINAL</source>
+                <target>Informe final</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_RESPUESTA_PROBLEMAS</source>
+                <target>Resposta a problemes</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_TEXTO_SI_CORRESPONDE</source>
+                <target>Text si el valor correspon</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_FORMULAS</source>
+                <target>Formules</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_CODIGO_FORMULA</source>
+                <target>Codi</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_FORMULA</source>
+                <target>Formula</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>TRANS_VARIABLES</source>
+                <target>Variables</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_VARIABLE</source>
+                <target>Variable</target>
+            </trans-unit>
+
+            <trans-unit id="44">
+                <source>TRANS_CUESTIONARIOS</source>
+                <target>Qüestionaris</target>
+            </trans-unit>
+
+            <trans-unit id="45">
+                <source>TRANS_CUESTIONARIO</source>
+                <target>Qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="46">
+                <source>TRANS_TIPO_CUESTIONARIO</source>
+                <target>Tipus de qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="47">
+                <source>TRANS_CODIGO_CUESTIONARIO</source>
+                <target>Codi</target>
+            </trans-unit>
+
+            <trans-unit id="48">
+                <source>TRANS_GRUPO</source>
+                <target>Grup</target>
+            </trans-unit>
+
+            <trans-unit id="49">
+                <source>TRANS_ORDEN</source>
+                <target>Ordre</target>
+            </trans-unit>
+
+            <trans-unit id="50">
+                <source>TRANS_AÑADIR_PREGUNTAS</source>
+                <target>Afegir preguntes</target>
+            </trans-unit>
+
+            <trans-unit id="51">
+                <source>TRANS_CUESTIONARIO_PREGUNTAS</source>
+                <target>Preguntes del qüestionari</target>
+            </trans-unit>
+
+            <trans-unit id="52">
+                <source>TRANS_AÑADIR_PREGUNTA</source>
+                <target>Afegir pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="53">
+                <source>TRANS_ERROR_PREGUNTAS</source>
+                <target>Has de seleccionar com a mínim una pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="54">
+                <source>TRANS_SUB_PREGUNTAS</source>
+                <target>Subpreguntes</target>
+            </trans-unit>
+
+            <trans-unit id="55">
+                <source>TRANS_SUB_PREGUNTA</source>
+                <target>Subpregunta</target>
+            </trans-unit>
+
+            <trans-unit id="56">
+                <source>TRANS_TIPO_DATO</source>
+                <target>Tipus de dada</target>
+            </trans-unit>
+
+            <trans-unit id="57">
+                <source>TRANS_INFO_IPO_DATO</source>
+                <target>0 = Alfanumèric / 1 = Numèric</target>
+            </trans-unit>
+
+            <trans-unit id="58">
+                <source>TRANS_EDITAR_PREGUNTA</source>
+                <target>Modificar pregunta</target>
+            </trans-unit>
+
+            <trans-unit id="59">
+                <source>TRANS_AÑADIR_VARIABLE</source>
+                <target>Afegir variable</target>
+            </trans-unit>
+
+            <trans-unit id="60">
+                <source>TRANS_EDITAR_VARIABLE</source>
+                <target>Modificar variable</target>
+            </trans-unit>
+
+            <trans-unit id="61">
+                <source>TRANS_CUESTIONARIO_CA</source>
+                <target>Nom català</target>
+            </trans-unit>
+
+            <trans-unit id="62">
+                <source>TRANS_CUESTIONARIO_ES</source>
+                <target>Nom castellà</target>
+            </trans-unit>
+
+            <trans-unit id="63">
+                <source>TRANS_TEXTO_PREGUNTA_ES</source>
+                <target>Pregunta castellà</target>
+            </trans-unit>
+
+            <trans-unit id="64">
+                <source>TRANS_TEXTO_PREGUNTA_CA</source>
+                <target>Pregunta català</target>
+            </trans-unit>
+
+            <trans-unit id="65">
+                <source>TRANS_RESPUESTA_ES</source>
+                <target>Resposta castellà</target>
+            </trans-unit>
+
+            <trans-unit id="66">
+                <source>TRANS_RESPUESTA_CA</source>
+                <target>Resposta català</target>
+            </trans-unit>
+
+            <trans-unit id="67">
+                <source>TRANS_TEXTO_CONSEJO_ES</source>
+                <target>Consell castellà</target>
+            </trans-unit>
+
+            <trans-unit id="68">
+                <source>TRANS_TEXTO_CONSEJO_CA</source>
+                <target>Consell català</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

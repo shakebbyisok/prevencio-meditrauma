@@ -1,0 +1,285 @@
+ {% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block arrow %}<a href="{{ path('tecnico_evaluaciones_evaluacion_update_riesgo_causa', { "id": app.session.get('riesgoCausaId') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_ACCION_PREVENTIVA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.preventivaEmpresa }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('#accion_preventiva_empresa_preventivaEmpresa').change(function () {
+                var accionPreventiva = $( "#accion_preventiva_empresa_preventivaEmpresa option:selected" ).text();
+                $('#accion_preventiva_empresa_descripcion').val(accionPreventiva);
+            });
+
+        {#    //Boton que añade un epi a la accion preventiva#}
+        //     $('#btnAddEpc').click(function(){
+
+        {#        if($('#listEpc').val() == ""){#}
+        {#            $('#listEpc').focus();#}
+        {#            return false;#}
+        {#        }#}
+
+        {#        $('#btnAddEpc').prop("disabled", true);#}
+        {#        $('#btnAddEpc').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");#}
+
+        {#        $.ajax({#}
+        {#            type: "POST",#}
+        {#            url: "{{ path('tecnico_evaluaciones_evaluacion_create_epc_preventiva_empresa') }}",#}
+        {#            data: {#}
+        {#                'preventivaId': '{{ app.request.get('id') }}',#}
+        {#                'epcId': $('#listEpc').val(),#}
+        {#            },#}
+        {#            dataType: "JSON",#}
+        {#            success: function (data) {#}
+        {#                if(data == "OK"){#}
+        {#                    location.reload();#}
+        {#                }#}
+        {#            },#}
+        {#            error: function(){#}
+        {#                new PNotify({#}
+        {#                    title: 'Ops!',#}
+        {#                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',#}
+        {#                    icon: 'icon-blocked',#}
+        {#                    type: 'error'#}
+        {#                });#}
+
+        {#                $('#btnAddEpc').prop("disabled", false);#}
+        {#                $('#btnAddEpc').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");#}
+        {#            }#}
+        {#        });#}
+        {#    });#}
+        });
+
+        {#function deleteEpcPreventivaEmpresa(id) {#}
+        {#    $.ajax({#}
+        {#        type: "POST",#}
+        {#        url: "{{ path('tecnico_evaluaciones_evaluacion_delete_epc_preventiva_empresa') }}",#}
+        {#        data: {#}
+        {#            'epcPreventivaEmpresaId': id#}
+        {#        },#}
+        {#        dataType: "JSON",#}
+        {#        success: function (data) {#}
+        {#            if (data == "OK") {#}
+        {#                location.reload();#}
+        {#            }#}
+        {#        },#}
+        {#        error: function () {#}
+        {#            new PNotify({#}
+        {#                title: 'Ops!',#}
+        {#                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',#}
+        {#                icon: 'icon-blocked',#}
+        {#                type: 'error'#}
+        {#            });#}
+        {#        }#}
+        {#    });#}
+        {#}#}
+
+        {#//Boton que elimina el epc seleccionado#}
+        {#$(document).on('click', 'a.eliminarEpcPreventivaEmpresa', function(){#}
+        {#    var id = $(this).data('id');#}
+        {#    bootbox.confirm({#}
+        {#        title: '{% trans %}TRANS_ELIMINAR_EPC{% endtrans %}',#}
+        {#        message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',#}
+        {#        buttons: {#}
+        {#            confirm: {#}
+        {#                label: 'Si',#}
+        {#                className: 'btn-primary'#}
+        {#            },#}
+        {#            cancel: {#}
+        {#                label: 'No',#}
+        {#                className: 'btn-link'#}
+        {#            }#}
+        {#        },#}
+        {#        callback: function (result) {#}
+        {#            if(result == true){#}
+        {#                deleteEpcPreventivaEmpresa(id)#}
+        {#            }#}
+        {#        }#}
+        {#    });#}
+        {#});#}
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        <div class="row">
+            <div class="col-lg-12">
+                <a href="{{ path('tecnico_evaluaciones_evaluacion_create_accion_preventiva_empresa') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_AÑADIR_OTRA_ACCION_PREVENTIVA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+            </div>
+        </div>
+        <br/>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.preventivaEmpresa) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.descripcion) }}
+                </div>
+            </div>
+            <!--Peticio 01/09/2023-->
+            <!--<div class="row">
+                  <div class="col-lg-12">
+                     { form_row(form.observaciones) }}
+                  </div>
+                </div> -->
+
+{#            <fieldset>#}
+{#                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PLANIFICACION_PREVENTIVA{% endtrans %}</legend>#}
+{#                <div class="row">#}
+{#                    <div class="col-lg-2">#}
+{#                        {{ form_row(form.tipoPlanificacion) }}#}
+{#                    </div>#}
+{#                    <div class="col-lg-2">#}
+{#                        {{ form_row(form.fechaPrevista) }}#}
+{#                    </div>#}
+{#                    <div class="col-lg-2">#}
+{#                        {{ form_row(form.fechaRealizacion) }}#}
+{#                    </div>#}
+{#                    <div class="col-lg-2">#}
+{#                        {{ form_row(form.costePrevisto, {'attr': {'class': 'type_text_to_number'}}) }}#}
+{#                    </div>#}
+{#                    <div class="col-lg-2">#}
+{#                        {{ form_row(form.responsableInterno) }}#}
+{#                    </div>#}
+{#                </div>#}
+
+{#                <div class="row">#}
+{#    #}{#                <div class="col-lg-3">#}
+{#    #}{#                    {{ form_row(form.empresaExterna) }}#}
+{#    #}{#                </div>#}
+{#    #}{#                <div class="col-lg-3">#}
+{#    #}{#                    {{ form_row(form.responsableExterno) }}#}
+{#    #}{#                </div>#}
+{#                </div>#}
+{#            </fieldset>#}
+
+{#            <hr/>#}
+
+{#            <fieldset>#}
+{#                <legend class="text-uppercase font-size-sm font-weight-bold">EPC's</legend>#}
+{#                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}#}
+{#                    {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}#}
+{#                        {% if app.session.get('privilegiosRol').editEvaluacionSn %}#}
+{#                            <div class="row">#}
+{#                                <div class="col-lg-12">#}
+{#                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_epc">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %} EPC's<b><i class="icon-plus3"></i></b></a>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+{#                {% endif %}#}
+{#                <br/>#}
+{#                <div class="row">#}
+{#                    <div class="col-lg-12">#}
+{#                        <div class="table-bordered">#}
+{#                            <table class="table" id="epc">#}
+{#                                <thead>#}
+{#                                <tr class="bg-grey-300">#}
+{#                                    <th>{% trans %}TRANS_DESCRIPCION{% endtrans %}</th>#}
+{#                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>#}
+{#                                </tr>#}
+{#                                </thead>#}
+{#                                <tbody>#}
+{#                                {% if epc is not empty %}#}
+{#                                    {% for e in epc %}#}
+{#                                        <tr>#}
+{#                                            {% if e.epi is not empty %}#}
+{#                                                <td>{{ e.epi.descripcion }}</td>#}
+{#                                            {% else %}#}
+{#                                                <td></td>#}
+{#                                            {% endif %}#}
+{#                                            <td>#}
+{#                                                <div class="list-icons">#}
+{#                                                    <a href="#" data-id="{{ e.id }}" target="_self" class="list-icons-item eliminarEpcPreventivaEmpresa"><i class="icon-trash"></i></a>#}
+{#                                                </div>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                    {% endfor %}#}
+{#                                {% else %}#}
+{#                                    <tr>#}
+{#                                        <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>#}
+{#                                    </tr>#}
+{#                                {% endif %}#}
+{#                                </tbody>#}
+{#                            </table>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </fieldset>#}
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir epc -->
+{#    <div id="modal_añadir_epc" class="modal fade">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h5 class="modal-title">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %} EPC</h5>#}
+{#                    <button type="button" class="close" data-dismiss="modal">&times;</button>#}
+{#                </div>#}
+
+{#                <div class="modal-body">#}
+{#                    <label>EPC</label>#}
+{#                    <select id="listEpc" class="form-control select-search">#}
+{#                        <option value=""></option>#}
+{#                        {% if listEpc is defined and listEpc is not empty %}#}
+{#                            {% for le in listEpc %}#}
+{#                                <option value="{{ le.id }}">{{ le.descripcion }}</option>#}
+{#                            {% endfor %}#}
+{#                        {% endif %}#}
+{#                    </select>#}
+{#                </div>#}
+
+{#                <div class="modal-footer">#}
+{#                    <button type="button" class="btn bg-primary" id="btnAddEpc">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+    <!-- /Modal añadir epc -->
+
+{% endblock %}
+
+
+

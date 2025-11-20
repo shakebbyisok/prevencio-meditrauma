@@ -1,0 +1,123 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'mantenimientoreconocimientos' %}
+
+{% block arrow %}
+    {% if (app.session.get('pregunta') is defined and app.session.get('pregunta') is not empty ) %}
+        <a href="{{ path('mantenimiento_reconocimientos_pregunta_update', { "id": app.session.get('pregunta') }) }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% elseif (app.session.get('serieRespuesta') is defined and app.session.get('serieRespuesta') is not empty ) %}
+        <a href="{{ path('mantenimiento_reconocimientos_serie_respuesta_update', { "id": app.session.get('serieRespuesta') }) }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% else %}
+        <a href="{{ path('mantenimiento_reconocimientos') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+{% endblock %}
+{% block title %} {% trans %}TRANS_RESPUESTA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.sub }}. {{ form.vars.value.descripcion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.serieRespuesta) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.pregunta, {'attr': {'style': 'display: none;'}}) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.sub) }}
+                </div>
+                <div class="col-lg-5">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-5">
+                    {{ form_row(form.descripcionCa) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3">
+                    {{ form_row(form.valorDesde) }}
+                </div>
+                <div class="col-lg-3">
+                    {{ form_row(form.valorDesdeNumerico) }}
+                </div>
+                <div class="col-lg-3">
+                    {{ form_row(form.valorHasta) }}
+                </div>
+                <div class="col-lg-3">
+                    {{ form_row(form.valorHastaNumerico) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.informeMedico) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.informeFinal) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.consejoMedico) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.textoSiValorCorresponde) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.respuestaProblemas) }}
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoPreguntasSn is not null %}
+                {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

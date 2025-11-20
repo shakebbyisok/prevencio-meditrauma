@@ -1,0 +1,763 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'facturacion' %}
+
+{% block title %} {% trans %}TRANS_FACTURAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addFacturacionSn is defined and app.session.get('privilegiosRol').addFacturacionSn is not null %}
+        {% if app.session.get('privilegiosRol').addFacturacionSn %}
+            <a href="{{ path('factura_create') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVA_FACTURA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').sendFacturacionSn is defined and app.session.get('privilegiosRol').sendFacturacionSn is not null %}
+        {% if app.session.get('privilegiosRol').sendFacturacionSn %}
+            <a href="#" id="btnEnviarAviso" class="btn btn-labeled btn-labeled-left bg-slate" style="margin-left: 5px;">{% trans %}TRANS_ENVIAR_FACTURA{% endtrans %}<b><i class="icon-envelop2"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('factura_datatable') }}',
+                    type: 'POST',
+                    dataSrc: 'data'
+                },
+                "columnDefs": [
+                    { "name": "input", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "actions", "sortable": false, "searchable":false,  "targets": 1 },
+                    { "name": "enviada", "sortable": false, "searchable":false, "targets": 2 },
+                    { "name": "a.numFac", "targets": 3 },
+                    { "name": "a.fecha", "searchable":false, "targets": 4 },
+                    { "name": "mes", "searchable":false, "targets": 5 },
+                    { "name": "any", "searchable":false,  "targets": 6 },
+                    { "name": "codigo", "searchable":false, "targets": 7 },
+                    { "name": "cantidad", "searchable":false, "targets": 8 },
+                    { "name": "texto", "searchable":false, "targets": 9 },
+                    { "name": "importesiniva", "searchable":false, "targets": 10 },
+                    { "name": "renovada", "searchable":false, "targets": 11 },
+                    { "name": "b.cif", "targets": 12 },
+                    { "name": "b.empresa", "targets": 13 },
+                    { "name": "g.descripcion", "targets": 14 },
+                    { "name": "h.nombre", "targets": 15 },
+                    { "name": "tecnico", "searchable":false, "targets": 16 },
+                    { "name": "b.trabajadores", "searchable":false, "targets": 17 },
+                    { "name": "iva", "searchable":false, "targets": 18 },
+                    { "name": "importe", "searchable":false, "targets": 19 },
+                    {"name": "d.descripcion", "targets": 20 },
+                    {"name": "e.nombre", "targets": 21 },
+                    {"name": "f.nombre", "targets": 22 },
+                ],
+                order: [
+                    [4, "desc"]
+                ],
+                columns:[
+                    {data: "input"},
+                    {data: "actions"},
+                    {data: "enviada"},
+                    {data: "num_fac"},
+                    {data: "fecha"},
+                    {data: "mes"},
+                    {data: "any"},
+                    {data: "codigo"},
+                    {data: "cantidad"},
+                    {data: "texto"},
+                    {data: "importesiniva"},
+                    {data: "renovada"},
+                    {data: "cif"},
+                    {data: "empresa"},
+                    {data: "agente"},
+                    {data: "partner"},
+                    {data: "tecnico"},
+                    {data: "trabajadores"},
+                    {data: "iva"},
+                    {data: "importe"},
+                    {data: "formapago"},
+                    {data: "responsableadministrativo"},
+                    {data: "medico"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportFacturacionSn is defined and app.session.get('privilegiosRol').exportFacturacionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportFacturacionSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que filtra las facturas
+            $('#btnFiltra').click(function(){
+
+                $('#numFacturas').text(0);
+                $('#totalFacturas').text('0,00');
+                $('#ivaFacturas').text('0,00');
+                $('#baseFacturas').text('0,00');
+
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+                var renovada = $('#renovada').val();
+                var enviada = $('#enviada').val();
+
+                var dtInici = "";
+                var dtFin = "";
+
+                //Comprobamos si la mascara existe
+                var maskIni = fechaInicio.search("_");
+                if(maskIni != "-1"){
+                    fechaInicio = "";
+                }
+
+                var maskFin = fechaFin.search("_");
+                if(maskFin != "-1"){
+                    fechaFin = "";
+                }
+
+                if(fechaInicio != ""){
+                    var arrayIni = fechaInicio.split('/');
+                    dtInici = arrayIni[2]+'-'+arrayIni[1]+'-'+arrayIni[0];
+                    var daysMonths = daysInMonth(arrayIni[1],arrayIni[2]);
+                    if(arrayIni[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_INI_FILTRO{% endtrans %}');
+                        $('#fini').focus();
+                        return false;
+                    }
+                }
+
+                if(fechaFin != ""){
+                    var arrayFin = fechaFin.split('/');
+                    dtFin = arrayFin[2]+'-'+arrayFin[1]+'-'+arrayFin[0];
+                    var daysMonths = daysInMonth(arrayFin[1],arrayFin[2]);
+                    if(arrayFin[0] > daysMonths){
+                        alert('{% trans from 'messages' %}TRANS_ERROR_FECHA_FIN_FILTRO{% endtrans %}');
+                        $('#ffin').focus();
+                        return false;
+                    }
+                }
+
+                if(dtInici != "" || dtFin != "" || renovada || enviada){
+                    var url  = window.location.href;
+                    if (url.indexOf("pagadas") >= 0){
+                        filtrar(dtInici, dtFin, 1, renovada, enviada, true, false);
+                    }else if(url.indexOf("noPagadas") >= 0){
+                        filtrar(dtInici, dtFin, 1, renovada, enviada, false, true);
+                    }else{
+                        filtrar(dtInici, dtFin, 1, renovada, enviada, false, false);
+                    }
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                var url  = window.location.href;
+                if (url.indexOf("pagadas") >= 0){
+                    filtrar(null, null, 2, null, null, true, false);
+                }else if(url.indexOf("noPagadas") >= 0){
+                    filtrar(null, null, 2, null, null, false, true);
+                }else{
+                    filtrar(null, null, 2, null, null, false, false);
+                }
+
+                $('#fini').val("");
+                $('#ffin').val("");
+                $('#renovada').val("").change();
+                $('#enviada').val("").change();
+                $('#numFacturas').text(0);
+                $('#totalFacturas').text('0,00');
+                $('#ivaFacturas').text('0,00');
+                $('#baseFacturas').text('0,00');
+            });
+
+            //Boton que genera la facturas
+            $('#btnGeneraFactura').click(function(){
+
+                $('#btnGeneraFactura').prop("disabled", true);
+                $('#btnGeneraFactura').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantilla').val(),
+                        'id': $('#facturaId').val(),
+                        'tipo': 2
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnGeneraFactura').prop("disabled", false);
+                            $('#btnGeneraFactura').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnGeneraFactura').prop("disabled", false);
+                        $('#btnGeneraFactura').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que envia el aviso
+            $('#btnEnviarAviso').click(function(){
+                if(arrayFacturas.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_GENVIAR_AVISO_FACTURA{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }else{
+                    $.ajax({
+                        type: "POST",
+                        url: '{{ path('factura_pre_enviar_aviso_factura_manual') }}',
+                        dataType: 'JSON',
+                        data: {
+                            facturas: arrayFacturas
+                        },
+                        success: function (data) {
+                            if(data == 'OK'){
+                                var url = '{{ path('factura_enviar_aviso_factura_manual') }}';
+                                location.href = url;
+                            }
+                        },
+                        error: function(){
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        function daysInMonth (month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function filtrar(fechaInicio, fechaFin, op, renovada, enviada, pagadaSn, noPagadaSn){
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            var table = $('.datatable-export-excel').DataTable();
+            table.clear().destroy();
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('factura_filtra_datatable') }}',
+                    type: 'POST',
+                    dataSrc: 'data',
+                    data: {
+                        'ini': fechaInicio,
+                        'fin': fechaFin,
+                        'renovada': renovada,
+                        'enviada': enviada
+                    },
+                },
+                "columnDefs": [
+                    { "name": "input", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "actions", "sortable": false, "searchable":false,  "targets": 1 },
+                    { "name": "enviada", "sortable": false, "searchable":false, "targets": 2 },
+                    { "name": "a.numFac", "targets": 3 },
+                    { "name": "a.fecha", "searchable":false, "targets": 4 },
+                    { "name": "mes", "searchable":false, "targets": 5 },
+                    { "name": "any", "searchable":false,  "targets": 6 },
+                    { "name": "codigo", "searchable":false, "targets": 7 },
+                    { "name": "cantidad", "searchable":false, "targets": 8 },
+                    { "name": "texto", "searchable":false, "targets": 9 },
+                    { "name": "importesiniva", "searchable":false, "targets": 10 },
+                    { "name": "renovada", "searchable":false, "targets": 11 },
+                    { "name": "b.cif", "targets": 12 },
+                    { "name": "b.empresa", "targets": 13 },
+                    { "name": "g.descripcion", "targets": 14 },
+                    { "name": "h.nombre", "targets": 15 },
+                    { "name": "tecnico", "searchable":false, "targets": 16 },
+                    { "name": "b.trabajadores", "searchable":false, "targets": 17 },
+                    { "name": "iva", "searchable":false, "targets": 18 },
+                    { "name": "importe", "searchable":false, "targets": 19 },
+                    {"name": "d.descripcion", "targets": 20 },
+                    {"name": "e.nombre", "targets": 21 },
+                    {"name": "f.nombre", "targets": 22 },
+                ],
+                order: [
+                    [4, "desc"]
+                ],
+                columns:[
+                    {data: "input"},
+                    {data: "actions"},
+                    {data: "enviada"},
+                    {data: "num_fac"},
+                    {data: "fecha"},
+                    {data: "mes"},
+                    {data: "any"},
+                    {data: "codigo"},
+                    {data: "cantidad"},
+                    {data: "texto"},
+                    {data: "importesiniva"},
+                    {data: "renovada"},
+                    {data: "cif"},
+                    {data: "empresa"},
+                    {data: "agente"},
+                    {data: "partner"},
+                    {data: "tecnico"},
+                    {data: "trabajadores"},
+                    {data: "iva"},
+                    {data: "importe"},
+                    {data: "formapago"},
+                    {data: "responsableadministrativo"},
+                    {data: "medico"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            buscarDatosFacturacion(fechaInicio, fechaFin, renovada);
+
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", false);
+                $('#btnFiltra').html("Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", false);
+                $('#btnReset').html("Reset");
+            }
+        }
+
+        var arrayFacturas = [];
+        //Boton que añade la factura a la lista de facturas seleccionadas
+        $(document).on('click', 'input[name=\'factura\']', function(){
+            var facturaId = $(this).attr('id');
+
+            if ($(this).prop('checked')) {
+                $('#uniform-'+facturaId+' span').addClass('checked');
+                arrayFacturas.push(facturaId);
+            }else{
+                $('#uniform-'+facturaId+' span').removeClass('checked');
+                arrayFacturas.splice($.inArray(facturaId, arrayFacturas),1);
+            }
+        });
+
+        //Boton que añade todas las facturas a la lista de facturas seleccionadas
+        $(document).on('click', 'input[name=\'facturasAll\']', function(){
+            //var cells = $('.datatable-export-excel').DataTable().cells( ).nodes();
+            //var checks = $(cells).find('input[name=\'factura\']');
+            var checks = $('.datatable-export-excel').find('input[name=\'factura\']');
+
+            if($(this).prop('checked')){
+                $(checks).each(function() {
+                    var facturaId = $(this).attr('id');
+                    $('#uniform-'+facturaId+' span').addClass('checked');
+                    arrayFacturas.push(facturaId);
+                });
+            }else{
+                $(checks).each(function() {
+                    var facturaId = $(this).attr('id');
+                    $('#uniform-'+facturaId+' span').removeClass('checked');
+                });
+                arrayFacturas.splice(0, arrayFacturas.length);
+            }
+        });
+
+
+        //Boton que elimina la factura seleccionada
+        $(document).on('click', 'a.eliminarFactura', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FACTURA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        var url = '{{ path('factura_delete', { "id": "facturaId" }) }}';
+                        url = url.replace("facturaId", id);
+                        window.location.href = url;
+                    }
+                }
+            });
+        });
+
+        function buscarDatosFacturacion(fechaInicio, fechaFin, renovada){
+            $.ajax({
+                type: "POST",
+                url: '{{ path('factura_filtrar_facturas') }}',
+                dataType: 'JSON',
+                data: {
+                    'ini': fechaInicio,
+                    'fin': fechaFin,
+                    'renovada': renovada,
+                    'pagadaSn': "",
+                    'noPagadaSn': ""
+                },
+                success: function (data) {
+
+                    if (data.numero != "") {
+                        $('#numFacturas').text(data.numero);
+                    }
+
+                    if (data.total != "") {
+                        $('#totalFacturas').text(data.total);
+                    } else {
+                        $('#totalFacturas').text('0,00');
+                    }
+
+                    if (data.iva != "") {
+                        $('#ivaFacturas').text(data.iva);
+                    } else {
+                        $('#ivaFacturas').text('0,00');
+                    }
+
+                    if (data.base != "") {
+                        $('#baseFacturas').text(data.base);
+                    } else {
+                        $('#baseFacturas').text('0,00');
+                    }
+                }
+            });
+        }
+
+        function deleteFichero(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_delete_file') }}",
+                data: {
+                    'id': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que añade el id de la factura para su generacion
+        $(document).on('click', 'a.selectFactura', function(){
+            var facturaId = $(this).data('id');
+            $('#facturaId').val(facturaId);
+        });
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarFichero', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,2)
+                    }
+                }
+            });
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        <div class="card-header bg-white">
+            <div class="header-elements">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item"><span class="badge-light badge-striped badge-striped-left border-left-grey"><i class="icon-stack"></i> {% trans %}TRANS_NUMERO_FACTURAS{% endtrans %} <strong><span id="numFacturas">0</span></strong></span></li>
+                    <li class="list-inline-item"><span class="badge-light badge-striped badge-striped-left border-left-success"><i class="icon-coin-euro"></i> {% trans %}TRANS_TOTAL_FACTURAS{% endtrans %} <strong><span id="totalFacturas">0,00</span></strong> €</span></li>
+                    <li class="list-inline-item"><span class="badge-light badge-striped badge-striped-left border-left-primary"><i class="icon-coin-euro"></i> {% trans %}TRANS_BASE_IMP{% endtrans %} <strong><span id="baseFacturas">0,00</span> €</strong></span></li>
+                    <li class="list-inline-item"><span class="badge-light badge-striped badge-striped-left border-left-info"><i class="icon-coin-euro"></i> {% trans %}TRANS_IVA{% endtrans %}: <strong><span id="ivaFacturas">0,00</span> € </strong></span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="text" id="fini" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="text" id="ffin" data-mask="99/99/9999" placeholder="dd/mm/aaaa">
+            </label>
+
+            <label>
+                <span>Renovada:</span>
+                <select id="renovada" class="form-control">
+                    <option value=""></option>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                </select>
+            </label>
+
+            <label>
+                <span>Enviada:</span>
+                <select id="enviada" class="form-control">
+                    <option value=""></option>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                </select>
+            </label>
+
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="facturasAll" id="selectFacturasAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Enviada">{% trans %}TRANS_ENVIADA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Factura">{% trans %}TRANS_FACTURA{% endtrans %}
+                        </th>
+                        <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha" aria-sort="descending">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Mes">{% trans %}TRANS_MES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Año">{% trans %}TRANS_AÑO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Codigo">{% trans %}TRANS_CODIGO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Cantidad">{% trans %}TRANS_CANTIDAD{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Descripcion">{% trans %}TRANS_DESCRIPCION{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="ImporteSinIva">{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Renovada">{% trans %}TRANS_RENOVADA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="cif">CIF Empresa
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Comercial">{% trans from 'empresas' %}TRANS_AGENTE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Partner">{% trans from 'empresas' %}TRANS_COLABORADOR{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tecnico">{% trans from 'empresas' %}TRANS_TECNICO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Trabajadores">{% trans from 'empresas' %}TRANS_TRABAJADORES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="ImporteIva">{% trans %}TRANS_IVA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Importe">{% trans %}TRANS_IMPORTE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="FormaPago">{% trans %}TRANS_FORMA_PAGO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="GestorAdm">{% trans from 'empresas' %}TRANS_GESTOR_ADM{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Medico">{% trans from 'empresas' %}TRANS_MEDICO{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generacion factura -->
+    <div id="modal_generate_factura" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}IMPRIMIR_FACTURA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillas is not empty %}
+                            {% for lp in listPlantillas %}
+                                <option value="{{ lp.id }}">{{ lp.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="facturaId" class="form-control"/>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGeneraFactura">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion factura -->
+
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'empresas' %}
+
+{% block title %} {% trans %}TRANS_EMPRESAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addEmpresaSn is defined and app.session.get('privilegiosRol').addEmpresaSn is not null %}
+        {% if app.session.get('privilegiosRol').addEmpresaSn %}
+            <a href="{{ path('empresa_create') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVA_EMPRESA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for empresa in empresas %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                actions += '<a href="{{ path("empresa_select", { "id": empresa.id, "tipo": 1 }) }}" class="list-icons-item" data-popup="tooltip" title="Seleccionar" data-container="body"><i class="icon-select2"></i></a>';
+
+                {% if app.session.get('privilegiosRol').viewEmpresaSn is defined and app.session.get('privilegiosRol').viewEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').viewEmpresaSn %}
+                        actions += '<a href="{{ path('empresa_view', { "id": empresa.id }) }}" class="list-icons-item" data-popup="tooltip" title="Ver" data-container="body"><i class="icon-eye"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').editEmpresaSn is defined and app.session.get('privilegiosRol').editEmpresaSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEmpresaSn %}
+                        actions += '<a href="{{ path('empresa_update', { "id": empresa.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                var activa;
+                var tipo;
+                var estado;
+                //Peticio 01/09/0223
+                {% if empresa.anulado == false %}
+                    activa = '<span class="badge badge-flat border-success text-success-600">Si<i class="icon-checkmark2"></i></span>';
+
+                    {% if app.session.get('privilegiosRol').deleteEmpresaSn is defined and app.session.get('privilegiosRol').deleteEmpresaSn is not null %}
+                        {% if app.session.get('privilegiosRol').deleteEmpresaSn %}
+                            actions += '<a href="#" data-id="{{ empresa.id }}" class="list-icons-item selectBajaEmpresa" title="Dar de baja"  data-toggle="modal" data-target="#modal_baja_empresa"><i class="icon-trash"></i></a>';
+                        {% endif %}
+                    {% endif %}
+
+                {% else %}
+                    {% if app.session.get('privilegiosRol').deleteEmpresaSn is defined and app.session.get('privilegiosRol').deleteEmpresaSn is not null %}
+                        {% if app.session.get('privilegiosRol').deleteEmpresaSn %}
+                            actions += '<a href="{{ path('empresa_activar', { "id": empresa.id, "tipo": 1 }) }}" class="list-icons-item" data-popup="tooltip" title="Activar" data-container="body" onclick="return confirm(\'{% trans from 'messages' %}TRANS_CONFIRM_ACTIVAR_EMPRESA{% endtrans %}\')"><i class="icon-reset"></i></a>';
+                        {% endif %}
+                    {% endif %}
+
+                    activa = '<span class="badge badge-flat border-danger text-danger-600">No<i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                actions += '</div>';
+
+                var tipo = '';
+                {% if empresa.tipo is not empty %}
+                    {% if empresa.tipoid == 1 %}
+                        tipo = '<span class="badge badge-info">{{ empresa.tipo }}</span>';
+                    {% elseif empresa.tipoid == 2 %}
+                        tipo = '<span class="badge badge-danger">{{ empresa.tipo }}</span>';
+                    {% elseif empresa.tipoid == 3 %}
+                        tipo = '<span class="badge badge-warning">{{ empresa.tipo }}</span>';
+                    {% else %}
+                        tipo = '<span class="badge badge-primary">{{ empresa.tipo }}</span>';
+                    {% endif %}
+                {% endif %}
+
+                {% if empresa.estado is not empty %}
+                    {% if empresa.estadoid != 4 %}
+                        estado = '<span class="badge badge-danger">{{ empresa.estado }}</span>';
+                    {% else %}
+                        estado = '<span class="badge badge-success">{{ empresa.estado }}</span>';
+                    {% endif %}
+                {% else %}
+                    estado = '<span class="badge badge-success"><br/></span>';
+                {% endif %}
+
+                var pruebasEspeciales = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% if empresa.pruebas_especiales == true %}
+                pruebasEspeciales = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% endif %}
+
+                array.push(actions, activa, pruebasEspeciales, '{{ empresa.facturacionanterior|number_format(2, ",", ".") }} €', estado, tipo, '{{ empresa.empresa }}', '{{ empresa.codigo }}', '{{ empresa.cif }}', '{{ empresa.telefono1 }}', '{{ empresa.telefono2 }}', '{{ empresa.email }}', '{{ empresa.colaborador }}', '{{ empresa.tecnico }}', '{{ empresa.agente }}', '{{ empresa.medico }}', '{{ empresa.responsableadministrativo }}', '{{ empresa.domicilio_postal }}', '{{ empresa.localidad_postal }}', '{{ empresa.codigo_postal_postal }}', '{{ empresa.trabajadores }}');
+                arrayData.push(array);
+            {% endfor %}
+
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    decimal: ',',
+                    thousands: '.',
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEmpresaSn is defined and app.session.get('privilegiosRol').exportEmpresaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportEmpresaSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton para dar de baja a una empresa
+            $('#btnBajaEmpresa').click(function(){
+
+                if($('#fechaBajaEmpresa').val() == ''){
+                    $('#fechaBajaEmpresa').focus();
+                    return false;
+                }
+
+                if($('#motivoBajaEmpresa').val() == ''){
+                    $('#motivoBajaEmpresa').focus();
+                    return false;
+                }
+
+                $('#btnBajaEmpresa').prop("disabled", true);
+                $('#btnBajaEmpresa').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_DAR_DE_BAJA_EMPRESA{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('empresa_delete') }}",
+                    data: {
+                        'fechaBaja': $('#fechaBajaEmpresa').val(),
+                        'motivoBaja': $('#motivoBajaEmpresa').val(),
+                        'empresaId': $('#empresaIdBaja').val(),
+                        'tipo': 1
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnBajaEmpresa').prop("disabled", false);
+                        $('#btnBajaEmpresa').html("{% trans from 'messages' %}TRANS_DAR_DE_BAJA_EMPRESA{% endtrans %}");
+                    }
+                });
+            });
+        });
+
+        //Boton que añade el id de la empresa para darla de baja
+        $(document).on('click', 'a.selectBajaEmpresa', function(){
+            var id = $(this).data('id');
+            $('#empresaIdBaja').val(id);
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-sort="ascending" aria-label="Activa">{% trans %}TRANS_ACTIVA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="PruebasEspeciales">{% trans %}TRANS_PRUEBAS_ESPECIALES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="FacturacionAnterior">{% trans %}TRANS_FACTURACION_ANTERIOR{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                             aria-label="Estado">{% trans %}TRANS_ESTADO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tipo">{% trans %}TRANS_TIPO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_NOMBRE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Codigo">{% trans %}TRANS_CODIGO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="CIF">CIF
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Telefono">{% trans %}TRANS_TELEFONO1{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Telefono2">{% trans %}TRANS_TELEFONO2{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Correo">{% trans %}TRANS_EMAIL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Colaborador">{% trans %}TRANS_COLABORADOR{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tecnico">{% trans %}TRANS_TECNICO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Agente">{% trans %}TRANS_AGENTE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Medico">{% trans %}TRANS_MEDICO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Gestor">{% trans %}TRANS_GESTOR_ADM{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Domicilio">{% trans %}TRANS_DOMICILIO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Localidad">{% trans %}TRANS_LOCALIDAD{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="CodigoPostal">{% trans %}TRANS_CODIGO_POSTAL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Trabajadores">{% trans %}TRANS_TRABAJADORES{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal dar de baja empresa -->
+    <div id="modal_baja_empresa" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MOTIVO_BAJA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_FECHA_BAJA{% endtrans %}</label>
+                    <input type="date" class="form-control" id="fechaBajaEmpresa" />
+
+                    <br/>
+                    <br/>
+
+                    <label>{% trans %}TRANS_MOTIVO_BAJA{% endtrans %}</label>
+                    <textarea id="motivoBajaEmpresa" class="form-control"></textarea>
+
+                    <input type="hidden" class="form-control" id="empresaIdBaja" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnBajaEmpresa">{% trans from 'messages' %}TRANS_DAR_DE_BAJA_EMPRESA{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal dar de baja empresa -->
+
+{% endblock %}

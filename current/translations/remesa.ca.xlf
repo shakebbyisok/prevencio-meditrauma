@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_REMESAS</source>
+                <target>Remeses bancàries</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_IMPORTE_GIROS</source>
+                <target>Import girs (només seleccionats):</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_FACTURA</source>
+                <target>Factura</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_REMESA</source>
+                <target>Remesa</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_GENERAR_REMESAS</source>
+                <target>Generar fitxer de remesa</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_IMPORTE</source>
+                <target>Import</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_VENCIMIENTO</source>
+                <target>Vencimient</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_GENERANDO</source>
+                <target>Generant...</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_ERROR_REMESAS</source>
+                <target>Has de seleccionar almenys un gir bancari.</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_DATOS_BANCARIOS</source>
+                <target>Dades bancàries</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_NOMBRE_ORDENANTE</source>
+                <target>Nom ordenant</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_CCC</source>
+                <target>CCC</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_GENERAR</source>
+                <target>Generar</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_ERROR_DATOS_REMESA</source>
+                <target>Has d\'introduir el nom d\'ordenant i un CCC.</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_REMESAS_GENERADAS</source>
+                <target>Remeses generadas</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_FECHA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_CUENTA</source>
+                <target>Compte bancari</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

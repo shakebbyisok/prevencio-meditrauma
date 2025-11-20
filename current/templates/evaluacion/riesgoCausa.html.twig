@@ -1,0 +1,1133 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block arrow %}
+    {% if app.session.get('puestoTrabajoEvaluacionId') is defined and app.session.get('puestoTrabajoEvaluacionId') is not empty %}
+        <a href="{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_evaluar', { "id": app.session.get('puestoTrabajoEvaluacionId') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+    {% if app.session.get('zonaTrabajoEvaluacionId') is defined and app.session.get('zonaTrabajoEvaluacionId') is not empty %}
+        <a href="{{ path('tecnico_evaluaciones_evaluacion_zona_trabajo_evaluar', { "id": app.session.get('zonaTrabajoEvaluacionId') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+{% endblock %}
+{% block title %} {% trans %}TRANS_RIESGOS_CAUSAS{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {% if form.vars.value.grupoRiesgo is not empty %}
+            {{ form.vars.value.grupoRiesgo.codigo }} - {{ form.vars.value.grupoRiesgo }}
+        {% endif %}
+
+        {% if form.vars.value.riesgo is not empty %}
+            / {{ form.vars.value.riesgo.codigo }} - {{ form.vars.value.riesgo }}
+        {% endif %}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            var tipo = $('#riesgo_causa_tipoPlanificacion').val();
+            var fechaPrevista = '';
+            var fechaEvaluacion = new Date('{{ fechaEvaluacion|date("Y-m-d")|replace({'-':'/'}) }}');
+            var day = fechaEvaluacion.getDate().toString().padStart(2, '0');
+
+            if (isNaN(fechaEvaluacion)) {
+                console.log('La fecha de evaluación no es válida.');
+                return;
+            }
+            var year = fechaEvaluacion.getFullYear();
+            var month = fechaEvaluacion.getMonth();
+
+            if (tipo == 0) {
+                switch ($('#riesgo_causa_valorRiesgo').val()) {
+                    case '1':
+                        month += 1;
+                        break;
+                    case '2':
+                        month += 3;
+                        break;
+                    case '3':
+                        month += 6;
+                        break;
+                    case '4':
+                        year += 1;
+                        break;
+                    case '5':
+                        year += 1;
+                        break;
+                }
+
+                // Verificar si la fecha es válida
+                if (month > 11) {
+                    year += Math.floor(month / 12);
+                    month = month % 12;
+                }
+
+                // Ajustar al último día del mes
+                var lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+                if (day > lastDayOfMonth) {
+                    day = lastDayOfMonth;
+                }
+
+                // Ajustar el mes al formato de dos dígitos
+                var formattedMonth = (month + 1 < 10) ? "0" + (month + 1) : (month + 1);
+
+                fechaPrevista = year + '-' + formattedMonth + '-' + day;
+                $('#riesgo_causa_fechaPrevista').val(fechaPrevista);
+            }
+            if (tipo == 2) {
+                switch ($('#riesgo_causa_valorRiesgo').val()) {
+                    case '1':
+                        month += 1;
+                        break;
+                    case '2':
+                        month += 3;
+                        break;
+                    case '3':
+                        month += 6;
+                        break;
+                    case '4':
+                        year += 1;
+                        break;
+                    case '5':
+                        year += 1;
+                        break;
+                }
+
+                // Verificar si la fecha es válida
+                if (month > 11) {
+                    year += Math.floor(month / 12);
+                    month = month % 12;
+                }
+
+                // Ajustar al último día del mes
+                var lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+                if (day > lastDayOfMonth) {
+                    day = lastDayOfMonth;
+                }
+
+                // Ajustar el mes al formato de dos dígitos
+                var formattedMonth = (month + 1 < 10) ? "0" + (month + 1) : (month + 1);
+
+                fechaPrevista = year + '-' + formattedMonth + '-' + day;
+                $('#riesgo_causa_fechaPrevista').val(fechaPrevista);
+            }
+
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            $('.html5-uploader').pluploadQueue({
+                runtimes: 'html5',
+                url: '{{ path('tecnico_evaluaciones_evaluacion_create_img_riesgo_causa') }}',
+                chunk_size: '100mb',
+                unique_names: true,
+                preinit: attachCallbacks,
+                filters: {
+                    max_file_size: '100mb',
+                    mime_types: [{
+                        title: 'Image files',
+                        extensions: 'jpg,gif,png'
+                    }]
+                },
+                resize: {
+                    width: 320,
+                    height: 240,
+                    quality: 90
+                },
+                views: {
+                    list: true,
+                    thumbs: true, // Show thumbs
+                    active: 'thumbs'
+                },
+            });
+
+            function attachCallbacks(Uploader) {
+                Uploader.bind('FileUploaded', function(Up, File, Response) {
+                    if( (Uploader.total.uploaded + 1) == Uploader.files.length)
+                    {
+                        location.reload();
+                    }
+                });
+            }
+
+            //Control grupo riesgo - riesgo
+            {#$('#riesgo_causa_grupoRiesgo').change(function () {#}
+            {#    $('#riesgo_causa_riesgo').empty();#}
+            {#    $('#riesgo_causa_riesgo').prop('disabled', true);#}
+
+            {#    var grupoRiesgoId = $(this).val();#}
+
+            {#    $.ajax({#}
+            {#        type: "POST",#}
+            {#        url: "{{ path('tecnico_evaluaciones_evaluacion_busca_riesgos') }}",#}
+            {#        data: {#}
+            {#            'grupoRiesgoId': grupoRiesgoId,#}
+            {#        },#}
+            {#        dataType: "JSON",#}
+            {#        success: function (data) {#}
+            {#            if (JSON.parse(data) != "") {#}
+            {#                $('#riesgo_causa_riesgo').empty();#}
+
+            {#                $("#riesgo_causa_riesgo").append('<option value=""></option>');#}
+            {#                $.each(JSON.parse(data), function (i, item) {#}
+            {#                    $("#riesgo_causa_riesgo").append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');#}
+            {#                });#}
+            {#            }#}
+            {#        },#}
+            {#        complete: function (){#}
+            {#            $('#riesgo_causa_riesgo').prop('disabled', false);#}
+            {#        },#}
+            {#        error: function () {#}
+            {#            new PNotify({#}
+            {#                title: 'Ops!',#}
+            {#                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',#}
+            {#                icon: 'icon-blocked',#}
+            {#                type: 'error'#}
+            {#            });#}
+            {#        }#}
+            {#    });#}
+            {#});#}
+
+            {#$('#riesgo_causa_grupoRiesgo').each(function () {#}
+            {#    var grupoRiesgoId = $(this).val();#}
+            {#    var riesgoId = $("#riesgo_causa_riesgo").val();#}
+
+            {#    if(grupoRiesgoId == ""){#}
+            {#        $('#riesgo_causa_riesgo').prop('disabled', true);#}
+            {#    }else{#}
+            {#        $.ajax({#}
+            {#            type: "POST",#}
+            {#            url: "{{ path('tecnico_evaluaciones_evaluacion_busca_riesgos') }}",#}
+            {#            data: {#}
+            {#                'grupoRiesgoId': grupoRiesgoId,#}
+            {#            },#}
+            {#            dataType: "JSON",#}
+            {#            success: function (data) {#}
+            {#                if (JSON.parse(data) != "") {#}
+            {#                    $('#riesgo_causa_riesgo').empty();#}
+
+            {#                    $("#riesgo_causa_riesgo").append('<option value=""></option>');#}
+            {#                    $.each(JSON.parse(data), function (i, item) {#}
+            {#                        $("#riesgo_causa_riesgo").append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');#}
+            {#                    });#}
+            {#                }#}
+            {#            },#}
+            {#            complete: function (){#}
+            {#                $("#riesgo_causa_riesgo").val(riesgoId).change();#}
+            {#                $('#riesgo_causa_riesgo').prop('disabled', false);#}
+            {#            },#}
+            {#            error: function () {#}
+            {#                new PNotify({#}
+            {#                    title: 'Ops!',#}
+            {#                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',#}
+            {#                    icon: 'icon-blocked',#}
+            {#                    type: 'error'#}
+            {#                });#}
+            {#            }#}
+            {#        });#}
+            {#    }#}
+            {#});#}
+
+            $('#riesgo_causa_riesgo').change(function () {
+                var riesgoId = $(this).val();
+                //var grupoRiesgoId = $('#riesgo_causa_grupoRiesgo').val();
+                var causaId = $('#riesgo_causa_causa').val();
+
+                $('#riesgo_causa_causa').empty();
+                $('#riesgo_causa_causa').prop('disabled', true);
+
+                if(riesgoId != ""){
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('tecnico_evaluaciones_evaluacion_busca_causas') }}",
+                        data: {
+                            'riesgoId': riesgoId,
+                            //'grupoRiesgoId': grupoRiesgoId,
+                        },
+                        dataType: "JSON",
+                        success: function (data) {
+                            if (JSON.parse(data) != "") {
+                                $('#riesgo_causa_causa').empty();
+                                $("#riesgo_causa_causa").append('<option value=""></option>');
+                                $.each(JSON.parse(data), function (i, item) {
+                                    $("#riesgo_causa_causa").append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                                });
+                            }
+                        },
+                        complete: function (){
+                            $("#riesgo_causa_causa").val(causaId).change();
+                            $('#riesgo_causa_causa').prop('disabled', false);
+                        },
+                        error: function () {
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+
+            $('#riesgo_causa_riesgo').each(function () {
+                var riesgoId = $(this).val();
+                //var grupoRiesgoId = $('#riesgo_causa_grupoRiesgo').val();
+                var causaId = $('#riesgo_causa_causa').val();
+
+                $('#riesgo_causa_causa').empty();
+                $('#riesgo_causa_causa').prop('disabled', true);
+
+                if(riesgoId != ""){
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('tecnico_evaluaciones_evaluacion_busca_causas') }}",
+                        data: {
+                            'riesgoId': riesgoId,
+                            //'grupoRiesgoId': grupoRiesgoId,
+                        },
+                        dataType: "JSON",
+                        success: function (data) {
+                            if (JSON.parse(data) != "") {
+                                $('#riesgo_causa_causa').empty();
+                                $("#riesgo_causa_causa").append('<option value=""></option>');
+                                $.each(JSON.parse(data), function (i, item) {
+                                    $("#riesgo_causa_causa").append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                                });
+                            }
+                        },
+                        complete: function (){
+                            $("#riesgo_causa_causa").val(causaId).change();
+                            $('#riesgo_causa_causa').prop('disabled', false);
+                        },
+                        error: function () {
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+
+            $('#riesgo_causa_valorRiesgo').attr("style", "pointer-events: none;");
+
+            function buscaValorRiesgo(severidad, probabilidad){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_busca_valor_riesgo') }}",
+                    data: {
+                        'severidadId': severidad,
+                        'probabilidadId': probabilidad
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data != "") {
+                            $('#riesgo_causa_valorRiesgo').val(data.valorRiesgo).change();
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+
+            //Evento cuando cambia severidad
+            $("#riesgo_causa_severidad").change(function () {
+                var severidad = $("#riesgo_causa_severidad").val();
+                var probabilidad = $("#riesgo_causa_probabilidad").val();
+
+                if(severidad != "" && probabilidad != ""){
+                    buscaValorRiesgo(severidad, probabilidad);
+                }
+            });
+
+            //Evento cuando cambia severidad
+            $("#riesgo_causa_probabilidad").change(function () {
+                var severidad = $("#riesgo_causa_severidad").val();
+                var probabilidad = $("#riesgo_causa_probabilidad").val();
+
+                if(severidad != "" && probabilidad != ""){
+                    buscaValorRiesgo(severidad, probabilidad);
+                }
+            });
+
+            //Evento cuando tipo planificacion es PREVENTIVA
+            $("#riesgo_causa_tipoPlanificacion").change(function () {
+               var tipoPlanificacion = $(this).val();
+               if(tipoPlanificacion == 0 && tipoPlanificacion != ""){
+                   //Peticio 01/09/2023 Mejora continua #67379 - Modificacion puesto trabajo
+                    //$('#riesgo_causa_fechaPrevista').css('display', 'none');
+                    $('#riesgo_causa_fechaPrevista_continuo').css('display', 'none');
+                    $('#riesgo_causa_fechaRealizacion').css('display', 'none');
+                    $('#riesgo_causa_fechaPrevista_periodicamente').css({'display':'block', 'margin-top': '-20px'});
+               }else{
+                    $('#riesgo_causa_fechaPrevista_continuo').css('display', 'none');
+                    $('#riesgo_causa_fechaPrevista').css('display', 'block');
+                    $('#riesgo_causa_fechaPrevista_periodicamente').css('display', 'none');
+                    $('#riesgo_causa_fechaRealizacion').css('display', 'block');
+               }
+            });
+
+            $("#riesgo_causa_tipoPlanificacion").each(function () {
+                var tipoPlanificacion = $(this).val();
+                if(tipoPlanificacion == 0 && tipoPlanificacion != ""){
+                    //Peticio 01/09/2023 Mejora continua #67379 - Modificacion puesto trabajo
+                    //$('#riesgo_causa_fechaPrevista').css('display', 'none');
+                    $('#riesgo_causa_fechaPrevista_continuo').css('display', 'none');
+                    $('#riesgo_causa_fechaRealizacion').css('display', 'none');
+                    $('#riesgo_causa_fechaPrevista_periodicamente').css({'display':'block', 'margin-top': '-20px'});
+                }else{
+                    $('#riesgo_causa_fechaPrevista_continuo').css('display', 'none');
+                    $('#riesgo_causa_fechaPrevista').css('display', 'block');
+                    $('#riesgo_causa_fechaPrevista_periodicamente').css('display', 'none');
+                    $('#riesgo_causa_fechaRealizacion').css('display', 'block');
+                }
+            });
+
+            //Control metodologia valoracion
+           /* $('label[for="riesgo_causa_severidad"]').css('display', 'none');
+            $('#riesgo_causa_severidad').css('display', 'none');
+            $('label[for="riesgo_causa_probabilidad"]').css('display', 'none');
+            $('#riesgo_causa_probabilidad').css('display', 'none');
+            $('label[for="riesgo_causa_actividad"]').css('display', 'none');
+            $('#riesgo_causa_actividad').css('display', 'none');
+            $('label[for="riesgo_causa_danyo"]').css('display', 'none');
+            $('#riesgo_causa_danyo').css('display', 'none');
+            $('label[for="riesgo_causa_consecuencia"]').css('display', 'none');
+            $('#riesgo_causa_consecuencia').css('display', 'none');
+            $('label[for="riesgo_causa_exposicion"]').css('display', 'none');
+            $('#riesgo_causa_exposicion').css('display', 'none');
+            $('label[for="riesgo_causa_factorCoste"]').css('display', 'none');
+            $('#riesgo_causa_factorCoste').css('display', 'none');
+            $('label[for="riesgo_causa_gradoCorreccion"]').css('display', 'none');
+            $('#riesgo_causa_gradoCorreccion').css('display', 'none');
+
+            #switch ( metodologiaId )
+                case 1:
+                    $('label[for="riesgo_causa_severidad"]').css('display', 'block');
+                    $('#riesgo_causa_severidad').css('display', 'block');
+                    $('label[for="riesgo_causa_probabilidad"]').css('display', 'block');
+                    $('#riesgo_causa_probabilidad').css('display', 'block');
+                    break;
+                case 2:
+                    $('label[for="riesgo_causa_consecuencia"]').css('display', 'block');
+                    $('#riesgo_causa_consecuencia').css('display', 'block');
+                    $('label[for="riesgo_causa_exposicion"]').css('display', 'block');
+                    $('#riesgo_causa_exposicion').css('display', 'block');
+                    $('label[for="riesgo_causa_probabilidad"]').css('display', 'block');
+                    $('#riesgo_causa_probabilidad').css('display', 'block');
+                    break;
+                case 3:
+                    $('label[for="riesgo_causa_actividad"]').css('display', 'block');
+                    $('#riesgo_causa_actividad').css('display', 'block');
+                    $('label[for="riesgo_causa_danyo"]').css('display', 'block');
+                    $('#riesgo_causa_danyo').css('display', 'block');
+                    $('label[for="riesgo_causa_consecuencia"]').css('display', 'block');
+                    $('#riesgo_causa_consecuencia').css('display', 'block');
+                    $('label[for="riesgo_causa_probabilidad"]').css('display', 'block');
+                    $('#riesgo_causa_probabilidad').css('display', 'block');
+                    break;
+                case 10:
+                    break;
+                case 1003:
+                    break;
+            }*/
+
+            //Control campo fecha prevista
+            {% if fechaEvaluacion is defined and fechaEvaluacion is not empty %}
+            $('#riesgo_causa_tipoPlanificacion').change(function () {
+            var tipo = $(this).val();
+            var fechaPrevista = '';
+            var fechaEvaluacion = new Date('{{ fechaEvaluacion|date("Y-m-d")|replace({'-':'/'}) }}');
+            var day = fechaEvaluacion.getDate().toString().padStart(2, '0');
+            if (isNaN(fechaEvaluacion)) {
+                console.log('La fecha de evaluación no es válida.');
+                return;
+            }
+            var year = fechaEvaluacion.getFullYear();
+            var month = fechaEvaluacion.getMonth();
+
+                if (tipo == 0) {
+                    switch ($('#riesgo_causa_valorRiesgo').val()) {
+                        case '1':
+                            month += 1;
+                            break;
+                        case '2':
+                            month += 3;
+                            break;
+                        case '3':
+                            month += 6;
+                            break;
+                        case '4':
+                            year += 1;
+                            break;
+                        case '5':
+                            year += 1;
+                            break;
+                    }
+
+                    // Verificar si la fecha es válida
+                    if (month > 11) {
+                        year += Math.floor(month / 12);
+                        month = month % 12;
+                    }
+
+                    // Ajustar al último día del mes
+                    var lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+                    if (day > lastDayOfMonth) {
+                        day = lastDayOfMonth;
+                    }
+
+                    // Ajustar el mes al formato de dos dígitos
+                    var formattedMonth = (month + 1 < 10) ? "0" + (month + 1) : (month + 1);
+
+                    fechaPrevista = year + '-' + formattedMonth + '-' + day;
+                    $('#riesgo_causa_fechaPrevista').val(fechaPrevista);
+                }
+                if (tipo == 2) {
+                    switch ($('#riesgo_causa_valorRiesgo').val()) {
+                        case '1':
+                            month += 1;
+                            break;
+                        case '2':
+                            month += 3;
+                            break;
+                        case '3':
+                            month += 6;
+                            break;
+                        case '4':
+                            year += 1;
+                            break;
+                        case '5':
+                            year += 1;
+                            break;
+                    }
+
+                    // Verificar si la fecha es válida
+                    if (month > 11) {
+                        year += Math.floor(month / 12);
+                        month = month % 12;
+                    }
+
+                    // Ajustar al último día del mes
+                    var lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+                    if (day > lastDayOfMonth) {
+                        day = lastDayOfMonth;
+                    }
+
+                    // Ajustar el mes al formato de dos dígitos
+                    var formattedMonth = (month + 1 < 10) ? "0" + (month + 1) : (month + 1);
+
+                    fechaPrevista = year + '-' + formattedMonth + '-' + day;
+                    $('#riesgo_causa_fechaPrevista').val(fechaPrevista);
+                }
+                });
+
+            $('#riesgo_causa_valorRiesgo').change(function () {
+
+                var tipo = $('#riesgo_causa_tipoPlanificacion').val();
+                var fechaPrevista = '';
+                var fechaEvaluacion = new Date('{{ fechaEvaluacion|date("Y-m-d")|replace({'-':'/'}) }}');
+                var day = fechaEvaluacion.getDate().toString().padStart(2, '0');
+                var year = fechaEvaluacion.getFullYear();
+                var month = fechaEvaluacion.getMonth();
+
+                if (tipo == 2) {
+                    switch ($('#riesgo_causa_valorRiesgo').val()) {
+                        case '1':
+                            month += 1;
+                            break;
+                        case '2':
+                            month += 3;
+                            break;
+                        case '3':
+                            month += 6;
+                            break;
+                        case '4':
+                            year += 1;
+                            break;
+                        case '5':
+                            year += 1;
+                            break;
+                    }
+
+                    // Verificar si la fecha es válida
+                    if (month > 11) {
+                        year += Math.floor(month / 12);
+                        month = month % 12;
+                    }
+
+                    // Ajustar al último día del mes
+                    var lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+                    if (day > lastDayOfMonth) {
+                        day = lastDayOfMonth;
+                    }
+
+                    // Ajustar el mes al formato de dos dígitos
+                    var formattedMonth = (month + 1 < 10) ? "0" + (month + 1) : (month + 1);
+
+                    fechaPrevista = year + '-' + formattedMonth + '-' + day;
+                    $('#riesgo_causa_fechaPrevista').val(fechaPrevista);
+                }
+            });
+
+            {% endif %}
+        });
+
+        function deleteRiesgoCausa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_riesgo_causa') }}",
+                data: {
+                    'riesgoCausaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteAccionPreventivaEmpresa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_accion_preventiva_empresa') }}",
+                data: {
+                    'accionPreventivaEmpresaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteAccionPreventivaTrabajador(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_accion_preventiva_trabajador') }}",
+                data: {
+                    'accionPreventivaTrabajadorId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteImagenRiesgoCausa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_img_riesgo_causa') }}",
+                data: {
+                    'riesgoCausaImgId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el riesgo-causa seleccionado
+        $(document).on('click', 'a.eliminarRiesgoCausa', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_RIESGO_CAUSA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteRiesgoCausa(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la accion preventiva seleccionada
+        $(document).on('click', 'a.eliminarAccionPreventivaEmpresa', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_ACCION_PREVENTIVA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteAccionPreventivaEmpresa(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la accion preventiva seleccionada
+        $(document).on('click', 'a.eliminarAccionPreventivaTrabajador', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_ACCION_PREVENTIVA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteAccionPreventivaTrabajador(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la imagen
+        $(document).on('click', 'a.eliminarImagen', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_IMAGEN{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteImagenRiesgoCausa(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        <div class="row">
+            <div class="col-lg-12">
+                <a href="{{ path('tecnico_evaluaciones_evaluacion_create_riesgo_causa') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_AÑADIR_OTRO_RIESGO_CAUSA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+            </div>
+        </div>
+        <br/>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+{#                <div class="tab-pane fade" id="tab2">#}
+
+{#                    {% if metodologiaId is defined and metodologiaId is not empty %}#}
+
+{#                        {% if metodologiaId == 1 %}#}
+{#                            <div class="row">#}
+{#                                <div class="col-lg-4">#}
+{#                                    {{ form_row(form.severidad) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-4">#}
+{#                                    {{ form_row(form.probabilidad) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-4">#}
+{#                                    {{ form_row(form.valorRiesgo) }}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+
+{#                        {% if metodologiaId == 2 %}#}
+{#                            <div class="row">#}
+{#                                <div class="col-lg-3">#}
+{#                                    {{ form_row(form.consecuencia) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-3">#}
+{#                                    {{ form_row(form.exposicion) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-3">#}
+{#                                    {{ form_row(form.probabilidad) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-3">#}
+{#                                    {{ form_row(form.valorRiesgo) }}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+
+{#                        {% if metodologiaId == 3 %}#}
+{#                            <div class="row">#}
+{#                                <div class="col-lg-2">#}
+{#                                    {{ form_row(form.actividad) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-2">#}
+{#                                    {{ form_row(form.danyo) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-2">#}
+{#                                    {{ form_row(form.probabilidad) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-2">#}
+{#                                    {{ form_row(form.consecuencia) }}#}
+{#                                </div>#}
+{#                                <div class="col-lg-2">#}
+{#                                    {{ form_row(form.valorRiesgo) }}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+
+{#                    {% endif %}#}
+
+{#                </div>#}
+
+            <div class="d-flex justify-content-between align-items-center border-top-0">
+                {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                    {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                        {{ form_row(form.guardar) }}
+                    {% else %}
+                        {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                    {% endif %}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.finalizado) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.riesgo) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.causa) }}
+                </div>
+            </div>
+            <!-- Peticio 28/07/2023-->
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_OBSERVACION_CAUSA{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-12">
+                         {{form_row(form.observacionCausa)}}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_VALORACION{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-4">
+                        {{ form_row(form.severidad) }}
+                    </div>
+                    <div class="col-lg-4">
+                        {{ form_row(form.probabilidad) }}
+                    </div>
+                    <div class="col-lg-4">
+                        {{ form_row(form.valorRiesgo) }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_MEDIDAS_PREVENTIVAS_CORRECTORAS{% endtrans %}</legend>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4>{% trans %}TRANS_PREVENTIVA_EMPRESA{% endtrans %}</h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                            <a href="{{ path('tecnico_evaluaciones_evaluacion_create_accion_preventiva_empresa') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans %}TRANS_AÑADIR_ACCION_PREVENTIVA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% else %}
+                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_AÑADIR_ACCION_PREVENTIVA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-bordered">
+                            <table class="table" id="accionPreventiva">
+                                <thead>
+                                <tr class="bg-grey-300">
+                                    <th>{% trans %}TRANS_ACCION_PREVENTIVA{% endtrans %}</th>
+                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if accionPreventivaEmpresa is defined and accionPreventivaEmpresa is not empty %}
+                                    {% for ape in accionPreventivaEmpresa %}
+                                        <tr>
+                                            <td>
+                                                {% if ape.descripcion is not empty %}
+                                                    {{ ape.descripcion }}
+                                                {% else %}
+                                                    {{ ape.preventivaEmpresa }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="list-icons">
+                                                    <a href="{{ path('tecnico_evaluaciones_evaluacion_update_accion_preventiva_empresa', { "id": ape.id }) }}" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                    <a href="#" data-id="{{ ape.id }}" target="_self" class="list-icons-item eliminarAccionPreventivaEmpresa"><i class="icon-trash"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <br/>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4>{% trans %}TRANS_PREVENTIVA_TRABAJADOR{% endtrans %}</h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                            <a href="{{ path('tecnico_evaluaciones_evaluacion_create_accion_preventiva_trabajador') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans %}TRANS_AÑADIR_ACCION_PREVENTIVA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% else %}
+                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_AÑADIR_ACCION_PREVENTIVA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <br/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-bordered">
+                            <table class="table" id="accionPreventiva">
+                                <thead>
+                                <tr class="bg-grey-300">
+                                    <th>{% trans %}TRANS_ACCION_PREVENTIVA{% endtrans %}</th>
+                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if accionPreventivaTrabajador is defined and accionPreventivaTrabajador is not empty %}
+                                    {% for apt in accionPreventivaTrabajador %}
+                                        <tr>
+                                            <td>
+                                                {% if apt.descripcion is not empty %}
+                                                    {{ apt.descripcion }}
+                                                {% else %}
+                                                    {{ apt.preventivaTrabajador }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="list-icons">
+                                                    <a href="{{ path('tecnico_evaluaciones_evaluacion_update_accion_preventiva_trabajador', { "id": apt.id }) }}" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                    <a href="#" data-id="{{ apt.id }}" target="_self" class="list-icons-item eliminarAccionPreventivaTrabajador"><i class="icon-trash"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_IMAGENES{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_visita">{% trans %}TRANS_AÑADIR_IMAGEN{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% else %}
+                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_AÑADIR_IMAGEN{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        {% endif %}
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-bordered">
+                            <table class="table" id="imagenes">
+                                <thead>
+                                <tr class="bg-grey-300">
+                                    <th>{% trans %}TRANS_IMAGEN{% endtrans %}</th>
+                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if imagenes is defined and imagenes is not empty %}
+                                    {% for img in imagenes %}
+                                        <tr>
+                                            <td>{{ img.nombreOriginal }}</td>
+                                            <td>
+                                                <div class="list-icons">
+                                                    <a href="{{ path('tecnico_evaluaciones_evaluacion_down_img_riesgo_causa', { "id": img.id }) }}" class="list-icons-item"><i class="icon-download4"></i></a>
+                                                    <a href="#" data-id="{{ img.id }}" target="_self" class="list-icons-item eliminarImagen"><i class="icon-trash"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PLANIFICACION_PREVENTIVA{% endtrans %}</legend>
+                <div class="row">
+                    <div class="col-lg-2">
+                        {{ form_row(form.tipoPlanificacion) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.fechaPrevista) }}
+                        <!--Peticio 01/09/2023 Mejora continua #67379 - Modificacion puesto trabajo-->
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.fechaRealizacion) }}
+                        <div class="form-group">
+                            <input type="text" id="riesgo_causa_fechaPrevista_periodicamente" class="form-control" value="PERIODICAMENTE"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.costePrevisto, {'attr': {'class': 'type_text_to_number'}}) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.responsable) }}
+                    </div>
+                    <div class="col-lg-2">
+                        {{ form_row(form.trabajadores) }}
+                    </div>
+                </div>
+            </fieldset>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir visita -->
+    <div id="modal_añadir_visita" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_IMAGEN{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="html5-uploader"></div>
+                </div>
+
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir visita -->
+
+{% endblock %}

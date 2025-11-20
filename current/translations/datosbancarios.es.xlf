@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_DATOS_BANCARIOS</source>
+                <target>Datos bancarios</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVO_DATO_BANCARIO</source>
+                <target>Nuevo dato bancario</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_BANCO</source>
+                <target>Banco</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_PRINCIPAL</source>
+                <target>Principal</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_CODIGO_BANCO</source>
+                <target>Código banco</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_OFICINA</source>
+                <target>Oficina</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_NUMERO_CUENTA</source>
+                <target>Número de cuenta</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_DIRECCION</source>
+                <target>Dirección</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_LOCALIDAD</source>
+                <target>Localidad</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_TELEFONO</source>
+                <target>Teléfono</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_DC</source>
+                <target>DC</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_CODIGO_PAIS</source>
+                <target>Código país</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_IBAN_DIGITAL</source>
+                <target>IBAN Digital</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_IBAN_PAPEL</source>
+                <target>IBAN Papel</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_BIC</source>
+                <target>BIC</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_FORMA_PAGO</source>
+                <target>Forma de pago</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_DIA_PAGO</source>
+                <target>Día de pago del cliente</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_DATO_BANCARIO</source>
+                <target>Dato bancario</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_REFERENCIA</source>
+                <target>Referencia</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_AÑADIR_MANDATO</source>
+                <target>Generar mandato</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_FECHA</source>
+                <target>Fecha firma</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_TIPO_PAGO</source>
+                <target>Tipo pago</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_TIPO_PAGO_RECURRENTE</source>
+                <target>Pago recurrente</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_EDITAR_MANDATO</source>
+                <target>Modificar mandato</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_VALIDAR_IBAN</source>
+                <target>Validar IBAN</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_PAIS_NO_INFORMADO</source>
+                <target>¡Error! El país no está informado</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_ENTIDAD_NO_INFORMADA</source>
+                <target>¡Error! La entidad bancaria no está informada</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_OFICINA_NO_INFORMADA</source>
+                <target>¡Error! La oficina no está informada</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_CUENTA_NO_INFORMADO</source>
+                <target>¡Error! El número de cuenta no está informado</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_DC_NO_INFORMADO</source>
+                <target>¡Error! El DC no está informado</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_OFICINA_CARACTERES</source>
+                <target>¡Error! La oficina debe contener 4 carácteres</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_CUENTA_CARACTERES</source>
+                <target>¡Error! La oficina debe contener 10 carácteres</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_DC_CARACTERES</source>
+                <target>¡Error! El DC debe contener 2 carácteres</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_CC_NO_VALIDO</source>
+                <target>¡Error! El CCC no es valido</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_IBAN_EXISTENTE</source>
+                <target>¡Error! El IBAN ya existe en la base de datos</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

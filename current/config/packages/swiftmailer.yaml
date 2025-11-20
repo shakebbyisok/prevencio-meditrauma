@@ -1,0 +1,10 @@
+# config/packages/swiftmailer.yaml
+swiftmailer:
+    transport: smtp
+    host: 'smtp.mailersend.net'
+    port: 587
+    encryption: 'tls'
+    username: 'MS_No8p5Y@mdtprevencion.com'
+    password: 'o4yA9FptVyvhU6or'
+    spool: { type: 'memory' }
+    sender_address: 'mbalmaceda@mdtprevencion.com'

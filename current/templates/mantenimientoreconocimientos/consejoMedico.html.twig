@@ -1,0 +1,96 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'mantenimientoreconocimientos' %}
+
+{% block arrow %}<a href="{{ path('mantenimiento_reconocimientos') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_TEXTO_CONSEJO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.codigo }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <style>
+        .custom-file-label { opacity: 0; }
+        .custom-file-input { opacity: 1; }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.codigo) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.descripcionCa) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.documento) }}
+                    {% if documento is defined and documento is not empty %}
+                        <div class="list-icons">
+                            <a href="../../../upload/media/consejos/{{ documento }}" class="list-icons-item" title="Descargar" data-container="body" target="_blank" download>
+                                <i class="icon-file-download" aria-hidden="true"></i>
+                            </a>
+                            <a href="{{ path('mantenimiento_reconocimientos_consejo_medico_documento_delete', { "id": app.request.get('id') }) }}" class="list-icons-item" title="Eliminar" data-container="body" target="_blank" download>
+                                <i class="icon-trash" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.indicarResumen) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    {{ form_row(form.indicarInforme) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is defined and app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn is not null %}
+                {% if app.session.get('privilegiosRol').mantenimientoConsejosMedicosSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

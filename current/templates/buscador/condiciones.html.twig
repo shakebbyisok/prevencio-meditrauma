@@ -1,0 +1,222 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'buscadores' %}
+
+{% block arrow %}<a href="{{ path('buscadores_update', { "id": app.request.get('id') }) }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_BUSCADOR{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ nombreConsulta }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <script src="{{ asset('querybuilder/datepicker/js/bootstrap-datepicker.js') }}"></script>
+    <link href="{{ asset('querybuilder/datepicker/css/bootstrap-datepicker.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('querybuilder/datepicker/locales/bootstrap-datepicker.es.min.js') }}" rel="stylesheet" type="text/css">
+
+    <script src="{{ asset('querybuilder/js/query-builder.standalone.js') }}"></script>
+    <script src="{{ asset('querybuilder/i18n/query-builder.es.js') }}"></script>
+
+    <script src="{{ asset('js/moment.min.js') }}"></script>
+    <link href="{{ asset('querybuilder/css/query-builder.default.css') }}" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // $.fn.datepicker.defaults.language = 'es';
+
+            // Fix for Selectize
+            $('#builder-widgets').on('afterCreateRuleInput.queryBuilder', function(e, rule) {
+                if (rule.filter.plugin == 'selectize') {
+                    rule.$el.find('.rule-value-container').css('min-width', '200px')
+                        .find('.selectize-control').removeClass('form-control');
+                }
+            });
+
+            // Fix for Bootstrap Datepicker
+            $('#builder-widgets').on('afterUpdateRuleValue.queryBuilder', function(e, rule) {
+                if (rule.filter.plugin === 'datepicker') {
+                    rule.$el.find('.rule-value-container input').datepicker('update');
+                }
+            });
+
+            $('#builder').queryBuilder({
+                //plugins: ['bt-tooltip-errors'],
+                allow_empty: true,
+                filters: [
+                    {% for filter in queryOptions %}
+
+
+                        {% if filter.tipo ==  "boolean" %}
+                        {
+                            id: "{{ filter.campo }}",
+                            label: "{{ filter.alias }}",
+                            type: "string",
+                            input: 'radio',
+                            values: {
+                                true: 'Si',
+                                false: 'No'
+                            },
+                            colors: {
+                                1: 'success',
+                                0: 'danger'
+                            },
+                            operators: ['equal']
+                        }
+
+
+                        {% elseif filter.tipo == "string" %}
+                        {
+                            id: "{{ filter.campo }}",
+                            label: "{{ filter.alias }}",
+                            type: "{{ filter.tipo }}",
+                            default_condition: 'like'
+                        }
+
+                        {% elseif filter.tipo == "integer" %}
+                        {
+                            id: "{{ filter.campo }}",
+                            label: "{{ filter.alias }}",
+                            type: "{{ filter.tipo }}",
+                        }
+
+                        {% elseif filter.tipo == "date" or filter.tipo == "datetime" %}
+                        {
+                            id: "{{ filter.campo }}",
+                            label: "{{ filter.alias }}",
+                            type: "date",
+                            default_condition: 'like',
+                            validation: {
+                                format: 'DD-MM-YYYY'
+                            },
+                            plugin: 'datepicker',
+                                plugin_config: {
+                            format: 'dd-mm-yyyy',
+                                todayBtn: 'linked',
+                                todayHighlight: true,
+                                autoclose: true
+                            }
+                        }
+
+
+                        {% else %}
+                        {
+                            id: "{{ filter.campo }}",
+                                label: "{{ filter.alias }}",
+                            type: "string"
+                        }
+
+                        {% endif %}
+
+
+                        {% if not loop.last %}
+                            ,
+                        {% endif %}
+
+                    {% endfor %}
+                ]
+
+                {% if queryRestricciones != "" %}
+                    ,rules: {{ queryRestricciones | raw }}
+                {% endif %}
+
+            });
+
+            $('#btn-reset').on('click', function() {
+                $('#builder-basic').queryBuilder('reset');
+            });
+
+            $('#btn-set').on('click', function() {
+                $('#builder-basic').queryBuilder('setRules', rules_basic);
+            });
+
+            $('form').submit( function(e) {
+
+                //Cancelamos el guardar
+                e.preventDefault();
+
+                var queryBuilderFormat = $('#builder').queryBuilder('getRules');
+                var queryBuilderSQL = $('#builder').queryBuilder('getSQL');
+
+                if (!$.isEmptyObject(queryBuilderFormat)) {
+                    $("#buscador_restricciones").val(JSON.stringify(queryBuilderFormat, null, 2));
+                    $("#buscador_restriccionesSQL").val(JSON.stringify(queryBuilderSQL.sql, null, 2));
+
+                    //Guardamos finalmente el form
+                    $(this).unbind('submit').submit();
+                }
+            });
+
+            // $('#builder').removeClass('form-inline');
+
+        });
+
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row" style="display: none;">
+                <div class="col-lg-12">
+                    {{ form_row(form.nombre) }}
+                </div>
+            </div>
+
+            <div class="row" style="display: none;">
+                <div class="col-lg-12">
+                    {{ form_row(form.compartida) }}
+                </div>
+            </div>
+
+            <div class="row" style="display: none;">
+                <div class="col-lg-12">
+                    {{ form_row(form.variables) }}
+                </div>
+            </div>
+
+            <div id="builder"></div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.restricciones) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.restriccionesSQL) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editBuscadorSn is defined and app.session.get('privilegiosRol').editBuscadorSn is not null %}
+                {% if app.session.get('privilegiosRol').editBuscadorSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

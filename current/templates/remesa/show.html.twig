@@ -1,0 +1,484 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'remesa' %}
+
+{% block title %} {% trans %}TRANS_REMESAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addRemesaSn is defined and app.session.get('privilegiosRol').addRemesaSn is not null %}
+        {% if app.session.get('privilegiosRol').addRemesaSn %}
+            <a href="#" data-toggle="modal" data-target="#modal_genera_remesa" class="btn btn-labeled btn-labeled-left bg-primary" style="margin-right: 10px;">{% trans %}TRANS_GENERAR_REMESAS{% endtrans %}<b><i class="icon-file-empty"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').exportRemesaSn is defined and app.session.get('privilegiosRol').exportRemesaSn is not null %}
+        {% if app.session.get('privilegiosRol').exportRemesaSn %}
+            <a href="#" id="btnExportRemesas" class="btn btn-success"><i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel los marcados</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var arrayData = [];
+
+            {% for remesa in remesas %}
+                var array = [];
+
+                var input = '<div class="uniform-checker" id="uniform-{{ remesa.id }}"><span><input type="checkbox" name="remesa" id="{{ remesa.id }}" data-importe="{{ remesa.importe }}" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+                var estado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+
+                var cuenta = '';
+                {% if remesa.cuenta_sn == true %}
+                    {% if remesa.cuenta_id is not null %}
+                        cuenta ='<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                    {% else %}
+                        cuenta = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                        input = '';
+                    {% endif %}
+                {% else %}
+                    cuenta = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                    input = '';
+                {% endif %}
+
+                array.push(input, cuenta, '{{ remesa.empresa }}', '{{ remesa.num_fac }}', '{{ remesa.importe|number_format(2,",", ".") }} €', '<span style="display:none;">{{ remesa.fechatimestamp }}</span>{{ remesa.fecha }}', '<span style="display:none;">{{ remesa.vencimientotimestamp }}</span>{{ remesa.vencimiento }}', estado);
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData,
+            });
+
+            $('.datatable-export-excel').DataTable({
+                order: [[5, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                        }
+                    ]
+                }
+            });
+
+            $('.dt-buttons').css('display', 'none');
+
+            $('#btnGeneraRemesa').click(function(){
+
+                if(arrayRemesas.length != 0){
+
+                    var nombreOrdenante = $('#nombreOrdenante').val();
+                    var ccc = $('#ccc').val();
+                    var importe = parseFloat($('#importeGiros').html());
+
+                    if(nombreOrdenante != "" && ccc != ""){
+
+                        $('#btnGeneraRemesa').prop("disabled", true);
+                        $('#btnGeneraRemesa').html("<i class='icon-spinner2 spinner mr-2'></i>{% trans %}TRANS_GENERANDO{% endtrans %}");
+
+                        $.ajax({
+                            type: "POST",
+                            url: '{{ path('remesa_recupera_datos') }}',
+                            dataType: 'JSON',
+                            data: {
+                                remesas: arrayRemesas,
+                                nombreOrdenante: nombreOrdenante,
+                                ccc: ccc,
+                                importe: importe.toFixed(2)
+                            },
+                            success: function (data) {
+
+                                if(data == 'OK'){
+                                    var url = '{{ path('remesa_genera') }}';
+                                    location.href = url;
+
+                                    $('#btnGeneraRemesa').prop("disabled", false);
+                                    $('#btnGeneraRemesa').html("{% trans %}TRANS_GENERAR{% endtrans %}");
+
+                                    // setTimeout(function() {
+                                    //     location.reload();
+                                    // }, 3000);
+                                }
+                            },
+                            error: function(){
+                                new PNotify({
+                                    title: 'Ops!',
+                                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                    icon: 'icon-blocked',
+                                    type: 'error'
+                                });
+                            }
+                        });
+                    }else{
+
+                        new PNotify({
+                            title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                            text: '{% trans %}TRANS_ERROR_DATOS_REMESA{% endtrans %}',
+                            icon: 'icon-warning22',
+                            type: 'warning'
+                        });
+                    }
+                }else{
+
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REMESAS{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                }
+            });
+
+            //Boton que filtra las remesas
+            $('#btnFiltra').click(function(){
+                var fechaInicio = $('#fini').val();
+                var fechaFin = $('#ffin').val();
+
+                if(fechaInicio != "" || fechaFin != ""){
+                    filtrar(fechaInicio, fechaFin, 1);
+                }
+            });
+
+            //Boton que hace un reset de los filtros
+            $('#btnReset').click(function(){
+                filtrar(null, null, 2);
+            });
+
+            $('#btnExportRemesas').click(function () {
+
+                if(arrayRemesas.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REMESAS{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('remesas_exportar') }}?remesas='+arrayRemesas;
+
+            });
+        });
+
+        function filtrar(fechaInicio, fechaFin, op){
+            if(op == 1){
+                $('#btnFiltra').prop("disabled", true);
+                $('#btnFiltra').html("<i class='icon-spinner2 spinner mr-2'></i>Filtrar");
+            }else{
+                $('#btnReset').prop("disabled", true);
+                $('#btnReset').html("<i class='icon-spinner2 spinner mr-2'></i>Reset");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ path('remesas_filtra_remesas') }}',
+                dataType: 'JSON',
+                data: {
+                    ini: fechaInicio,
+                    fin: fechaFin,
+                },
+                success: function (data) {
+
+                    //Limpiamos la tabla
+                    var table = $('.datatable-export-excel').DataTable();
+                    table.clear().destroy();
+
+                    if(JSON.parse(data) != ""){
+
+                        var arrayNewData = [];
+
+                        $.each(JSON.parse(data), function (key, item) {
+                            var array = [];
+
+                            var input = '<div class="uniform-checker" id="uniform-'+item['id']+'"><span><input type="checkbox" name="remesa" id="'+item['id']+'" data-importe="'+item['importe']+'" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+                            var estado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+
+                            var importe = '';
+                            if(item['importe'] != undefined){
+                                importe = item["importe"];
+                                importe = parseFloat(item["importe"]).toFixed(2);
+                                importe = importe.replace('.', ',');
+                            }else{
+                                importe = '0,00';
+                            }
+
+                            var cuenta = '';
+                            if(item['cuenta_sn'] == true){
+                                if(item['cuenta_id'] != undefined){
+                                    cuenta ='<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                                }else{
+                                    cuenta = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                                    input = '';
+                                }
+                            }else{
+                                cuenta = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                                input = '';
+                            }
+
+                            array.push(input, cuenta, ''+item['empresa']+'', ''+item['num_fac']+'', ''+importe+' €', '<span style="display:none;">'+item['fechatimestamp']+'</span>'+item['fecha']+'', '<span style="display:none;">'+item['vencimientotimestamp']+'</span>'+item['vencimiento']+'', estado);
+                            arrayNewData.push(array);
+                        });
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: true,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            // lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todo"]],
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                            data: arrayNewData
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        $('.dt-buttons').css('display', 'none');
+                    }else{
+
+                        $.extend( $.fn.dataTable.defaults, {
+                            // autoWidth: true,
+                            // columnDefs: [{
+                            //     width: 100,
+                            // }],
+                            // ordering: true,
+                            deferRender: true,
+                            dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                            // lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todo"]],
+                            language: {
+                                search: '<span>Filtrar:</span> _INPUT_',
+                                searchPlaceholder: 'Escriba para filtrar...',
+                                lengthMenu: '<span>Mostrar:</span> _MENU_',
+                                paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                            },
+                        });
+
+                        $('.datatable-export-excel').DataTable({
+                            buttons: {
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        className: 'btn btn-success',
+                                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                                        fieldSeparator: '\t',
+                                        extension: '.xlsx'
+                                    }
+                                ]
+                            }
+                        });
+
+                        $('.dt-buttons').css('display', 'none');
+
+                        table.context[0].oLanguage.sEmptyTable = "Sin registros";
+                        table.clear().draw();
+                    }
+
+                    if(op == 1){
+                        $('#btnFiltra').prop("disabled", false);
+                        $('#btnFiltra').html("Filtrar");
+                    }else{
+                        $('#btnReset').prop("disabled", false);
+                        $('#btnReset').html("Reset");
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        var arrayRemesas = [];
+        //Boton que añade la remesa a la lista de remesas seleccionadas
+        $(document).on('click', 'input[name=\'remesa\']', function(){
+            var remesaId = $(this).attr('id');
+            var importe = parseFloat($(this).data('importe'));
+            var importeActual = parseFloat($('#importeGiros').html());
+
+            if ($(this).prop('checked')) {
+                $('#uniform-'+remesaId+' span').addClass('checked');
+                arrayRemesas.push(remesaId);
+                importeActual = parseFloat(importeActual + importe);
+                $('#importeGiros').html(importeActual.toFixed(2));
+            }else{
+                $('#uniform-'+remesaId+' span').removeClass('checked');
+                arrayRemesas.splice($.inArray(remesaId, arrayRemesas),1);
+                importeActual = parseFloat(importeActual - importe);
+                $('#importeGiros').html(importeActual.toFixed(2));
+            }
+        });
+
+        //Boton que añade todas las remesas a la lista de remesas seleccionadas
+        $(document).on('click', 'input[name=\'remesasAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'remesa\']");
+
+                    var remesaId = $(check).attr('id');
+                    $('#uniform-'+remesaId+' span').addClass('checked');
+                    var importe = parseFloat($(check).data('importe'));
+                    var importeActual = parseFloat($('#importeGiros').html());
+
+                    arrayRemesas.push(remesaId);
+                    importeActual = parseFloat(importeActual + importe);
+                    $('#importeGiros').html(importeActual.toFixed(2));
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'remesa\']");
+
+                    var remesaId = $(check).attr('id');
+                    $('#uniform-'+remesaId+' span').removeClass('checked');
+                }
+                arrayRemesas.splice(0, arrayRemesas.length);
+                var importeActual = 0;
+                $('#importeGiros').html(importeActual.toFixed(2));
+            }
+        });
+
+        $('.datatable-export-excel tbody').on('change', 'input[type="checkbox"]', function(){
+            // If checkbox is not checked
+            if(!this.checked){
+                var el = $('#selectRemesasAll').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if(el && el.checked && ('indeterminate' in el)){
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <span class="badge badge-flat border-grey-800 text-default">{% trans %}TRANS_IMPORTE_GIROS{% endtrans %} <span id="importeGiros">0,00 </span> €</span>
+
+    <br/>
+    <br/>
+
+    <div class="card">
+
+        <div id="DataTables_Table_0_filter" class="dataTables_filter" style="margin-top: 10px; margin-bottom: 5px;">
+            <label>
+                <span>Desde:</span>
+                <input type="date" id="fini">
+            </label>
+
+            <label>
+                <span>hasta:</span>
+                <input type="date" id="ffin">
+            </label>
+            <button type="button" id="btnFiltra" class="btn btn-primary">Filtrar</button>
+            <button type="button" id="btnReset" class="btn btn-danger">Reset</button>
+        </div>
+
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="tableRemesas" role="grid" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select">
+                            <input type="checkbox" name="remesasAll" id="selectRemesasAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Cuenta">{% trans %}TRANS_CUENTA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Factura">{% trans %}TRANS_FACTURA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Importe">{% trans %}TRANS_IMPORTE{% endtrans %}</th>
+                        <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Fecha" aria-sort="descending">{% trans %}TRANS_FECHA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Vencimiento">{% trans %}TRANS_VENCIMIENTO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Remesa">{% trans %}TRANS_REMESA{% endtrans %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal genera remesa -->
+    <div id="modal_genera_remesa" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_DATOS_BANCARIOS{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_NOMBRE_ORDENANTE{% endtrans %}</label>
+                    <input type="text" id="nombreOrdenante" value="{{ ordenante }}" class="form-control" />
+
+                    <label>{% trans %}TRANS_CCC{% endtrans %}</label>
+                    <input type="text" id="ccc" value="{{ ccc }}" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGeneraRemesa">{% trans %}TRANS_GENERAR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal genera remesa -->
+{% endblock %}

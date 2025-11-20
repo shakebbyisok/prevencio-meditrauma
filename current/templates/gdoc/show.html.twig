@@ -1,0 +1,559 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'gdoc' %}
+
+{% block title %} {% trans %}TRANS_PLANTILLAS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addGdocSn is defined and app.session.get('privilegiosRol').addGdocSn is not null %}
+        {% if app.session.get('privilegiosRol').addGdocSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-primary" style="margin-right: 10px;" data-toggle="modal" data-target="#modal_añadir_carpeta">{% trans %}TRANS_ADD_CARPETA{% endtrans %}<b><i class="icon-folder-plus"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').addGdocFileSn is defined and app.session.get('privilegiosRol').addGdocFileSn is not null %}
+        {% if app.session.get('privilegiosRol').addGdocFileSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-success" data-toggle="modal" data-target="#modal_añadir_fichero">{% trans %}TRANS_AÑADIR_FICHERO{% endtrans %}<b><i class="icon-file-upload"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block card %}
+
+    <style>
+        .custom-file-label { opacity: 0; }
+        .custom-file-input { opacity: 1; }
+    </style>
+
+    <script src="{{ asset('jstree/jstree.min.js') }}"></script>
+    <link href="{{ asset('jstree/themes/default/style.min.css') }}" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var xhr;
+            var json = {{ tree | raw }};
+            var selected_id;
+
+            function ControlViews() {
+                selected_id = $("#tree").find(".jstree-clicked").attr('id');
+                //Algun nodo selecionado.
+                if (typeof selected_id != 'undefined' && selected_id != '') {
+                    var remove = /_anchor$/;
+                    selected_id = selected_id.replace(remove, "");
+
+
+                    //FICHERO
+                    if (selected_id.indexOf("fileId") == 0) {
+                        selected_id = selected_id.replace("fileId", "");
+
+                        // $("#download").stop().hide('slow');
+                        // $("#upload").stop().hide('slow');
+                        plantillaAjaxRequest(selected_id);
+                    }
+                    //CARPETA
+                    else {
+                        // $("#form_category").val(selected_id);
+                        // $("#download").stop().hide('slow');
+                        // $("#upload").stop().hide('slow');
+                        //
+                        // setTimeout(function () {
+                        //     var folderName = $("#tree").find(".jstree-clicked").html();
+                        //     folderName = folderName.replace('<i class="jstree-icon jstree-themeicon" role="presentation"></i>', "");
+                        //
+                        //     $("#upfolder").html(folderName);
+                        //     $("#form_file").val("");
+                        //     $("#form_nombrefichero").val("");
+                        //     $("#upload").stop().show('slow')
+                        // }, 600);
+                    }
+                }
+            }
+
+            $(function () {
+                $("#tree")
+                    .jstree({
+                        'core': {
+                            'data': json,
+                            'check_callback': true
+                        },
+
+                        'plugins': ["search", "sort", "state"]
+
+                    })
+                    .on('changed.jstree', function (e, data) {
+                        if (xhr && xhr.readyState != 4) {
+                            xhr.abort();
+                        }
+
+                        ControlViews();
+                    })
+                    .on('ready.jstree', function (e, data) {
+                        var fileUploadedID = location.search.split('fileid=')[1];
+                        //console.log(fileUploadedID);
+                        if (typeof(fileUploadedID) != "undefined") {
+                            var node = "fileId" + fileUploadedID;
+                            $('#tree').jstree('deselect_all');
+                            setTimeout(function(){
+                                $('#tree').jstree('select_node', node);
+                            },300);
+
+                        }
+                    });
+            });
+
+            ControlViews();
+
+            //Evento click carpeta
+            $('#tree').on("select_node.jstree", function (e, data) {
+                var carpetaId = data.node['id'];
+
+                if(carpetaId != "" && !isNaN(carpetaId)){
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ path('gdoc_recupera_carpeta') }}',
+                        data: {
+                            'id': carpetaId,
+                            'tipo': 1
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            $("#idCarpeta").val(response.id);
+                            $("#nombreCarpetaEditar").val(response.nombre);
+                            $("#carpetaPadreEditar").val(response.padre).change();
+                            $('#modal_editar_carpeta').modal('show');
+                        }
+                    });
+                }
+            });
+
+            function plantillaAjaxRequest(plantillaId) {
+
+                $("#nombreFichero").val("");
+                $("#fechaFichero").val("");
+                $("#usuarioFichero").val("");
+                $("#tipoFichero").val("");
+                $("#midaFichero").val("");
+                $("#idFichero").val("");
+                $("#btnDownPlantilla").attr('href', "");
+                $("#btnOpenPlantilla").attr('href', "");
+
+                $('#modal_view_fichero').modal('show');
+
+                var url = '{{ path('gdoc_plantilla_view') }}';
+
+                $("#btnOpenPlantilla").hide();
+                $("#btnDownPlantilla").hide();
+                $('#btnDeletePlantilla').hide();
+
+                xhr = $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'id': plantillaId,
+                        'tipo': 1
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        $("#nombreFichero").val(response.name);
+                        $("#fechaFichero").val(response.fecha);
+                        $("#usuarioFichero").val(response.usuario);
+                        $("#tipoFichero").val(response.tipo);
+                        $("#midaFichero").val(response.mida);
+                        $("#idFichero").val(response.id);
+                        $("#btnDownPlantilla").attr('href', '{{ path('gdoc_down_plantilla') }}?plantillaId='+response.down+'&tipo=1');
+
+                        $("#btnDownPlantilla").show();
+                        $('#btnDeletePlantilla').show();
+
+                        if(response.pdf == false){
+                            $("#btnOpenPlantilla").attr('href', '{{ path('gdoc_open_plantilla') }}?plantillaId='+response.open+'&tipo=1');
+                            $("#btnOpenPlantilla").show();
+                        }
+                    }
+                });
+            }
+
+            //Boton que elimina el fichero seleccionado
+            $('#btnDeletePlantilla').click(function(){
+
+                $('#btnDeletePlantilla').prop("disabled", true);
+                $('#btnDeletePlantilla').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_ELIMINAR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_plantilla_delete') }}",
+                    data: {
+                        'id': $('#idFichero').val(),
+                        'tipo': 1
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            $('#btnDeletePlantilla').prop("disabled", false);
+                            $('#btnDeletePlantilla').html("{% trans from 'messages' %}TRANS_ELIMINAR{% endtrans %}");
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnDeletePlantilla').prop("disabled", false);
+                        $('#btnDeletePlantilla').html("{% trans from 'messages' %}TRANS_ELIMINAR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Botón que añade la nueva carpeta
+            $('#btnAddCarpeta').click(function(){
+
+                var nombreCarpeta = $('#nombreCarpeta').val();
+                var carpetaPadre = $('#carpetaPadre').val();
+
+                if(nombreCarpeta == "" || nombreCarpeta == null){
+                    $('#nombreCarpeta').focus();
+                    return false;
+                }
+
+                $('#btnAddCarpeta').prop("disabled", true);
+                $('#btnAddCarpeta').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_carpeta_add') }}",
+                    data: {
+                        'nombre': nombreCarpeta,
+                        'padre': carpetaPadre,
+                        'tipo': 1,
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddCarpeta').prop("disabled", false);
+                        $('#btnAddCarpeta').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Botón que modifica la carpeta seleccionada
+            $('#btnUpdateCarpeta').click(function(){
+
+                var nombreCarpeta = $('#nombreCarpetaEditar').val();
+                var carpetaPadre = $('#carpetaPadreEditar').val();
+                var id = $('#idCarpeta').val();
+
+                if(nombreCarpeta == "" || nombreCarpeta == null){
+                    $('#nombreCarpetaEditar').focus();
+                    return false;
+                }
+
+                $('#btnUpdateCarpeta').prop("disabled", true);
+                $('#btnUpdateCarpeta').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_carpeta_update') }}",
+                    data: {
+                        'id': id,
+                        'nombre': nombreCarpeta,
+                        'padre': carpetaPadre,
+                        'tipo': 1
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateCarpeta').prop("disabled", false);
+                        $('#btnUpdateCarpeta').html("Guardar");
+                    }
+                });
+            });
+
+            //Botón que modifica la carpeta seleccionada
+            $('#btnDeleteCarpeta').click(function(){
+
+                var id = $('#idCarpeta').val();
+
+                $('#btnDeleteCarpeta').prop("disabled", true);
+                $('#btnDeleteCarpeta').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Eliminar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_carpeta_delete') }}",
+                    data: {
+                        'id': id,
+                        'tipo': 1
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateCarpeta').prop("disabled", false);
+                        $('#btnUpdateCarpeta').html("Guardar");
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="tree" style="border: 1px solid #DDD; border-radius: 5px; padding:20px; margin:0 auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal añadir carpeta -->
+    <div id="modal_añadir_carpeta" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_ADD_CARPETA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_NOMBRE_CARPETA{% endtrans %}</label>
+                    <input type="text" id="nombreCarpeta" class="form-control" />
+
+                    <label>{% trans %}TRANS_PADRE{% endtrans %}</label>
+                    <select id="carpetaPadre" class="select-search form-control">
+                        <option value=""></option>
+                        {% if carpetas is not empty %}
+                            {% for c in carpetas %}
+                                <option value="{{ c.id }}">{{ c.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').addGdocSn is defined and app.session.get('privilegiosRol').addGdocSn is not null %}
+                        {% if app.session.get('privilegiosRol').addGdocSn %}
+                            <button type="button" class="btn bg-primary" id="btnAddCarpeta">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal añadir carpeta -->
+
+    <!-- Modal editar carpeta -->
+    <div id="modal_editar_carpeta" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_EDIT_CARPETA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_NOMBRE_CARPETA{% endtrans %}</label>
+                    <input type="text" id="nombreCarpetaEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_PADRE{% endtrans %}</label>
+                    <select id="carpetaPadreEditar" class="select-search form-control">
+                        <option value=""></option>
+                        {% if carpetas is not empty %}
+                            {% for c in carpetas %}
+                                <option value="{{ c.id }}">{{ c.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <input type="hidden" id="idCarpeta" class="form-control" />
+
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').editGdocSn is defined and app.session.get('privilegiosRol').editGdocSn is not null %}
+                        {% if app.session.get('privilegiosRol').editGdocSn %}
+                            <button type="button" class="btn bg-primary" id="btnUpdateCarpeta">Guardar</button>
+                        {% endif %}
+                    {% endif %}
+                    {% if app.session.get('privilegiosRol').deleteGdocSn is defined and app.session.get('privilegiosRol').deleteGdocSn is not null %}
+                        {% if app.session.get('privilegiosRol').deleteGdocSn %}
+                            <button type="button" class="btn bg-danger" id="btnDeleteCarpeta">Eliminar</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal editar carpeta -->
+
+    <!-- Modal view fichero -->
+    <div id="modal_view_fichero" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_DATOS_FICHERO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_NOMBRE_FICHERO{% endtrans %}</label>
+                    <input type="text" id="nombreFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans %}TRANS_FECHA_FICHERO{% endtrans %}</label>
+                    <input type="text" id="fechaFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans %}TRANS_NOMBRE_USUARIO_FICHERO{% endtrans %}</label>
+                    <input type="text" id="usuarioFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans %}TRANS_TIPO_FICHERO{% endtrans %}</label>
+                    <input type="text" id="tipoFichero" class="form-control" disabled="disabled" />
+
+                    <label>{% trans %}TRANS_MIDA_FICHERO{% endtrans %}</label>
+                    <input type="text" id="midaFichero" class="form-control" disabled="disabled" />
+
+                    <input type="hidden" id="idFichero" class="form-control" />
+
+                </div>
+
+                <div class="modal-footer">
+
+                    {% if app.session.get('privilegiosRol').openGdocFileSn is defined and app.session.get('privilegiosRol').openGdocFileSn is not null %}
+                        {% if app.session.get('privilegiosRol').openGdocFileSn %}
+                            <a href="#" id="btnOpenPlantilla" class="btn btn-labeled btn-labeled-left bg-primary" target="_blank">{% trans from 'messages' %}TRANS_OPEN{% endtrans %}<b><i class="icon-file-eye"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').downGdocFileSn is defined and app.session.get('privilegiosRol').downGdocFileSn is not null %}
+                        {% if app.session.get('privilegiosRol').downGdocFileSn %}
+                            <a href="#" id="btnDownPlantilla" class="btn btn-labeled btn-labeled-left bg-success" target="_blank">{% trans from 'messages' %}TRANS_DOWN{% endtrans %}<b><i class="icon-file-download"></i></b></a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+                        {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+                            <button type="button" class="btn btn-labeled btn-labeled-left bg-danger" id="btnDeletePlantilla">{% trans from 'messages' %}TRANS_ELIMINAR{% endtrans %}<b><i class="icon-cross2"></i></b></button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal view fichero -->
+
+    <!-- Modal añadir fichero -->
+    <div id="modal_añadir_fichero" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_FICHERO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    {{ form_start(form) }}
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.nombre) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.media) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.carpeta) }}
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+
+                </div>
+
+                <div class="modal-footer">
+                    {% if app.session.get('privilegiosRol').addGdocSn is defined and app.session.get('privilegiosRol').addGdocSn is not null %}
+                        {% if app.session.get('privilegiosRol').addGdocSn %}
+                            {{ form_row(form.guardar) }}
+                        {% else %}
+                            {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                        {% endif %}
+                    {% else %}
+                        {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal añadir fichero -->
+
+{% endblock %}

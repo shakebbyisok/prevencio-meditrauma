@@ -1,0 +1,307 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'dashboard' %}
+
+{% block title %} {% trans %}TRANS_REVISIONES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').facturarRevisionSn is defined and app.session.get('privilegiosRol').facturarRevisionSn is not null %}
+        {% if app.session.get('privilegiosRol').facturarRevisionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-slate" id="btnFacturarRevision">{% trans from 'contratos' %}TRANS_FACTURAR_MULTIPLE{% endtrans %}<b><i class="icon-copy4"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').facturarRevisionSn is defined and app.session.get('privilegiosRol').facturarRevisionSn is not null %}
+        {% if app.session.get('privilegiosRol').facturarRevisionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-purple" id="btnEnviarFacturaRevision" style="margin-left: 10px;">{% trans %}TRANS_ENVIAR_FACTURA_MULTIPLE{% endtrans %}<b><i class="icon-envelop2"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').facturarRevisionSn is defined and app.session.get('privilegiosRol').facturarRevisionSn is not null %}
+        {% if app.session.get('privilegiosRol').facturarRevisionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-orange-300" id="btnIncluirRevision" style="margin-left: 10px;">{% trans %}TRANS_REVISION_INCLUIR_MULTIPLE{% endtrans %}<b><i class="icon-file-check"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').enviarAptitudRevisionSn is defined and app.session.get('privilegiosRol').enviarAptitudRevisionSn is not null %}
+        {% if app.session.get('privilegiosRol').enviarAptitudRevisionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-brown-300" id="btnEnviarAptitud" style="margin-left: 10px;">{% trans %}TRANS_ENVIAR_APTITUDES{% endtrans %}<b><i class="icon-envelop"></i></b></a>
+        {% endif %}
+    {% endif %}
+
+    {% if app.session.get('privilegiosRol').enviarAptitudRevisionSn is defined and app.session.get('privilegiosRol').enviarAptitudRevisionSn is not null %}
+        {% if app.session.get('privilegiosRol').enviarAptitudRevisionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-blue" id="btnMarcarEnviadaRevision" style="margin-left: 10px;">{% trans %}TRANS_MARCAR_ENVIADA_REVISION{% endtrans %}<b><i class="icon-check"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            $('.datatable-export-excel').DataTable({
+                order: [[3, "desc"]],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportRevisionSn is defined and app.session.get('privilegiosRol').exportRevisionSn is not null %}
+                {% if app.session.get('privilegiosRol').exportRevisionSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+
+            //Boton que envia las revisiones a facturar
+            $('#btnFacturarRevision').click(function () {
+                if(arrayRevisiones.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REVISIONES_MULTIPLE{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('medico_revision_facturar') }}?revisiones='+arrayRevisiones;
+            });
+
+            //Boton que envia la aptitud de la revision
+            $('#btnEnviarAptitud').click(function () {
+                if(arrayRevisiones.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REVISIONES_MULTIPLE{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('medico_revision_enviar_aptitud') }}?revisiones='+arrayRevisiones;
+            });
+
+            //Boton que incluye las revisiones como facturadas
+            $('#btnIncluirRevision').click(function () {
+                if(arrayRevisiones.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REVISIONES_INCLUIR_MULTIPLE{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('medico_revision_incluir') }}?revisiones='+arrayRevisiones;
+            });
+
+            //Boton que marca las revisiones como enviadas
+            $('#btnMarcarEnviadaRevision').click(function () {
+                if(arrayRevisiones.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REVISIONES_MARCAR_MULTIPLE{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('medico_revision_marcar_aptitud_enviada') }}?revisiones='+arrayRevisiones;
+            });
+
+            //Boton que envia las facturas al cliente
+            $('#btnEnviarFacturaRevision').click(function () {
+                if(arrayRevisiones.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_REVISIONES_ENVIAR_FACTURA_MULTIPLE{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('factura_enviar_aviso_factura_revision') }}?revisiones='+arrayRevisiones;
+            });
+
+        });
+
+        var arrayRevisiones = [];
+        //Boton que añade el contrato a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'revision\']', function(){
+            var revisionId = $(this).attr('id');
+            if ($(this).prop('checked')) {
+                $('#uniform-'+revisionId+' span').addClass('checked');
+                arrayRevisiones.push(revisionId);
+            }else{
+                $('#uniform-'+revisionId+' span').removeClass('checked');
+                arrayRevisiones.splice($.inArray(revisionId, arrayRevisiones),1);
+            }
+        });
+
+        //Boton que añade todas los contratos a la lista de contratos seleccionadas
+        $(document).on('click', 'input[name=\'revisionesAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'revision\']");
+                    var revisionId = $(check).attr('id');
+                    $('#uniform-'+revisionId+' span').addClass('checked');
+                    arrayRevisiones.push(revisionId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'revision\']");
+                    var revisionId = $(check).attr('id');
+                    $('#uniform-'+revisionId+' span').removeClass('checked');
+                }
+                arrayRevisiones.splice(0, arrayRevisiones.length);
+            }
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="prueba" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                    <thead>
+                    <tr class="bg-grey-300" role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="revisionesAll" id="selectRevisionesAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Facturada">{% trans %}TRANS_FACTURADA{% endtrans %}</th>
+                        <th class="sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Fecha" aria-sort="descending">{% trans %}TRANS_FECHA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Agenda">{% trans %}TRANS_AGENDA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Trabajador">{% trans %}TRANS_TRABAJADOR{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="DNI">DNI</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Doctor">{% trans from 'revision' %}TRANS_MEDICO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Apto">{% trans %}TRANS_APTO{% endtrans %}</th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PruebasComplementarias">{% trans %}TRANS_PRUEBAS_COMPLEMENTARIAS{% endtrans %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if revisiones is defined and revisiones is not empty %}
+                        {% for r in revisiones %}
+                        <tr>
+                            <td>
+                                {% if r.estado_id == 4 %}
+                                    {% if r.fichero_resumen_id is not null %}
+                                        <input type="checkbox" name="revision" id="{{ r.id }}" class="form-check-input-styled form-check-input" value="1" />
+                                    {% endif %}
+                                {% else %}
+                                    <input type="checkbox" name="revision" id="{{ r.id }}" class="form-check-input-styled form-check-input" value="1" />
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="list-icons">
+                                    {% if app.session.get('privilegiosRol').facturarRevisionSn is defined and app.session.get('privilegiosRol').facturarRevisionSn is not null %}
+                                        {% if app.session.get('privilegiosRol').facturarRevisionSn %}
+                                            {% if r.estado_id != 4 %}
+                                                <a href="{{ path('medico_revision_facturar') }}?id={{ r.id }}" class="list-icons-item" data-popup="tooltip" title="Facturar" data-container="body"><i class="icon-cash"></i></a>
+                                                <a href="{{ path('medico_revision_incluir') }}?id={{ r.id }}" class="list-icons-item" data-popup="tooltip" title="Incluir" data-container="body"><i class="icon-file-check"></i></a>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if r.fichero_resumen_id is not null %}
+                                        {% if r.aptitud_enviada == false and r.estado_id == 4 %}
+                                            {% if app.session.get('privilegiosRol').enviarAptitudRevisionSn is defined and app.session.get('privilegiosRol').enviarAptitudRevisionSn is not null %}
+                                                {% if app.session.get('privilegiosRol').enviarAptitudRevisionSn %}
+                                                    <a href="{{ path('factura_enviar_aviso_factura_revision') }}?id={{ r.id }}" class="list-icons-item" data-popup="tooltip" title="Enviar factura al cliente" data-container="body"><i class="icon-envelope"></i></a>
+                                                    <a href="{{ path('medico_revision_enviar_aptitud') }}?id={{ r.id }}" class="list-icons-item" data-popup="tooltip" title="Enviar aptitud" data-container="body"><i class="icon-file-upload"></i></a>
+                                                    <a href="{{ path('medico_revision_marcar_aptitud_enviada') }}?id={{ r.id }}" class="list-icons-item" data-popup="tooltip" title="Marcar como enviada" data-container="body"><i class="icon-check"></i></a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if r.estado_id == 4 %}
+                                    <span class="badge badge-success"><i class="icon-check"></i></span>
+                                {% else %}
+                                    <span class="badge badge-danger"><i class="icon-cross"></i></span>
+                                {% endif %}
+                            </td>
+                            <td><span style="display:none;">{{ r.fechatimestamp }}</span>{{ r.fecha }}</td>
+                            <td>{{ r.agenda }}</td>
+                            <td>{{ r.trabajador }}</td>
+                            <td>{{ r.dni }}</td>
+                            <td>{{ r.puesto }}</td>
+                            <td>{{ r.empresa }}</td>
+                            <td>{{ r.doctor }}</td>
+                            <td>
+                                {% if r.apto_id is not empty %}
+                                    {% if r.apto_id == 1 %}
+                                        <span class="badge badge-success"><i class="icon-check"></i></span>
+                                    {% elseif r.apto_id == 2 %}
+                                        <span class="badge badge-warning"><i class="icon-check"></i></span>
+                                    {% elseif r.apto_id == 3 %}
+                                        <span class="badge badge-danger"><i class="icon-cross"></i></span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>{{ r.pruebas_complementarias | raw }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

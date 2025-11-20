@@ -1,0 +1,122 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'auditoria' %}
+
+{% block title %} {% trans %}TRANS_MONITOR_AUDITORIA{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                }
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('monitor_auditoria_datatable') }}',
+                    type: 'POST',
+                    dataSrc: 'data'
+                },
+                "columnDefs": [
+                    { "name": "a.action", "targets": 0 },
+                    { "name": "a.loggedAt", "searchable":false, "targets": 1 },
+                    { "name": "a.objectClass", "targets": 2 },
+                    { "name": "data", "sortable": false, "searchable":false, "targets": 3 },
+                    { "name": "a.username", "targets": 4 },
+                ],
+                order: [
+                    [1, "desc"]
+                ],
+                columns:[
+                    {data: "action"},
+                    {data: "fecha"},
+                    {data: "clase"},
+                    {data: "data"},
+                    {data: "username"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportMonitorAuditoriaSn is defined and app.session.get('privilegiosRol').exportMonitorAuditoriaSn is not null %}
+                {% if app.session.get('privilegiosRol').exportMonitorAuditoriaSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+        });
+
+
+    </script>
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Accion">{% trans %}TRANS_ACCION{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Clase">{% trans %}TRANS_CLASE{% endtrans %}
+                        </th>
+                        <th class="sorting_disabled" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Data">{% trans %}TRANS_DATA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Usuario">{% trans %}TRANS_USUARIO{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

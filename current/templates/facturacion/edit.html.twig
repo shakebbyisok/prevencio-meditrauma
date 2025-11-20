@@ -1,0 +1,1977 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'facturacion' %}
+
+{% block arrow %}<a href="{{ path('factura_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_FACTURA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.numFac }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {% if app.session.get('privilegiosRol').addVencimientoFacturacionSn is defined and app.session.get('privilegiosRol').addVencimientoFacturacionSn is not null %}
+            {% if app.session.get('privilegiosRol').addVencimientoFacturacionSn %}
+                {% if vencimiento is defined and vencimiento == false and serieSn == true %}
+                    <a href="{{ path('factura_genera_vencimiento_automatico', { "id": app.request.get('id') }) }}" class="btn btn-labeled btn-labeled-left bg-success">{% trans %}TRANS_GENERA_VENCIMIENTO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        {% if app.session.get('privilegiosRol').addVencimientoFacturacionSn is defined and app.session.get('privilegiosRol').addVencimientoFacturacionSn is not null %}
+            {% if app.session.get('privilegiosRol').addVencimientoFacturacionSn %}
+                {% if giroBancario is defined and giroBancario == true and serieSn == true %}
+                    <a href="{{ path('factura_genera_vencimiento_automatico', { "id": app.request.get('id') }) }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'balanceeconomico' %}TRANS_GENERAR_GIRO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('#cantidadConcepto').val(1);
+
+            //Recuperamos la numeracion de la serie
+            $('#facturacion_serie').on('change', function(){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_recupera_numeracion') }}",
+                    data: {
+                        'serieId': $('#facturacion_serie').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != null){
+                            $('#facturacion_numFac').val(data.num);
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                    }
+                });
+            });
+
+            //Recuperamos los datos de la empresa
+            $('#facturacion_empresa').on('change', function(){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_busca_datos_empresa') }}",
+                    data: {
+                        'empresaId': $('#facturacion_empresa').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != null){
+                            //$('#facturacion_empresa').val(data.empresaId).change();
+                            $('#facturacion_cifEmpresa').val(data.cif);
+                            $('#facturacion_direccionEmpresa').val(data.direccion);
+                            $('#facturacion_formaPago').val(data.formaPagoId).change();
+
+                            if(data.observaciones != "" || data.observaciones != null){
+                                $('#observacionesEmpresa').html(data.observaciones);
+                                $('#observacionesEmpresa').css('display', 'block');
+                            }
+                            buscaContratosEmpresa($('#facturacion_empresa').val());
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                    }
+                });
+            });
+
+            if($('#facturacion_empresa').val() != ""){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_busca_datos_empresa') }}",
+                    data: {
+                        'empresaId': $('#facturacion_empresa').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != null){
+                            // $('#facturacion_empresa').val(data.empresaId).change();
+                            $('#facturacion_cifEmpresa').val(data.cif);
+                            $('#facturacion_direccionEmpresa').val(data.direccion);
+                            // $('#facturacion_formaPago').val(data.formaPagoId).change();
+
+                            if(data.observaciones != "" || data.observaciones != null){
+                                $('#observacionesEmpresa').html(data.observaciones);
+                                $('#observacionesEmpresa').css('display', 'block');
+                            }
+                            //buscaContratosEmpresa($('#facturacion_empresa').val());
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                    }
+                });
+            }
+
+            //Boton que añade el pago
+            $('#btnAddPago').click(function(){
+
+                $('#btnAddPago').prop("disabled", true);
+                $('#btnAddPago').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_add_pago') }}",
+                    data: {
+                        'facturaId': '{{ app.request.get('id') }}',
+                        'porcentaje': $('#porcentajePago').val(),
+                        'concepto': $('#conceptoPago').val(),
+                        'exento': $('#exentoIvaPago').val(),
+                        'sujeto': $('#sujetoIvaPago').val(),
+                        'sinIva': $('#sinIvaPago').val(),
+                        'iva': $('#ivaPago').val(),
+                        'total': $('#totalPago').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperaPagos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#conceptoPago').val("");
+                            $('#porcentajePago').val("");
+                            $('#exentoIvaPago').val("");
+                            $('#sujetoIvaPago').val("");
+                            $('#sinIvaPago').val("");
+                            $('#ivaPago').val("");
+                            $('#totalPago').val("");
+
+                            $('#btnAddPago').prop("disabled", false);
+                            $('#btnAddPago').html("Guardar");
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddPago').prop("disabled", false);
+                        $('#btnAddPago').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Boton que modifica el pago seleccionado
+            $('#btnUpdatePago').click(function(){
+
+                $('#btnUpdatePago').prop("disabled", true);
+                $('#btnUpdatePago').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_update_pago') }}",
+                    data: {
+                        'pagoId': $('#idPagoEditar').val(),
+                        'porcentaje': $('#porcentajePagoEditar').val(),
+                        'concepto': $('#conceptoPagoEditar').val(),
+                        'exento': $('#exentoIvaPagoEditar').val(),
+                        'sujeto': $('#sujetoIvaPagoEditar').val(),
+                        'sinIva': $('#sinIvaPagoEditar').val(),
+                        'iva': $('#ivaPrecioPagoEditar').val(),
+                        'total': $('#totalPagoEditar').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperaPagos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#idPagoEditar').val("");
+                            $('#conceptoPagoEditar').val("");
+                            $('#porcentajePagoEditar').val("");
+                            $('#exentoIvaPagoEditar').val("");
+                            $('#sujetoIvaPagoEditar').val("");
+                            $('#sinIvaPagoEditar').val("");
+                            $('#ivaPagoEditar').val("");
+                            $('#ivaPrecioPagoEditar').val("");
+                            $('#totalPagoEditar').val("");
+
+                            $('#btnUpdatePago').prop("disabled", false);
+                            $('#btnUpdatePago').html("Guardar");
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdatePago').prop("disabled", false);
+                        $('#btnUpdatePago').html("Guardar");
+                    }
+                });
+
+            });
+
+            //Boton que añade el concepto
+            $('#btnAddConcepto').click(function(){
+
+                $('#btnAddConcepto').prop("disabled", true);
+                $('#btnAddConcepto').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_add_concepto') }}",
+                    data: {
+                        'facturaId': '{{ app.request.get('id') }}',
+                        'concepto': $('#conceptoConcepto').val(),
+                        'conceptoObj': $('#listConcepto').val(),
+                        'importe': $('#importeConcepto').val(),
+                        'iva': $('#ivaPrecioConcepto').val(),
+                        'total': $('#totalConcepto').val(),
+                        'cantidad': $('#cantidadConcepto').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperaConceptos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#listConcepto').val("").change();
+                            $('#conceptoConcepto').val("");
+                            $('#importeConcepto').val("");
+                            $('#ivaConcepto').val("");
+                            $('#ivaPrecioConcepto').val("");
+                            $('#totalConcepto').val("");
+                            $('#cantidadConcepto').val(1);
+
+                            $('#btnAddConcepto').prop("disabled", false);
+                            $('#btnAddConcepto').html("Guardar");
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddConcepto').prop("disabled", false);
+                        $('#btnAddConcepto').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+
+            });
+
+            //Boton que modifica el concepto seleccionado
+            $('#btnUpdateConcepto').click(function(){
+
+                $('#btnUpdateConcepto').prop("disabled", true);
+                $('#btnUpdateConcepto').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_update_concepto') }}",
+                    data: {
+                        'conceptoId': $('#idConceptoEditar').val(),
+                        'concepto': $('#conceptoConceptoEditar').val(),
+                        'conceptoObj': $('#listConceptoEditar').val(),
+                        'importe': $('#importeConceptoEditar').val(),
+                        'iva': $('#ivaPrecioConceptoEditar').val(),
+                        'total': $('#totalConceptoEditar').val(),
+                        'cantidad': $('#cantidadConceptoEditar').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperaConceptos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#listConceptoEditar').val("").change();
+                            $('#idConceptoEditar').val("");
+                            $('#conceptoConceptoEditar').val("");
+                            $('#importeConceptoEditar').val("");
+                            $('#ivaConceptoEditar').val("");
+                            $('#ivaPrecioConceptoEditar').val("");
+                            $('#totalConceptoEditar').val("");
+                            $('#cantidadConceptoEditar').val(1);
+
+                            $('#btnUpdateConcepto').prop("disabled", false);
+                            $('#btnUpdateConcepto').html("Guardar");
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateConcepto').prop("disabled", false);
+                        $('#btnUpdateConcepto').html("Guardar");
+                    }
+                });
+            });
+
+            //Calculamos el total
+            $('#importeConcepto').on('keyup', function(){
+                var importe = $(this).val();
+                var iva = $("#ivaConcepto").val();
+                var cantidad = $("#cantidadConcepto").val();
+
+                var importeTotal = 0;
+                var importeIva = 0;
+                if(iva != ""){
+                    //Calculamos el precio final
+                    importeTotal = calcularPrecioConIva(importe, iva, cantidad);
+                    importeIva = calcularPrecioIva(importe, iva);
+                }
+
+                $('#totalConcepto').val(importeTotal);
+                $('#ivaPrecioConcepto').val(importeIva);
+            });
+
+            $('#importeConceptoEditar').on('keyup', function(){
+                var importe = $(this).val();
+                var iva = $("#ivaConceptoEditar").val();
+                var cantidad = $("#cantidadConcepto").val();
+
+                var importeTotal = 0;
+                var importeIva = 0;
+                if(iva != ""){
+                    //Calculamos el precio final
+                    importeTotal = calcularPrecioConIva(importe, iva, cantidad);
+                    importeIva = calcularPrecioIva(importe, iva);
+                }
+
+                $('#totalConceptoEditar').val(importeTotal);
+                $('#ivaPrecioConceptoEditar').val(importeIva);
+            });
+
+            $('#ivaConcepto').on('keyup', function(){
+                var iva = $(this).val();
+                var importe = $("#importeConcepto").val();
+                var cantidad = $("#cantidadConcepto").val();
+
+                var importeTotal = 0;
+                var importeIva = 0;
+                if(iva != "" && importe != ""){
+                    //Calculamos el precio final
+                    importeTotal = calcularPrecioConIva(importe, iva, cantidad);
+                    importeIva = calcularPrecioIva(importe, iva);
+                    $('#ivaPrecioConcepto').val(importeIva);
+                    $('#totalConcepto').val(importeTotal);
+                }
+            });
+
+            $('#ivaConceptoEditar').on('keyup', function(){
+                var iva = $(this).val();
+                var importe = $("#importeConceptoEditar").val();
+                var cantidad = $("#cantidadConceptoEditar").val();
+
+                var importeTotal = 0;
+                var importeIva = 0;
+                if(iva != "" && importe != ""){
+                    //Calculamos el precio final
+                    importeTotal = calcularPrecioConIva(importe, iva, cantidad);
+                    importeIva = calcularPrecioIva(importe, iva);
+                    $('#ivaPrecioConceptoEditar').val(importeIva);
+                    $('#totalConceptoEditar').val(importeTotal);
+                }
+            });
+
+            $('#cantidadConcepto').on('keyup', function(){
+                var cantidad = $(this).val();
+                var importe = $("#importeConcepto").val();
+                var iva = $("#ivaConcepto").val();
+
+                var importeTotal = 0;
+                var importeIva = 0;
+                if(iva != "" && importe != ""){
+                    //Calculamos el precio final
+                    importeTotal = calcularPrecioConIva(importe, iva, cantidad);
+                    importeIva = calcularPrecioIva(importe, iva);
+                    $('#ivaPrecioConcepto').val(importeIva);
+                    $('#totalConcepto').val(importeTotal);
+                }
+            });
+
+            $('#cantidadConceptoEditar').on('keyup', function(){
+                var cantidad = $(this).val();
+                var importe = $("#importeConceptoEditar").val();
+                var iva = $("#ivaConceptoEditar").val();
+
+                var importeTotal = 0;
+                var importeIva = 0;
+                if(iva != "" && importe != ""){
+                    //Calculamos el precio final
+                    importeTotal = calcularPrecioConIva(importe, iva, cantidad);
+                    importeIva = calcularPrecioIva(importe, iva);
+                    $('#ivaPrecioConceptoEditar').val(importeIva);
+                    $('#totalConceptoEditar').val(importeTotal);
+                }
+            });
+
+            //Boton que añade la descripcion del concepto al crear un registro
+            $('#listConcepto').change(function(){
+                var descConcepto = $("#listConcepto option:selected").text();
+                $('#conceptoConcepto').val(descConcepto);
+                var ivaConcepto = $("#listConcepto option:selected").data('iva');
+                $('#ivaConcepto').val(ivaConcepto);
+                recuperaPrecioConcepto($(this).val(), ivaConcepto);
+            });
+
+            //Boton que añade la descripcion del concepto al editar un registro
+            $('#listConceptoEditar').change(function(){
+                var descConcepto = $( "#listConceptoEditar option:selected" ).text();
+                $('#conceptoConceptoEditar').val(descConcepto);
+                var ivaConcepto = $("#listConceptoEditar option:selected").data('iva');
+                $('#ivaConceptoEditar').val(ivaConcepto);
+                recuperaPrecioConceptoEditar($(this).val(), ivaConcepto);
+            });
+
+            //Boton que añade la descripcion del concepto al crear un registro
+            $('#listConceptoPago').change(function(){
+                var descConcepto = $( "#listConceptoPago option:selected" ).text();
+                $('#conceptoPago').val(descConcepto);
+            });
+
+            //Boton que añade la descripcion del concepto al editar un registro
+            $('#listConceptoPagoEditar').change(function(){
+                var descConcepto = $( "#listConceptoPagoEditar option:selected" ).text();
+                $('#conceptoPagoEditar').val(descConcepto);
+            });
+
+            var now = new Date();
+            var month = (now.getMonth() + 1);
+            var day = now.getDate();
+            if (month < 10)
+                month = "0" + month;
+            if (day < 10)
+                day = "0" + day;
+            var today = now.getFullYear() + '-' + month + '-' + day;
+            $('#fechaVencimiento').val(today);
+
+            //Control vencimiento
+            $('[id^=tipoFechaVencimiento]').change(function () {
+                if($('#tipoFechaVencimiento2').is(':checked')){
+                   $('#fechaVencimiento').prop('disabled', false);
+                }else{
+                    $('#fechaVencimiento').prop('disabled', true);
+                }
+            });
+
+            $('[id^=tipoFechaVencimiento]').each(function () {
+                if($('#tipoFechaVencimiento2').is(':checked')){
+                    $('#fechaVencimiento').prop('disabled', false);
+                }else{
+                    $('#fechaVencimiento').prop('disabled', true);
+                }
+            });
+
+            //Control modo generación vencimientos de cobro
+            $('[id^=vencimientoCobro]').change(function () {
+                if($('#vencimientoCobro2').is(':checked')){
+                    $('[id^=fraccionamientoCobro]').prop('disabled', false);
+                }else{
+                    $('[id^=fraccionamientoCobro]').prop('disabled', true);
+                    $('[id^=fraccionamientoCobro]').prop('checked', false);
+                    $('#formaPagoFraccionamiento2').prop('disabled', true);
+                    $('#formaPagoFraccionamiento1').prop('disabled', true);
+                    $('#numeroCobros').prop('disabled', true);
+                    $('#unoCada').prop('disabled', true);
+                    $('[id^=frecCobro]').prop('disabled', true);
+                    $('[id^=frecCobro]').prop('checked', false);
+                    $('#formaPagoFraccionamiento1').val('').change();
+                    $('#formaPagoFraccionamiento2').val('').change();
+                    $('#numeroCobros').val('');
+                    $('#unoCada').val('');
+                }
+            });
+
+            $('[id^=vencimientoCobro]').each(function () {
+                if($('#vencimientoCobro2').is(':checked')){
+                    $('[id^=fraccionamientoCobro]').prop('disabled', false);
+                }else{
+                    $('[id^=fraccionamientoCobro]').prop('disabled', true);
+                }
+            });
+
+            //Control vencimientos periodicos
+            $('[id^=fraccionamientoCobro]').change(function () {
+                if($('#fraccionamientoCobro1').is(':checked')){
+                    $('#formaPagoFraccionamiento1').prop('disabled', false);
+                    $('#numeroCobros').prop('disabled', false);
+                    $('#unoCada').prop('disabled', false);
+                    $('#formaPagoFraccionamiento2').prop('disabled', true);
+                    $('#formaPagoFraccionamiento2').val('').change();
+                }else if($('#fraccionamientoCobro2').is(':checked')){
+                    $('#formaPagoFraccionamiento2').prop('disabled', false);
+                    $('#formaPagoFraccionamiento1').prop('disabled', true);
+                    $('#numeroCobros').prop('disabled', true);
+                    $('#unoCada').prop('disabled', true);
+                    $('#formaPagoFraccionamiento1').val('').change();
+                    $('#numeroCobros').val('');
+                    $('#unoCada').val('');
+                }else{
+                    $('#formaPagoFraccionamiento1').prop('disabled', true);
+                    $('#numeroCobros').prop('disabled', true);
+                    $('#unoCada').prop('disabled', true);
+                    $('#formaPagoFraccionamiento2').prop('disabled', true);
+                    $('#formaPagoFraccionamiento1').val('').change();
+                    $('#numeroCobros').val('');
+                    $('#unoCada').val('');
+                    $('#formaPagoFraccionamiento2').val('').change();
+                }
+            });
+
+            $('[id^=fraccionamientoCobro]').each(function () {
+                if($('#fraccionamientoCobro1').is(':checked')){
+                    $('#formaPagoFraccionamiento1').prop('disabled', false);
+                    $('#numeroCobros').prop('disabled', false);
+                    $('#unoCada').prop('disabled', false);
+                    $('#formaPagoFraccionamiento2').prop('disabled', true);
+                }else if($('#fraccionamientoCobro2').is(':checked')){
+                    $('#formaPagoFraccionamiento2').prop('disabled', false);
+                    $('#formaPagoFraccionamiento1').prop('disabled', true);
+                    $('#numeroCobros').prop('disabled', true);
+                    $('#unoCada').prop('disabled', true);
+                }else{
+                    $('#formaPagoFraccionamiento1').prop('disabled', true);
+                    $('#numeroCobros').prop('disabled', true);
+                    $('#unoCada').prop('disabled', true);
+                    $('#formaPagoFraccionamiento2').prop('disabled', true);
+                }
+            });
+
+            //Control generacion dias cobro
+            $('#unoCada').change(function () {
+                if($(this).val().length > 0){
+                    $('[id^=frecCobro]').prop('disabled', false);
+                }else{
+                    $('[id^=frecCobro]').prop('disabled', true);
+                }
+            });
+
+            $('#unoCada').each(function () {
+                if($(this).val().length > 0){
+                    $('[id^=frecCobro]').prop('disabled', false);
+                }else{
+                    $('[id^=frecCobro]').prop('disabled', true);
+                }
+            });
+
+            $('#btnGenerarVencimiento').click(function () {
+
+                if(!$('#tipoFechaVencimiento1').is(':checked') && !$('#tipoFechaVencimiento2').is(':checked')){
+                    alert('{% trans %}TRANS_SELECT_FECHA_VENCIMIENTO{% endtrans %}');
+                    return false;
+                }
+
+                if(!$('#vencimientoCobro1').is(':checked') && !$('#vencimientoCobro2').is(':checked')){
+                    alert('{% trans %}TRANS_SELECT_MODO_GENERACION_VENCIMIENTO{% endtrans %}');
+                    return false;
+                }
+
+                if($('#vencimientoCobro2').is(':checked')){
+                    if(!$('#fraccionamientoCobro1').is(':checked') && !$('#fraccionamientoCobro2').is(':checked')){
+                        alert('{% trans %}TRANS_SELECT_GENERAR_VENCIMIENTO{% endtrans %}');
+                        return false;
+                    }
+                }
+
+                if($('#fraccionamientoCobro1').is(':checked')){
+                    if($('#formaPagoFraccionamiento1').val() == '' || $('#numeroCobros').val() == '' || $('#unoCada').val() == ''){
+                        alert('{% trans %}TRANS_SELECT_VENCIMIENTO_PERIODICO{% endtrans %}');
+                        return false;
+                    }
+
+                    if($('#unoCada').val() != ''){
+                        if(!$('#frecCobro1').is(':checked') && !$('#frecCobro2').is(':checked') && !$('#frecCobro3').is(':checked')){
+                            alert('{% trans %}TRANS_SELECT_CADA_CUANTOS_DIAS{% endtrans %}');
+                            return false;
+                        }
+                    }
+                }
+
+                if($('#fraccionamientoCobro2').is(':checked')){
+                    if($('#formaPagoFraccionamiento2').val() == ''){
+                        alert('{% trans %}TRANS_SELECT_FORMA_PAGO{% endtrans %}');
+                        return false;
+                    }
+                }
+
+                $('#btnGenerarVencimiento').prop("disabled", true);
+                $('#btnGenerarVencimiento').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Generar");
+
+                var tipoFechaVencimiento = null;
+
+                if($('#tipoFechaVencimiento1').is(':checked')){
+                    tipoFechaVencimiento = 1;
+                }
+
+                if($('#tipoFechaVencimiento2').is(':checked')){
+                    tipoFechaVencimiento = 2;
+                }
+
+                var ignorarDiaPago = false;
+                if($('#ignorarDiaPago').is(':checked')){
+                    ignorarDiaPago = true;
+                }
+
+                var confirmarCobro = false;
+                if($('#confirmarCobro').is(':checked')){
+                    confirmarCobro = true;
+                }
+
+                var vencimientoCobro = null;
+
+                if($('#vencimientoCobro1').is(':checked')){
+                    vencimientoCobro = 1;
+                }
+
+                if($('#vencimientoCobro2').is(':checked')){
+                    vencimientoCobro = 2;
+                }
+
+                var fraccionamientoCobro = null;
+                var formaPago = null;
+                var numeroCobros = null;
+                var cadaCuando = null;
+                var frecuencia = null;
+
+                if($('#fraccionamientoCobro1').is(':checked')){
+                    fraccionamientoCobro = 1;
+                    formaPago = $('#formaPagoFraccionamiento1').val();
+                    numeroCobros = $('#numeroCobros').val();
+                    cadaCuando = $('#unoCada').val();
+
+                    if($('#frecCobro1').is(':checked')){
+                        frecuencia = 1;
+                    }
+
+                    if($('#frecCobro2').is(':checked')){
+                        frecuencia = 2;
+                    }
+
+                    if($('#frecCobro3').is(':checked')){
+                        frecuencia = 3;
+                    }
+
+                }
+
+                if($('#fraccionamientoCobro2').is(':checked')){
+                    fraccionamientoCobro = 2;
+                    formaPago = $('#formaPagoFraccionamiento2').val();
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_genera_vencimiento_manual') }}",
+                    data: {
+                        'facturaId': '{{ app.request.get('id') }}',
+                        'tipoFechaVencimiento': tipoFechaVencimiento,
+                        'fechaVencimiento': $('#fechaVencimiento').val(),
+                        'ignorarDiaPago': ignorarDiaPago,
+                        'confirmarCobro': confirmarCobro,
+                        'vencimientoCobro': vencimientoCobro,
+                        'fraccionamientoCobro': fraccionamientoCobro,
+                        'formaPago': formaPago,
+                        'numeroCobros': numeroCobros,
+                        'cadaCuando': cadaCuando,
+                        'frecuencia': frecuencia,
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            $('#btnGenerarVencimiento').prop("disabled", false);
+                            $('#btnGenerarVencimiento').html("Generar");
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnGenerarVencimiento').prop("disabled", false);
+                        $('#btnGenerarVencimiento').html("Generar");
+                    }
+                });
+            });
+
+            {% if observaciones is defined and observaciones is not empty and observaciones is not null %}
+                $('#observacionesEmpresa').html('{{ observaciones | raw }}');
+                $('#observacionesEmpresa').css('display', 'block');
+            {% endif %}
+        });
+
+        function calcularPrecioConIva(importe, iva, cantidad){
+            var importeTotal = 0;
+            var importeReal = parseFloat(importe) * parseInt(cantidad);
+            return importeTotal = parseFloat(importeReal) + parseFloat(((importeReal * iva)/100));
+        }
+
+        function calcularPrecioIva(importe, iva){
+            var importeIva = 0;
+            return importeIva = parseFloat(((importe * iva)/100));
+        }
+
+        function recuperaPago(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_recupera_pago') }}",
+                data: {
+                    'lineaPagoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+
+                        $('#idPagoEditar').val(data.id);
+                        $('#conceptoPagoEditar').val(data.concepto);
+                        $('#porcentajePagoEditar').val(data.porcentaje);
+                        $('#exentoIvaPagoEditar').val(data.exento);
+                        $('#sujetoIvaPagoEditar').val(data.sujeto);
+                        $('#sinIvaPagoEditar').val(data.sinIva);
+                        $('#ivaPrecioPagoEditar').val(data.iva);
+                        $('#totalPagoEditar').val(data.total);
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaPagos(){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_recuperar_pagos') }}",
+                data: {
+                    'facturaId': '{{ app.request.get('id') }}',
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#lineaPagos").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th><th>{% trans %}TRANS_PORCENTAJE{% endtrans %}</th><th>{% trans %}TRANS_EXENTO_IVA{% endtrans %}</th><th>{% trans %}TRANS_SUJETO_IVA{% endtrans %}</th><th>{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</th><th>{% trans %}TRANS_IVA{% endtrans %}</th><th>{% trans %}TRANS_TOTAL{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    table += "<tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr  class="grid-row-cells even"> ';
+                             }
+
+                            if (item["concepto"] != undefined) {
+                                table += '<td>' + item["concepto"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["porcentaje"] != undefined) {
+                                table += '<td>' + parseFloat(item["porcentaje"]).toFixed(2)+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeExentoIva"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeExentoIva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeSujetoIva"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeSujetoIva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeSinIva"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeSinIva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeIva"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeIva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeTotal"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeTotal"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+
+                                {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                                    {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                                        table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item" onclick="recuperaPago('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_pago"><i class="icon-pencil7"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if app.session.get('privilegiosRol').deleteFacturacionSn is defined and app.session.get('privilegiosRol').deleteFacturacionSn is not null %}
+                                    {% if app.session.get('privilegiosRol').deleteFacturacionSn %}
+                                        table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarPago"><i class="icon-trash"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='8' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#lineaPagos").html("");
+                    $("#lineaPagos").html(table);
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deletePago(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_delete_pago') }}",
+                data: {
+                    'pagoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+
+                        recuperaPagos();
+
+                        new PNotify({
+                            title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                            icon: 'icon-checkmark3',
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el pago seleccionado
+        $(document).on('click', 'a.eliminarPago', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_CONCEPTO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deletePago(id)
+                    }
+                }
+            });
+        });
+
+        function recuperaConcepto(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_recupera_concepto') }}",
+                data: {
+                    'lineaConceptoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        $('#idConceptoEditar').val(data.id);
+                        $('#conceptoConceptoEditar').val(data.concepto);
+                        $('#importeConceptoEditar').val(data.importe);
+                        $('#ivaPrecioConceptoEditar').val(data.iva);
+                        $('#totalConceptoEditar').val(data.total);
+                        $('#cantidadConceptoEditar').val(data.cantidad);
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaConceptos(){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_recuperar_conceptos') }}",
+                data: {
+                    'facturaId': '{{ app.request.get('id') }}',
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#lineaConceptos").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th><th>{% trans %}TRANS_CANTIDAD{% endtrans %}</th><th>{% trans %}TRANS_IMPORTE{% endtrans %}</th><th>{% trans %}TRANS_IVA{% endtrans %}</th><th>{% trans %}TRANS_IMPORTE_TOTAL{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    table += "<tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr  class="grid-row-cells even"> ';
+                             }
+
+                            if (item["concepto"] != undefined) {
+                                table += '<td>' + item["concepto"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["unidades"] != undefined) {
+                                table += '<td>' + item["unidades"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeUnidad"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeUnidad"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["iva"] != undefined) {
+                                table += '<td>' + parseFloat(item["iva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe"] != undefined) {
+                                table += '<td>' + parseFloat(item["importe"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+
+                                {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                                    {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                                        table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item" onclick="recuperaConcepto('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_concepto"><i class="icon-pencil7"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if app.session.get('privilegiosRol').deleteFacturacionSn is defined and app.session.get('privilegiosRol').deleteFacturacionSn is not null %}
+                                    {% if app.session.get('privilegiosRol').deleteFacturacionSn %}
+                                        table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarConcepto"><i class="icon-trash"></i></a>';
+                                    {% endif %}
+                                {% endif %}
+
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='5' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#lineaConceptos").html("");
+                    $("#lineaConceptos").html(table);
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteConcepto(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_delete_concepto') }}",
+                data: {
+                    'conceptoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+
+                        recuperaConceptos();
+
+                        new PNotify({
+                            title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                            icon: 'icon-checkmark3',
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el concepto seleccionado
+        $(document).on('click', 'a.eliminarConcepto', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_SERVICIO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteConcepto(id)
+                    }
+                }
+            });
+        });
+
+        function buscaContratosEmpresa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('factura_busca_contratos_empresa') }}",
+                data: {
+                    'empresaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        if (JSON.parse(data) != "") {
+                            $('#facturacion_contrato').empty();
+                            $("#facturacion_contrato").append('<option value=""></option>');
+                            $.each(JSON.parse(data), function (i, item) {
+                                $('#facturacion_contrato').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                            });
+                        }
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaPrecioConcepto(conceptoId, iva){
+            if(iva == ""){
+                iva = 0;
+            }
+
+            if(conceptoId != ""){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_busca_precio_concepto') }}",
+                    data: {
+                        'conceptoId': conceptoId,
+                        'iva': iva
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data != null) {
+                            $('#importeConcepto').val(data.importe);
+                            $('#ivaPrecioConcepto').val(data.importeIva);
+                            $('#totalConcepto').val(data.importeTotal);
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+        }
+
+        function recuperaPrecioConceptoEditar(conceptoId, iva){
+
+            if(iva == ""){
+                iva = 0;
+            }
+
+            if(conceptoId != "") {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('factura_busca_precio_concepto') }}",
+                    data: {
+                        'conceptoId': conceptoId,
+                        'iva': iva
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data != null) {
+                            $('#importeConceptoEditar').val(data.importe);
+                            $('#ivaPrecioConceptoEditar').val(data.importeIva);
+                            $('#totalConceptoEditar').val(data.importeTotal);
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            {{ form_row(form.contrato) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.empresa) }}
+                        </div>
+
+                        <div class="col-lg-3">
+                            {{ form_row(form.cifEmpresa) }}
+                        </div>
+
+                        <div class="col-lg-3">
+                            {{ form_row(form.direccionEmpresa) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            {{ form_row(form.facturaRectificativa) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {% if serieId is defined and serieId is not empty %}
+                                {% if serieId == 6 %}
+                                    {{ form_row(form.facturaAsociada) }}
+                                {% else %}
+                                    {{ form_row(form.facturaAsociada, {'attr': {'disabled': 'disabled'}}) }}
+                                {% endif %}
+                            {% else %}
+                                {{ form_row(form.facturaAsociada, {'attr': {'disabled': 'disabled'}}) }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info bg-white alert-styled-left alert-arrow-left alert-dismissible" id="observacionesEmpresa" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            {{ form_row(form.serie) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.numFac) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.fecha) }}
+                        </div>
+                        <div class="col-lg-3">
+                            {{ form_row(form.formaPago) }}
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.pagada) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.renovacion) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.cancelada) }}
+                        </div>
+                    </div>
+
+{#                    <hr/>#}
+
+{#                    <div class="row">#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.comisionableColaborador) }}#}
+{#                        </div>#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.comisionColaborador, {'attr': {'class': 'type_text_to_number'}}) }}#}
+{#                        </div>#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.pagadaComisionColaborador) }}#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="row">#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.comisionableTecnico) }}#}
+{#                        </div>#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.comisionTecnico, {'attr': {'class': 'type_text_to_number'}}) }}#}
+{#                        </div>#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.pagadaComisionTecnico) }}#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="row">#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.comisionableComercial) }}#}
+{#                        </div>#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.comisionComercial, {'attr': {'class': 'type_text_to_number'}}) }}#}
+{#                        </div>#}
+{#                        <div class="col-lg-4">#}
+{#                            {{ form_row(form.pagadaComisionComercial) }}#}
+{#                        </div>#}
+{#                    </div>#}
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.observaciones) }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="text-center">{% trans %}TRANS_CONCEPTOS_FACTURADOS{% endtrans %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_pago">{% trans from 'messages' %}TRANS_AÑADIR_CONCEPTO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <table class="table" id="lineaPagos">
+                                    <thead>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_PORCENTAJE{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_EXENTO_IVA{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_SUJETO_IVA{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_IVA{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_TOTAL{% endtrans %}</th>
+                                        <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if lineasPagosFactura is not empty %}
+                                        {% for l in lineasPagosFactura %}
+                                            <tr>
+                                                <td>{{ l.concepto }}</td>
+                                                <td>{{ l.porcentaje|number_format(2, ',', '.') }}</td>
+                                                <td>{{ l.importeExentoIva|number_format(2, ',', '.') }} €</td>
+                                                <td>{{ l.importeSujetoIva|number_format(2, ',', '.') }} €</td>
+                                                <td>{{ l.importeSinIva|number_format(2, ',', '.') }} €</td>
+                                                <td>{{ l.importeIva|number_format(2, ',', '.') }} €</td>
+                                                <td>{{ l.importeTotal|number_format(2, ',', '.') }} €</td>
+                                                <td>
+                                                    <div class="list-icons">
+
+                                                        {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                                                            {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                                                                <a href="#" data-id="{{ l.id }}" target="_self" class="list-icons-item" onclick="recuperaPago('{{ l.id }}');" data-toggle="modal" data-target="#modal_editar_pago"><i class="icon-pencil7"></i></a>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        {% if app.session.get('privilegiosRol').deleteFacturacionSn is defined and app.session.get('privilegiosRol').deleteFacturacionSn is not null %}
+                                                            {% if app.session.get('privilegiosRol').deleteFacturacionSn %}
+                                                                <a href="#" data-id="{{ l.id }}" target="_self" class="list-icons-item eliminarPago"><i class="icon-trash"></i></a>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="8" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3 class="text-center">{% trans %}TRANS_SERVICIOS_CONTRATO_INCLUIDO{% endtrans %}</h3>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_concepto">{% trans from 'contratos' %}TRANS_AÑADIR_SERVICIO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <table class="table" id="lineaConceptos">
+                                    <thead>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_CANTIDAD{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_IMPORTE{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_IVA{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_IMPORTE_TOTAL{% endtrans %}</th>
+                                        <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if lineasConceptosFactura is not empty %}
+                                        {% for l in lineasConceptosFactura %}
+                                            <tr>
+                                                <td>{{ l.concepto }}</td>
+                                                <td>{{ l.unidades }}</td>
+                                                <td>{{ l.importeUnidad|number_format(2, ',', '.') }} €</td>
+                                                <td>{{ l.iva|number_format(2, ',', '.') }} €</td>
+                                                <td>{{ l.importe|number_format(2, ',', '.') }} €</td>
+                                                <td>
+                                                    <div class="list-icons">
+
+                                                        {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                                                            {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                                                                <a href="#" data-id="{{ l.id }}" target="_self" class="list-icons-item" onclick="recuperaConcepto('{{ l.id }}');" data-toggle="modal" data-target="#modal_editar_concepto"><i class="icon-pencil7"></i></a>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        {% if app.session.get('privilegiosRol').deleteFacturacionSn is defined and app.session.get('privilegiosRol').deleteFacturacionSn is not null %}
+                                                            {% if app.session.get('privilegiosRol').deleteFacturacionSn %}
+                                                                <a href="#" data-id="{{ l.id }}" target="_self" class="list-icons-item eliminarConcepto"><i class="icon-trash"></i></a>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editFacturacionSn is defined and app.session.get('privilegiosRol').editFacturacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editFacturacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir pago -->
+    <div id="modal_añadir_pago" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'messages' %}TRANS_AÑADIR_CONCEPTO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <select id="listConceptoPago" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listConceptos is not empty %}
+                            {% for lc in listConceptos %}
+                                <option value="{{ lc.id }}">{{ lc.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="text" id="conceptoPago" class="form-control" style="margin-top: 10px;" />
+
+                    <label>{% trans %}TRANS_PORCENTAJE_TEXT{% endtrans %}</label>
+                    <input type="text" id="porcentajePago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_EXENTO_IVA{% endtrans %}</label>
+                    <input type="text" id="exentoIvaPago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_SUJETO_IVA{% endtrans %}</label>
+                    <input type="text" id="sujetoIvaPago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</label>
+                    <input type="text" id="sinIvaPago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>% {% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaPago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaPrecioPago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_TOTAL{% endtrans %}</label>
+                    <input type="text" id="totalPago" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddPago">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir pago -->
+
+    <!-- Modal editar pago -->
+    <div id="modal_editar_pago" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_EDITAR_CONCEPTO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <select id="listConceptoPagoEditar" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listConceptos is not empty %}
+                            {% for lc in listConceptos %}
+                                <option value="{{ lc.id }}">{{ lc.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="text" id="conceptoPagoEditar" class="form-control" style="margin-top: 10px;" />
+
+                    <label>{% trans %}TRANS_PORCENTAJE_TEXT{% endtrans %}</label>
+                    <input type="text" id="porcentajePagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_EXENTO_IVA{% endtrans %}</label>
+                    <input type="text" id="exentoIvaPagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_SUJETO_IVA{% endtrans %}</label>
+                    <input type="text" id="sujetoIvaPagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</label>
+                    <input type="text" id="sinIvaPagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>% {% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaPagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaPrecioPagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_TOTAL{% endtrans %}</label>
+                    <input type="text" id="totalPagoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <input type="hidden" id="idPagoEditar"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdatePago">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal editar pago -->
+
+    <!-- Modal añadir concepto -->
+    <div id="modal_añadir_concepto" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'contratos' %}TRANS_AÑADIR_SERVICIO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <select id="listConcepto" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listConceptos is not empty %}
+                            {% for lc in listConceptos %}
+                                <option value="{{ lc.id }}" data-iva="{{ lc.iva }}">{{ lc.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="text" id="conceptoConcepto" class="form-control" style="margin-top: 10px;" />
+
+                    <label>{% trans %}TRANS_CANTIDAD{% endtrans %}</label>
+                    <input type="text" id="cantidadConcepto" min="0" max="999999999" step="1" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE{% endtrans %}</label>
+                    <input type="text" id="importeConcepto" min="-999999999.9999" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>% {% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaConcepto" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaPrecioConcepto" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IMPORTE_TOTAL{% endtrans %}</label>
+                    <input type="text" id="totalConcepto" min="-999999999.9999" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddConcepto">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir concepto -->
+
+    <!-- Modal editar concepto -->
+    <div id="modal_editar_concepto" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'contratos' %}TRANS_EDITAR_SERVICIO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <select id="listConceptoEditar" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listConceptos is not empty %}
+                            {% for lc in listConceptos %}
+                                <option value="{{ lc.id }}"  data-iva="{{ lc.iva }}">{{ lc.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="text" id="conceptoConceptoEditar" class="form-control" style="margin-top: 10px;" />
+
+                    <label>{% trans %}TRANS_CANTIDAD{% endtrans %}</label>
+                    <input type="text" id="cantidadConceptoEditar" min="0" max="999999999" step="1" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE{% endtrans %}</label>
+                    <input type="text" id="importeConceptoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>% {% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaConceptoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="ivaPrecioConceptoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <label>{% trans %}TRANS_IMPORTE_TOTAL{% endtrans %}</label>
+                    <input type="text" id="totalConceptoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+
+                    <input type="hidden" id="idConceptoEditar"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateConcepto">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal editar concepto -->
+
+    <!-- Modal generar vencimiento -->
+    <div id="modal_generate_vencimiento" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_GENERA_VENCIMIENTO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label><strong>{% trans %}TRANS_FECHA_REFERENCIA_VENCIMIENTO{% endtrans %}</strong></label><br/>
+
+                    <input type="radio" id="tipoFechaVencimiento1" name="tipoFechaVencimiento">
+                    <label for="tipoFechaVencimiento1">{% trans %}TRANS_FECHA_DOCUMENTO_VENCIMIENTO{% endtrans %}</label><br>
+
+                    <input type="radio" id="tipoFechaVencimiento2" name="tipoFechaVencimiento">
+                    <label for="tipoFechaVencimiento2">{% trans %}TRANS_FECHA{% endtrans %}:<input type="date" id="fechaVencimiento" class="form-control"/></label>
+
+                    <br/>
+                    <br/>
+
+                    <div class="form-check">
+                        <input type="checkbox" id="ignorarDiaPago" name="ignorarDiaPago" class="form-check-input-styled form-check-input" value="1" />
+                        <label class="form-check-label" for="ignorarDiaPago">{% trans %}TRANS_IGNORAR_DIA_PAGO{% endtrans %}</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" id="confirmarCobro" name="confirmarCobro" class="form-check-input-styled form-check-input" value="1" />
+                        <label class="form-check-label" for="confirmarCobro">{% trans %}TRANS_CONFIRMAR_COBRO{% endtrans %}</label>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <label><strong>{% trans %}TRANS_MODO_GENERACION_VENCIMIENTO_COBRO{% endtrans %}</strong></label><br/>
+
+                    <input type="radio" id="vencimientoCobro1" name="vencimientoCobro">
+                    <label for="vencimientoCobro1">{% trans %}TRANS_MODO_GENERACION_VENCIMIENTO_COBRO_1{% endtrans %}</label><br>
+
+                    <input type="radio" id="vencimientoCobro2" name="vencimientoCobro">
+                    <label for="vencimientoCobro2">{% trans %}TRANS_MODO_GENERACION_VENCIMIENTO_COBRO_2{% endtrans %}:</label>
+
+                    <ul style="list-style: none;">
+                        <li>
+                            <input type="radio" id="fraccionamientoCobro1" name="fraccionamientoCobro">
+                            <label for="fraccionamientoCobro1">{% trans %}TRANS_GENERAR_VENCIMIENTO_PERIODICO{% endtrans %}</label>
+                            <ul style="list-style: none;">
+                                <li>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label for="formaPago">{% trans %}TRANS_FORMA_PAGO{% endtrans %}:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <select name="formaPago" id="formaPagoFraccionamiento1" class="select-search form-control">
+                                                <option value=""></option>
+                                                {% if formaPago is defined and formaPago is not empty %}
+                                                    {% for f in formaPago %}
+                                                        <option value="{{ f.id }}">{{ f.descripcion }}</option>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <br/>
+
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label for="numeroCobros">{% trans %}TRANS_NUMERO_COBROS{% endtrans %}:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <input type="text" id="numeroCobros" name="numeroCobros" class="form-control" style="width: 45px;">
+                                        </div>
+                                    </div>
+
+                                    <br/>
+
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label for="cobroCada">{% trans %}TRANS_GENERAR_UNO_CADA{% endtrans %}:</label>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" id="unoCada" name="cobroCada" class="form-control" style="width: 45px;">
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="radio" id="frecCobro1" name="frecCobro">
+                                            <label for="frecCobro1">{% trans %}TRANS_DIAS{% endtrans %}</label>
+                                            <input type="radio" id="frecCobro2" name="frecCobro">
+                                            <label for="frecCobro2">{% trans %}TRANS_MESES{% endtrans %}</label>
+                                            <input type="radio" id="frecCobro3" name="frecCobro">
+                                            <label for="frecCobro3">{% trans %}TRANS_AÑOS{% endtrans %}</label>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <input type="radio" id="fraccionamientoCobro2" name="fraccionamientoCobro">
+                            <label for="fraccionamientoCobro2">{% trans %}TRANS_GENERAR_VENCIMIENTO_FORMA_PAGO{% endtrans %}</label>
+
+                            <ul style="list-style: none;">
+                                <li>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label for="formaPagoDefinida">{% trans %}TRANS_FORMA_PAGO{% endtrans %}:</label>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <select name="formaPagoDefinida" id="formaPagoFraccionamiento2" class="select-search form-control">
+                                                <option value=""></option>
+                                                {% if formaPago is defined and formaPago is not empty %}
+                                                    {% for f in formaPago %}
+                                                        <option value="{{ f.id }}">{{ f.descripcion }}</option>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </li>
+                    </ul>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGenerarVencimiento">Generar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generar vencimiento -->
+
+{% endblock %}
+
+
+

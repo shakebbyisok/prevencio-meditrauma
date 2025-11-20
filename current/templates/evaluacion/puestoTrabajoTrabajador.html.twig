@@ -1,0 +1,241 @@
+ {% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block arrow %}
+    {% if app.session.get('puestoTrabajoEvaluacionId') is defined and app.session.get('puestoTrabajoEvaluacionId') is not empty %}
+        <a href="{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_evaluar', { "id": app.session.get('puestoTrabajoEvaluacionId') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+
+    {% if app.session.get('trabajadorTecnico') is defined and app.session.get('trabajadorTecnico') is not empty %}
+        <a href="{{ path('tecnico_trabajador_update', { "id": app.session.get('trabajadorTecnico') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+{% endblock %}
+
+{% block title %} {% trans from 'trabajadores' %}TRANS_TRABAJADOR{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.trabajador }} - {{ form.vars.value.puestoTrabajo }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            //Cuando se selecciona la empresa buscamos los trabajadores/centros/puesto de trabajos
+            $('#puesto_trabajo_trabajador_empresa').change(function () {
+                var empresaId = $(this).val();
+                if(empresaId != ""){
+                    buscaTrabajadores(empresaId);
+                    buscaCentros(empresaId);
+                    buscaPuestoTrabajoTrabajador(empresaId);
+                }
+            });
+
+            //Cuando se selecciona la empresa buscamos los trabajadores/centros/puesto de trabajos
+            $('#puesto_trabajo_trabajador_empresa').each(function () {
+                var empresaId = $(this).val();
+                if(empresaId != ""){
+                    buscaCentros(empresaId);
+                }
+            });
+
+        });
+
+        function buscaTrabajadores(empresaId) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('citacion_busca_trabajador_empresa') }}",
+                data: {
+                    'empresaId': empresaId,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    $('#puesto_trabajo_trabajador_trabajador').empty();
+                    if (JSON.parse(data) != "") {
+                        $("#puesto_trabajo_trabajador_trabajador").append('<option value=""></option>');
+                        $.each(JSON.parse(data), function (i, item) {
+                            $('#puesto_trabajo_trabajador_trabajador').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                        });
+                    }
+                },
+                complete: function (){
+                    {% if trabajadorId is defined and trabajadorId is not empty %}
+                        $('#puesto_trabajo_trabajador_trabajador').val({{ trabajadorId }}).change();
+                    {% endif %}
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function buscaCentros(empresaId) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_empresa_busca_centros') }}",
+                data: {
+                    'empresaId': empresaId,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (JSON.parse(data) != "") {
+                        $('#puesto_trabajo_trabajador_centro').empty();
+                        $("#puesto_trabajo_trabajador_centro").append('<option value=""></option>');
+                        $.each(JSON.parse(data), function (i, item) {
+                            $('#puesto_trabajo_trabajador_centro').append('<option value="' + item['id'] + '">' + item['nombre'] + '</option>');
+                        });
+                    }
+                },
+                complete: function (){
+                    $('#puesto_trabajo_trabajador_centro').focus();
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function buscaPuestoTrabajoTrabajador(empresaId){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_empresa_busca_puesto_trabajo') }}",
+                data: {
+                    'empresaId': empresaId,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (JSON.parse(data.puestos) != "") {
+                        $('#puesto_trabajo_trabajador_puestoTrabajo').empty();
+                        $("#puesto_trabajo_trabajador_puestoTrabajo").append('<option value=""></option>');
+                        $.each(JSON.parse(data.puestos), function (i, item) {
+                            $('#puesto_trabajo_trabajador_puestoTrabajo').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                        });
+                    }
+                },
+                complete: function (){
+                    $("#puesto_trabajo_trabajador_puestoTrabajo").focus();
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.empresa) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.centro) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.trabajador) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.puestoTrabajo) }}
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-3">
+                    {{ form_row(form.fechaAlta) }}
+                </div>
+                <div class="col-lg-3">
+                    {{ form_row(form.fechaBaja) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.delegadoPrevencion) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.delegadoPersonal) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.delegadoComite) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.dedicacion) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.observaciones) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

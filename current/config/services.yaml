@@ -1,0 +1,627 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\EventListener\LoginListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'security.interactive_login' }
+
+    admin.user:
+        class: App\Admin\User
+        arguments: [~, App\Entity\User, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Usuarios' }
+
+    admin.user_empresa:
+        class: App\Admin\UserIntranet
+        arguments: [~, App\Entity\UserIntranet, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Usuario intranet' }
+
+    admin.user_intranet_empresa:
+        class: App\Admin\UserIntranetEmpresa
+        arguments: [~, App\Entity\UserIntranetEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Usuario intranet - empresa' }
+
+    admin.privilegio_roles:
+        class: App\Admin\PrivilegioRoles
+        arguments: [~, App\Entity\PrivilegioRoles, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Privilegios' }
+
+#    admin.actividad:
+#        class: App\Admin\Actividad
+#        arguments: [~, App\Entity\Actividad, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Actividad' }
+
+    admin.actividad_preventiva:
+        class: App\Admin\ActividadPreventiva
+        arguments: [~, App\Entity\ActividadPreventiva, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Actividad Preventiva' }
+
+    admin.agenda:
+        class: App\Admin\Agenda
+        arguments: [~, App\Entity\Agenda, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Agenda' }
+
+    admin.agenda_tecnico:
+        class: App\Admin\AgendaTecnico
+        arguments: [~, App\Entity\AgendaTecnico, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Agenda técnico' }
+
+    admin.alteracion_analitica:
+        class: App\Admin\AlteracionAnalitica
+        arguments: [~, App\Entity\AlteracionAnalitica, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Alteraciones analítica' }
+
+    admin.analiticas_config:
+        class: App\Admin\AnaliticasConfig
+        arguments: [~, App\Entity\AnaliticasConfig, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Configuración analíticas' }
+
+    admin.aptitud_restriccion:
+        class: App\Admin\AptitudRestriccion
+        arguments: [~, App\Entity\AptitudRestriccion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Restricciones aptitud' }
+
+    admin.apto:
+        class: App\Admin\Apto
+        arguments: [~, App\Entity\Apto, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Apto' }
+
+    admin.asesoria:
+        class: App\Admin\Asesoria
+        arguments: [~, App\Entity\Asesoria, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Asesoria' }
+    #Peticio 28/07/2023
+    admin.causa:
+        class: App\Admin\Causa
+        arguments: [~, App\Entity\Causa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Causa-Medidas', label: 'Causa' }
+
+    admin.cnae:
+        class: App\Admin\Cnae
+        arguments: [~, App\Entity\Cnae, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Cnae' }
+
+    admin.codigo_empresa:
+        class: App\Admin\CodigoEmpresa
+        arguments: [~, App\Entity\CodigoEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Código de empresa' }
+
+    admin.comercial:
+        class: App\Admin\Comercial
+        arguments: [~, App\Entity\Comercial, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Agente' }
+
+    admin.concepto:
+        class: App\Admin\Concepto
+        arguments: [~, App\Entity\Concepto, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Concepto facturación' }
+
+#    admin.consecuencia:
+#        class: App\Admin\Consecuencia
+#        arguments: [~, App\Entity\Consecuencia, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Consecuencia' }
+
+#    admin.danyo:
+#        class: App\Admin\Danyo
+#        arguments: [~, App\Entity\Danyo, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Daño' }
+
+    admin.contrato_modalidad:
+        class: App\Admin\ContratoModalidad
+        arguments: [~, App\Entity\ContratoModalidad, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Modalidad contrato' }
+
+    admin.doctor:
+        class: App\Admin\Doctor
+        arguments: [~, App\Entity\Doctor, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Doctor' }
+
+    admin.empresa_externa:
+        class: App\Admin\EmpresaExterna
+        arguments: [~, App\Entity\EmpresaExterna, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Empresa externa' }
+
+    admin.entidad_bancaria:
+        class: App\Admin\EntidadBancaria
+        arguments: [~, App\Entity\EntidadBancaria, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Entidad Bancaria' }
+
+    admin.epi:
+        class: App\Admin\Epi
+        arguments: [~, App\Entity\Epi, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Epi' }
+
+    admin.especialidad_preventiva:
+        class: App\Admin\EspecialidadPreventiva
+        arguments: [~, App\Entity\EspecialidadPreventiva, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Especialidad Preventiva' }
+
+    admin.estado_citacion:
+      class: App\Admin\EstadoCitacion
+      arguments: [~, App\Entity\EstadoCitacion, ~]
+      tags:
+        - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Estado citación' }
+
+    admin.estado_empresa:
+        class: App\Admin\EstadoEmpresa
+        arguments: [~, App\Entity\EstadoEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Estado Empresa' }
+
+    admin.estado_empresa_salud:
+        class: App\Admin\EstadoEmpresaSalud
+        arguments: [~, App\Entity\EstadoEmpresaSalud, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Estado Empresa Salud' }
+
+    admin.estado_empresa_tecnico:
+        class: App\Admin\EstadoEmpresaTecnico
+        arguments: [~, App\Entity\EstadoEmpresaTecnico, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Estado Empresa Técnico' }
+
+    admin.estado_prevencion:
+        class: App\Admin\EstadoPrevencion
+        arguments: [~, App\Entity\EstadoPrevencion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Estado Prevención' }
+
+    admin.estado_revision:
+        class: App\Admin\EstadoRevision
+        arguments: [~, App\Entity\EstadoRevision, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Estado Revisión' }
+
+    admin.estado_salud:
+        class: App\Admin\EstadoSalud
+        arguments: [~, App\Entity\EstadoSalud, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Estado Salud' }
+
+    admin.estado_tarea_tecnico:
+        class: App\Admin\EstadoTareaTecnico
+        arguments: [~, App\Entity\EstadoTareaTecnico, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Estado tarea técnico' }
+
+    admin.estado_tecnica:
+        class: App\Admin\EstadoTecnica
+        arguments: [~, App\Entity\EstadoTecnica, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Estado Tecnica' }
+
+#    admin.exposicion:
+#        class: App\Admin\Exposicion
+#        arguments: [~, App\Entity\Exposicion, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Exposición' }
+
+#    admin.factor_coste:
+#        class: App\Admin\FactorCoste
+#        arguments: [~, App\Entity\FactorCoste, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Factor de coste' }
+
+    admin.fase_contrato:
+        class: App\Admin\FaseContrato
+        arguments: [~, App\Entity\FaseContrato, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Fase Contrato' }
+
+    admin.forma_pago:
+        class: App\Admin\FormaPago
+        arguments: [~, App\Entity\FormaPago, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Forma de pago' }
+
+    admin.funcion_correo:
+        class: App\Admin\FuncionCorreo
+        arguments: [~, App\Entity\FuncionCorreo, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Función correo' }
+
+    admin.gdoc_config:
+        class: App\Admin\GdocConfig
+        arguments: [~, App\Entity\GdocConfig, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Configuración plantillas' }
+
+    admin.gdoc_empresa_carpeta:
+        class: App\Admin\GdocEmpresaCarpeta
+        arguments: [~, App\Entity\GdocEmpresaCarpeta, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Configuración carpetas empresas' }
+
+#    admin.grado_correccion:
+#        class: App\Admin\GradoCorreccion
+#        arguments: [~, App\Entity\GradoCorreccion, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Grado de corrección' }
+
+    admin.grupo_actividad:
+        class: App\Admin\GrupoActividad
+        arguments: [~, App\Entity\GrupoActividad, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Grupo actividad' }
+
+    admin.grupo_empresa:
+        class: App\Admin\GrupoEmpresa
+        arguments: [~, App\Entity\GrupoEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Grupo empresa' }
+
+    admin.grupo_maquina:
+        class: App\Admin\GrupoMaquina
+        arguments: [~, App\Entity\GrupoMaquina, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Grupo maquina' }
+
+    admin.grupo_normativa:
+        class: App\Admin\GrupoNormativa
+        arguments: [~, App\Entity\GrupoNormativa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Grupo normativa' }
+
+    admin.grupo_preventiva:
+        class: App\Admin\GrupoPreventiva
+        arguments: [~, App\Entity\GrupoPreventiva, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Grupo Preventiva' }
+
+    admin.grupo_riesgo:
+        class: App\Admin\GrupoRiesgo
+        arguments: [~, App\Entity\GrupoRiesgo, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Grupo Riesgo' }
+
+    admin.idioma_empresa:
+        class: App\Admin\IdiomaEmpresa
+        arguments: [~, App\Entity\IdiomaEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Idioma' }
+
+    admin.indicador:
+        class: App\Admin\Indicador
+        arguments: [~, App\Entity\Indicador, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Indicador' }
+
+    admin.indicar_historico:
+        class: App\Admin\IndicarHistorico
+        arguments: [~, App\Entity\Indicador, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Indicar historico' }
+
+    admin.lista_servicios_contratados:
+        class: App\Admin\ListaServiciosContratados
+        arguments: [~, App\Entity\ListaServiciosContratados, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Servicios contratados del contrato' }
+
+    admin.localidad:
+        class: App\Admin\Localidad
+        arguments: [~, App\Entity\Localidad, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Localidad' }
+
+    admin.maquina_generica:
+        class: App\Admin\MaquinaGenerica
+        arguments: [~, App\Entity\MaquinaGenerica, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Maquina genérica' }
+    #Peticio 01/09/2023
+    admin.maquina_empresa:
+        class: App\Admin\MaquinaEmpresa
+        arguments: [~, App\Entity\MaquinaEmpresa, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Maquina empresa' }
+    #Peticio 01/09/2023
+    admin.producto_quimico:
+        class: App\Admin\ProductosQuimicos
+        arguments: [~, App\Entity\PuestoTrabajoContaminante, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Productos quimicos' }
+
+    admin.metodologia_evaluacion:
+        class: App\Admin\MetodologiaEvaluacion
+        arguments: [~, App\Entity\MetodologiaEvaluacion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Metodologia evaluación' }
+
+    admin.modalidad_preventiva:
+        class: App\Admin\ModalidadPreventiva
+        arguments: [~, App\Entity\ModalidadPreventiva, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Modalidad preventiva' }
+
+    admin.municipio_serpa:
+        class: App\Admin\MunicipioSerpa
+        arguments: [~, App\Entity\MunicipioSerpa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Municipio SERPA' }
+
+    admin.mutua:
+        class: App\Admin\Mutua
+        arguments: [~, App\Entity\Mutua, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Mútua' }
+
+    admin.nivel_seguimiento:
+        class: App\Admin\NivelSeguimiento
+        arguments: [~, App\Entity\NivelSeguimiento, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Nivel de seguimiento' }
+
+    admin.normativa:
+        class: App\Admin\Normativa
+        arguments: [~, App\Entity\Normativa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Normativa' }
+
+    admin.pais:
+        class: App\Admin\Pais
+        arguments: [~, App\Entity\Pais, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'País' }
+
+    admin.prescriptor:
+        class: App\Admin\Prescriptor
+        arguments: [~, App\Entity\Prescriptor, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Prescriptor' }
+    #Peticio 28/07/2023
+    admin.preventiva_empresa:
+        class: App\Admin\PreventivaEmpresa
+        arguments: [~, App\Entity\PreventivaEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Causa-Medidas', label: 'Preventiva empresa' }
+    #Peticio 28/07/2023
+    admin.preventiva_empresa_causa:
+        class: App\Admin\PreventivaEmpresaCausa
+        arguments: [~, App\Entity\PreventivaEmpresaCausa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Causa-Medidas', label: 'Preventiva empresa - Causa' }
+
+    admin.preventiva_trabajador:
+        class: App\Admin\PreventivaTrabajador
+        arguments: [~, App\Entity\PreventivaTrabajador, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Causa-Medidas', label: 'Preventiva trabajador' }
+    #Peticio 28/07/2023
+    admin.preventiva_trabajador_causa:
+        class: App\Admin\PreventivaTrabajadorCausa
+        arguments: [~, App\Entity\PreventivaTrabajadorCausa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Causa-Medidas', label: 'Preventiva trabajador - Causa' }
+    #Peticio 28/07/2023
+    admin.probabilidad:
+        class: App\Admin\Probabilidad
+        arguments: [~, App\Entity\Probabilidad, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Probabilidad' }
+
+    admin.provincia_serpa:
+        class: App\Admin\ProvinciaSerpa
+        arguments: [~, App\Entity\ProvinciaSerpa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Provincia SERPA' }
+
+    admin.puesto_trabajo_generico:
+        class: App\Admin\PuestoTrabajoGenerico
+        arguments: [~, App\Entity\PuestoTrabajoGenerico, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Puesto de trabajo genérico' }
+
+    admin.regimen_seg_social:
+        class: App\Admin\RegimenSegSocial
+        arguments: [~, App\Entity\RegimenSegSocial, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Regimen de la SS' }
+
+    admin.remesa_config:
+        class: App\Admin\RemesaConfig
+        arguments: [~, App\Entity\RemesaConfig, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'Configuración remesas' }
+
+    admin.responsable_externo:
+        class: App\Admin\ResponsableExterno
+        arguments: [~, App\Entity\ResponsableExterno, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Responsable externo' }
+
+    admin.restriccion:
+        class: App\Admin\Restriccion
+        arguments: [~, App\Entity\Restriccion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Restricción' }
+
+    admin.riesgo:
+        class: App\Admin\Riesgo
+        arguments: [~, App\Entity\Riesgo, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Causa-Medidas', label: 'Riesgo' }
+
+    admin.sector_empresarial:
+        class: App\Admin\SectorEmpresarial
+        arguments: [~, App\Entity\SectorEmpresarial, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Sector empresarial' }
+
+    admin.serie_factura:
+        class: App\Admin\SerieFactura
+        arguments: [~, App\Entity\SerieFactura, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Serie Factura' }
+
+    admin.servicio_prevencion:
+        class: App\Admin\ServicioPrevencion
+        arguments: [~, App\Entity\ServicioPrevencion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Servicio de prevención' }
+
+    admin.severidad:
+        class: App\Admin\Severidad
+        arguments: [~, App\Entity\Severidad, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Severidad' }
+
+    admin.sms_config:
+        class: App\Admin\SmsConfig
+        arguments: [~, App\Entity\SmsConfig, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Usuario', label: 'SMS' }
+
+    admin.tecnico:
+        class: App\Admin\Tecnico
+        arguments: [~, App\Entity\Tecnico, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Técnico - Vigilancia de la salud - Responsable administrativo - DUE' }
+
+    admin.tipoActuacion:
+        class: App\Admin\TipoActuacion
+        arguments: [~, App\Entity\TipoActuacion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Tipo de actuación' }
+
+    admin.tipo_centro:
+        class: App\Admin\TipoCentro
+        arguments: [~, App\Entity\TipoCentro, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Tipo de centro' }
+
+#    admin.tipo_contrato:
+#        class: App\Admin\TipoContrato
+#        arguments: [~, App\Entity\TipoContrato, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Tipo de contrato' }
+
+    admin.tipo_cuestionario:
+        class: App\Admin\TipoCuestionario
+        arguments: [~, App\Entity\TipoCuestionario, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Tipo de cuestionario ' }
+
+    admin.tipo_empresa:
+        class: App\Admin\TipoEmpresa
+        arguments: [~, App\Entity\TipoEmpresa, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Tipo de empresa' }
+
+    admin.tipo_evaluacion:
+        class: App\Admin\TipoEvaluacion
+        arguments: [~, App\Entity\TipoEvaluacion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Tipo de evaluación' }
+
+    admin.tipo_planificacion:
+        class: App\Admin\TipoPlanificacion
+        arguments: [~, App\Entity\TipoPlanificacion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Tipo de planificación' }
+
+    admin.tipo_responsable:
+        class: App\Admin\TipoResponsable
+        arguments: [~, App\Entity\TipoResponsable, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Tipo de responsable' }
+
+    admin.tipo_respuesta:
+        class: App\Admin\TipoRespuesta
+        arguments: [~, App\Entity\TipoRespuesta, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Tipo de respuesta' }
+
+#    admin.tipo_servicio_contratado:
+#        class: App\Admin\TipoServicioContratado
+#        arguments: [~, App\Entity\TipoServicioContratado, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: 'Administración', label: 'Tipo de servicio contratado' }
+
+    admin.usuario_tecnico:
+        class: App\Admin\UsuarioTecnico
+        arguments: [~, App\Entity\UsuarioTecnico, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Usuarios' }
+
+    admin.validez_aptitud:
+        class: App\Admin\ValidezAptitud
+        arguments: [~, App\Entity\ValidezAptitud, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Médico', label: 'Validez aptitud' }
+
+    admin.valor_riesgo:
+        class: App\Admin\ValorRiesgo
+        arguments: [~, App\Entity\ValorRiesgo, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Técnico', label: 'Valor Riesgo' }
+
+    app.menu_builder:
+        class: App\Menu\MenuBuilder
+        arguments: ["@knp_menu.factory"]
+        tags:
+            - { name: knp_menu.menu_builder, method: mainMenu, alias: main } # The alias is what is used to retrieve the menu
+
+    App\EventSubscriber\LocaleSubscriber:
+        arguments: ['%kernel.default_locale%']
+
+    app.user_locale_listener:
+        class: App\EventSubscriber\LocaleSubscriber
+        arguments: ["session"]
+        tags:
+            - { name: kernel.event_listener, method: onInteractiveLogin, alias: main}
+
+    App\Controller\ChangePasswordController:
+        arguments:
+            $formFactory: '@fos_user.change_password.form.factory'
+

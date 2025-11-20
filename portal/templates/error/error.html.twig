@@ -1,0 +1,28 @@
+{% include 'theme/header.html.twig' %}
+
+<body>
+<div class="page-content">
+    <div class="content-wrapper">
+        <div class="content d-flex justify-content-center align-items-center">
+            <div class="flex-fill">
+                <div class="text-center mb-3">
+                    <h1 class="error-title">{{ code }}</h1>
+                    <h5>{{ msg }}</h5>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4 offset-xl-4 col-md-8 offset-md-2">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <a href="mailto:soporte@opentic.eu?subject=Error PREVENCION&body={{ exception }}" class="btn btn-warning btn-block"><i class="icon-envelop2"></i> Contacta</a>
+                            </div>
+                            <div class="col-sm-6">
+                                <a href="{{ path('dashboard') }}" class="btn btn-dark btn-block mt-3 mt-sm-0"><i class="icon-home2"></i> Volver atrás</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>

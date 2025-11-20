@@ -1,0 +1,119 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'datosbancarios' %}
+
+{% block arrow %}<a href="{{ path('empresa_update', { "id": app.session.get('empresa').id }) }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_DATO_BANCARIO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+
+        {% if form.vars.value.empresa is not null %}
+            {{ form.vars.value.empresa.empresa }}
+        {% endif %}
+
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-12">
+
+                    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                        {% if form.vars.value.empresa is not null %}
+                            {{ form_row(form.empresa, {'attr': {'class': 'disabled'}}) }}
+                        {% endif %}
+                    {% else %}
+                        {{ form_row(form.empresa) }}
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.entidadBancaria) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.oficina) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.numCuenta) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.direccion) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.localidad) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.telefon) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.dc) }}
+                </div>
+                <div class="col-lg-6">
+                    {{ form_row(form.pais) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.ibanDigital) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.ibanPapel) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.bic) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.formaPago) }}
+                </div>
+                <div class="col-lg-6">
+                    {{ form_row(form.diaPago) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.principal) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editDatosBancariosSn is defined and app.session.get('privilegiosRol').editDatosBancariosSn is not null %}
+                {% if app.session.get('privilegiosRol').editDatosBancariosSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,445 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'mantenimientoreconocimientos' %}
+
+{% block arrow %}<a href="{{ path('mantenimiento_reconocimientos') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_TEXTO_PREGUNTA{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.descripcion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('#pregunta_tipoRespuesta').change(function(){
+                var tipoRespuestaId = $(this).val();
+                switch (tipoRespuestaId) {
+                    //Texto
+                    // case "0":
+                    //     $('#containerRespuesta').css('display', 'block');
+                    //     $('#containerSerieRespuesta').css('display', 'none');
+                    //     $('#containerFormula').css('display', 'none');
+                    //     $('#containerSubpregunta').css('display', 'none');
+                    //     $('#pregunta_serieRespuesta').val('').change();
+                    //     $('#pregunta_formula').val('').change();
+                    //     break;
+                    //Serie
+                    case "5":
+                        $('#containerRespuesta').css('display', 'block');
+                        $('#containerSerieRespuesta').css('display', 'block');
+                        $('#containerFormula').css('display', 'none');
+                        $('#containerSubpregunta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        $('#pregunta_formula').val('').change();
+                        break;
+                    //Subpregunta
+                    case "6":
+                        $('#containerSubpregunta').css('display', 'block');
+                        $('#containerSerieRespuesta').css('display', 'none');
+                        $('#containerFormula').css('display', 'none');
+                        $('#containerRespuesta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        $('#pregunta_formula').val('').change();
+                        $('#pregunta_serieRespuesta').val('').change();
+                        break;
+                    //Formula
+                    case "7":
+                        $('#containerRespuesta').css('display', 'block');
+                        $('#containerFormula').css('display', 'block');
+                        $('#containerSerieRespuesta').css('display', 'none');
+                        $('#containerTableRespuestas').css('display', 'none');
+                        $('#containerSubpregunta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        $('#pregunta_serieRespuesta').val('').change();
+                        $('#pregunta_formula').val('').change();
+                        break;
+                    default:
+                        $('#containerRespuesta').css('display', 'none');
+                        $('#containerFormula').css('display', 'none');
+                        $('#containerSerieRespuesta').css('display', 'none');
+                        $('#containerTableRespuestas').css('display', 'none');
+                        $('#containerSubpregunta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        $('#pregunta_serieRespuesta').val('').change();
+                        $('#pregunta_formula').val('').change();
+                }
+            });
+
+            $('#pregunta_tipoRespuesta').each(function(){
+                var tipoRespuestaId = $(this).val();
+                switch (tipoRespuestaId) {
+                    //Texto
+                    // case "0":
+                    //     $('#containerRespuesta').css('display', 'block');
+                    //     $('#containerSerieRespuesta').css('display', 'none');
+                    //     $('#containerFormula').css('display', 'none');
+                    //     $('#containerSubpregunta').css('display', 'none');
+                    //     $('#pregunta_serieRespuesta').val('').change();
+                    //     $('#pregunta_formula').val('').change();
+                    //     break;
+                    //Serie
+                    case "5":
+                        $('#containerRespuesta').css('display', 'block');
+                        $('#containerSerieRespuesta').css('display', 'block');
+                        $('#containerFormula').css('display', 'none');
+                        $('#containerSubpregunta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        break;
+                    //Subpregunta
+                    case "6":
+                        $('#containerSubpregunta').css('display', 'block');
+                        $('#containerSerieRespuesta').css('display', 'none');
+                        $('#containerFormula').css('display', 'none');
+                        $('#containerRespuesta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        break;
+                    //Formula
+                    case "7":
+                        $('#containerRespuesta').css('display', 'block');
+                        $('#containerFormula').css('display', 'block');
+                        $('#containerSerieRespuesta').css('display', 'none');
+                        $('#containerTableRespuestas').css('display', 'none');
+                        $('#containerSubpregunta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                        break;
+                    default:
+                        $('#containerRespuesta').css('display', 'none');
+                        $('#containerFormula').css('display', 'none');
+                        $('#containerSerieRespuesta').css('display', 'none');
+                        $('#containerTableRespuestas').css('display', 'none');
+                        $('#containerSubpregunta').css('display', 'none');
+                        $('#containerAddRespuesta').css('display', 'none');
+                }
+            });
+        });
+
+        function deleteRespuesta(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_respuesta_delete') }}",
+                data: {
+                    'respuestaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la respuesta seleccionada
+        $(document).on('click', 'a.eliminarRespuesta', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_RESPUESTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteRespuesta(id)
+                    }
+                }
+            });
+        });
+
+        function deleteSubPregunta(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('mantenimiento_reconocimientos_subpregunta_delete') }}",
+                data: {
+                    'subPreguntaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la subpregunta seleccionada
+        $(document).on('click', 'a.eliminarSubPregunta', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_SUBPREGUNTA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteSubPregunta(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-5">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-5">
+                    {{ form_row(form.descripcionCa) }}
+                </div>
+                <div class="col-lg-2">
+                    {{ form_row(form.indicarHistorico) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.tipoRespuesta) }}
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <label style="font-weight: bolder; text-align: center;">{% trans %}TRANS_RESPUESTA_ENTRE_VALORES_PERMITIDOS{% endtrans %}</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.respuestaNormal) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.valorPorDefecto) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.familia) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.subFamilia) }}
+                </div>
+            </div>
+
+            <div id="containerRespuesta">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4 style="font-weight: bolder;">{% trans %}TRANS_RESPUESTAS{% endtrans %}</h4>
+                    </div>
+                </div>
+
+                <div class="row" id="containerAddRespuesta">
+                    <div class="col-lg-12">
+                        {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoPreguntasSn is not null %}
+                            {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn %}
+                                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                                    <a href="{{ path('mantenimiento_reconocimientos_respuesta_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                    <br/>
+                                    <br/>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row" id="containerSerieRespuesta">
+                    <div class="col-lg-2">
+                        {{ form_row(form.serieRespuesta) }}
+                    </div>
+                </div>
+
+                <div class="row" id="containerFormula">
+                    <div class="col-lg-2">
+                        {{ form_row(form.formula) }}
+                    </div>
+                </div>
+
+                <div class="row" id="containerTableRespuestas">
+                    <div class="col-lg-12">
+                        <div class="table-bordered">
+                            <table class="table" id="tableRespuestas">
+                                <thead>
+                                <tr class="bg-grey-300">
+                                    <th>Sub</th>
+                                    <th>{% trans %}TRANS_RESPUESTA{% endtrans %}</th>
+                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if respuestas is defined and respuestas is not empty %}
+                                    {% for r in respuestas %}
+                                        <tr>
+                                            <td>{{ r.sub }}</td>
+                                            <td>{{ r.descripcion }}</td>
+                                            <td>
+                                                <div class="list-icons">
+                                                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                                                            <a href="{{ path('mantenimiento_reconocimientos_respuesta_update', { "id": r.id }) }}" target="_self" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn is defined and app.session.get('privilegiosRol').mantenimientoRespuestasSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').mantenimientoRespuestasSn %}
+                                                            <a href="#" data-id="{{ r.id }}" target="_self" class="list-icons-item eliminarRespuesta"><i class="icon-trash"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="containerSubpregunta">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4 style="font-weight: bolder;">{% trans %}TRANS_SUB_PREGUNTAS{% endtrans %}</h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% if app.session.get('privilegiosRol').mantenimientoSubPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoSubPreguntasSn is not null %}
+                            {% if app.session.get('privilegiosRol').mantenimientoSubPreguntasSn %}
+                                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                                    <a href="{{ path('mantenimiento_reconocimientos_subpregunta_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                    <br/>
+                                    <br/>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-bordered">
+                            <table class="table" id="tableSubPreguntas">
+                                <thead>
+                                <tr class="bg-grey-300">
+                                    <th>{% trans %}TRANS_ORDEN{% endtrans %}</th>
+                                    <th>{% trans %}TRANS_SUB_PREGUNTA{% endtrans %}</th>
+                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if subpreguntas is defined and subpreguntas is not empty %}
+                                    {% for spp in subpreguntas %}
+                                        <tr>
+                                            <td>{{ spp.orden }}</td>
+                                            <td>{{ spp.descripcion }}</td>
+                                            <td>
+                                                <div class="list-icons">
+                                                    {% if app.session.get('privilegiosRol').mantenimientoSubPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoSubPreguntasSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').mantenimientoSubPreguntasSn %}
+                                                            <a href="{{ path('mantenimiento_reconocimientos_subpregunta_update', { "id": spp.id }) }}" target="_self" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if app.session.get('privilegiosRol').mantenimientoSubPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoSubPreguntasSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').mantenimientoSubPreguntasSn %}
+                                                            <a href="#" data-id="{{ spp.id }}" target="_self" class="list-icons-item eliminarSubPregunta"><i class="icon-trash"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn is defined and app.session.get('privilegiosRol').mantenimientoPreguntasSn is not null %}
+                {% if app.session.get('privilegiosRol').mantenimientoPreguntasSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

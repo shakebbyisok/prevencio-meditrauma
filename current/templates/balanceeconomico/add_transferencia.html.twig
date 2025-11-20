@@ -1,0 +1,111 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'balanceeconomico' %}
+
+{% block arrow %}<a href="{{ path('empresa_update', { "id": app.session.get('empresa').id }) }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_BALANCE_ECONOMICO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% trans %}TRANS_NUEVO_TRANSFERENCIA{% endtrans %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $.ajax({
+                type: "POST",
+                url: "{{ path('balance_economico_recupera_datos_factura') }}",
+                data: {
+                    'facturaId': $('#giro_bancario_transferencia_facturacion').val()
+                },
+                dataType: "JSON",
+                success: function (data) {
+
+                    if(data != ""){
+                        $('#giro_bancario_transferencia_importe').val(data.importe);
+                        $('#giro_bancario_transferencia_fecha').val(data.fecha);
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+
+            $('#giro_bancario_facturacion').on('change', function(){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('balance_economico_recupera_datos_factura') }}",
+                    data: {
+                        'facturaId': $('#giro_bancario_transferencia_facturacion').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data != ""){
+                            $('#giro_bancario_transferencia_importe').val(data.importe);
+                            $('#giro_bancario_transferencia_fecha').val(data.fecha);
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.facturacion) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.importe, {'attr': {'class': 'type_text_to_number'}}) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.fecha) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ form_row(form.cuenta) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').addTransferenciaBalanceEconomicoSn is defined and app.session.get('privilegiosRol').addTransferenciaBalanceEconomicoSn is not null %}
+                {% if app.session.get('privilegiosRol').addTransferenciaBalanceEconomicoSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

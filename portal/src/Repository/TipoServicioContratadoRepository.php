@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Repository;
+
+use App\Entity\TipoServicioContratado;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
+
+/**
+ * @method TipoServicioContratado|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TipoServicioContratado|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TipoServicioContratado[]    findAll()
+ * @method TipoServicioContratado[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class TipoServicioContratadoRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, TipoServicioContratado::class);
+    }
+
+    // /**
+    //  * @return TipoServicioContratado[] Returns an array of TipoServicioContratado objects
+    //  */
+    /*
+    public function findByExampleField($value)
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.exampleField = :val')
+            ->setParameter('val', $value)
+            ->orderBy('t.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    */
+
+    /*
+    public function findOneBySomeField($value): ?TipoServicioContratado
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.exampleField = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    */
+}

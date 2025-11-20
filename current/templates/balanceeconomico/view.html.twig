@@ -1,0 +1,283 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'balanceeconomico' %}
+
+{% block title %} {% trans %}TRANS_BALANCE_ECONOMICO{% endtrans %}  {% endblock %}
+{% block subtitle %}
+    {% if (app.session.get('empresa') is defined and app.session.get('empresa') is not empty ) %}
+       {{ app.session.get('empresa').empresa }}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block card %}
+
+    {% for message in app.flashes('success') %}
+
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <script type="text/javascript">
+
+        function deleteGiroTransferencia(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('balance_economico_delete_giro_transferencia') }}",
+                data: {
+                    'giroId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el giro seleccionado
+        $(document).on('click', 'a.eliminarGiro', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_GIRO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteGiroTransferencia(id);
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la stransferencia seleccionada
+        $(document).on('click', 'a.eliminarTransferencia', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_TRANSFERENCIA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteGiroTransferencia(id);
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', 'a.noEmpresa', function(){
+            new PNotify({
+                title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                text: '{% trans from 'messages' %}TRANS_SELECT_EMPRESA{% endtrans %}',
+                icon: 'icon-warning22',
+                type: 'warning'
+            });
+        });
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-lg-3">
+                    {% if app.session.get('privilegiosRol').addGiroBalanceEconomicoSn is defined and app.session.get('privilegiosRol').addGiroBalanceEconomicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').addGiroBalanceEconomicoSn %}
+                            {% if app.session.get('empresa') is defined and app.session.get('empresa') is not null %}
+                                <a href="{{ path('balance_economico_add_giro') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans %}TRANS_GENERAR_GIRO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            {% else %}
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300 noEmpresa">{% trans %}TRANS_GENERAR_GIRO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-lg-3">
+                    {% if app.session.get('privilegiosRol').addTransferenciaBalanceEconomicoSn is defined and app.session.get('privilegiosRol').addTransferenciaBalanceEconomicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').addTransferenciaBalanceEconomicoSn %}
+                            {% if app.session.get('empresa') is defined and app.session.get('empresa') is not null %}
+                            <a href="{{ path('balance_economico_add_transferencia') }}" class="btn btn-labeled btn-labeled-left bg-slate-300">{% trans %}TRANS_AÑADIR_TRANSFERENCIA_BANCARIA{% endtrans %}<b><i class="icon-file-empty"></i></b></a>
+                            {% else %}
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300 noEmpresa">{% trans %}TRANS_AÑADIR_TRANSFERENCIA_BANCARIA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-bordered">
+                        <table class="table" id="balanceEconomico">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>{% trans %}TRANS_ESTADO_GIRO{% endtrans %}</th>
+                                <th>{% trans %}TRANS_FECHA{% endtrans %}</th>
+                                <th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th>
+                                <th>{% trans %}TRANS_DEBE{% endtrans %}</th>
+                                <th>{% trans %}TRANS_HABER{% endtrans %}</th>
+                                <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if balanceEconomico is not empty %}
+                                {% set debeIncluyendo = 0 %}
+                                {% set haberIncluyendo = 0 %}
+                                {% set debeExcluyendo = 0 %}
+                                {% set haberExcluyendo = 0 %}
+                                {% set totalIncluyendo = 0 %}
+                                {% set totalExcluyendo = 0 %}
+                                {% for be in balanceEconomico %}
+                                    <tr>
+                                        {% if be.tipo == 2 %}
+                                            {% if be.remesa_id is not null %}
+                                                <td>
+                                                    <span class="badge badge-success">{% trans %}TRANS_GIRO_REMESADO{% endtrans %}</span>
+                                                    |
+                                                    {% if be.girado == true %}
+                                                        <span class="badge badge-success">{% trans %}TRANS_GIRADO{% endtrans %}</span>
+                                                    {% else %}
+                                                        <span class="badge badge-danger">{% trans %}TRANS_PENDIENTE_GIRAR{% endtrans %}</span>
+                                                    {% endif %}
+                                                </td>
+                                            {% else %}
+
+                                                {% if be.es_factura == false %}
+                                                    <td>
+                                                        <span class="badge badge-danger">{% trans %}TRANS_GIRO_NO_REMESADO{% endtrans %}</span>
+                                                        |
+                                                        {% if be.girado == true %}
+                                                            <span class="badge badge-success">{% trans %}TRANS_GIRADO{% endtrans %}</span>
+                                                        {% else %}
+                                                            <span class="badge badge-danger">{% trans %}TRANS_PENDIENTE_GIRAR{% endtrans %}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                {% else %}
+                                                    <td></td>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                        <td>{{ be.fechastring }}</td>
+                                        <td>{{ be.concepto }}</td>
+                                        {% if be.debe is not null %}
+                                            <td>{{ be.debe|number_format(2, ',', '.') }} €</td>
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                        {% if be.haber is not null %}
+                                            <td>{{ be.haber|number_format(2, ',', '.') }} €</td>
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                        <td>
+
+                                            {% if be.tipo == 2 and be.giroid is not null %}
+
+                                                {% if be.es_factura == false %}
+                                                    {% if app.session.get('privilegiosRol').editGiroBalanceEconomicoSn is defined and app.session.get('privilegiosRol').editGiroBalanceEconomicoSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').editGiroBalanceEconomicoSn %}
+                                                            <a href="{{ path('balance_economico_edit_giro', { 'id': be.giroid }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if app.session.get('privilegiosRol').deleteGiroBalanceEconomicoSn is defined and app.session.get('privilegiosRol').deleteGiroBalanceEconomicoSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').deleteGiroBalanceEconomicoSn %}
+                                                            <a href="#" data-id="{{ be.giroid }}" class="list-icons-item eliminarGiro" data-popup="tooltip" title="Eliminar" data-container="body"><i class="icon-trash"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                {% if be.es_factura == true %}
+                                                    {% if app.session.get('privilegiosRol').deleteTransferenciaBalanceEconomicoSn is defined and app.session.get('privilegiosRol').deleteTransferenciaBalanceEconomicoSn is not null %}
+                                                        {% if app.session.get('privilegiosRol').deleteTransferenciaBalanceEconomicoSn %}
+                                                            <a href="#" data-id="{{ be.giroid }}" class="list-icons-item eliminarTransferencia" data-popup="tooltip" title="Eliminar" data-container="body"><i class="icon-trash"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endif %}
+
+                                            {% endif %}
+
+                                        </td>
+                                        {% set debeIncluyendo = debeIncluyendo + be.debe %}
+                                        {% set debeExcluyendo = debeExcluyendo + be.debe %}
+                                        {% set haberIncluyendo = haberIncluyendo + be.haber %}
+                                        {% set haberExcluyendo = haberExcluyendo + be.haber %}
+                                    </tr>
+                                {% endfor %}
+                                {% set totalIncluyendo = haberIncluyendo - debeIncluyendo %}
+                                {% set totalExcluyendo = haberExcluyendo - debeExcluyendo %}
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{% trans %}TRANS_BALANCE_INCLUYENDO_REMESAS_NO_GIRADAS{% endtrans %}</td>
+                                    <td style="color: red; font-weight: bolder;">{{ debeIncluyendo|number_format(2, ',', '.') }} €</td>
+                                    <td style="color: blue; font-weight: bolder;">{{ haberIncluyendo|number_format(2, ',', '.') }} €</td>
+                                    <td style="font-weight: bolder;">{{ totalIncluyendo|number_format(2, ',', '.') }} €</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{% trans %}TRANS_BALANCE_EXLUYENDO_REMESAS_NO_GIRADAS{% endtrans %}</td>
+                                    <td style="color: red; font-weight: bolder;">{{ debeExcluyendo|number_format(2, ',', '.') }} €</td>
+                                    <td style="color: blue; font-weight: bolder;">{{ haberExcluyendo|number_format(2, ',', '.') }} €</td>
+                                    <td style="font-weight: bolder;">{{ totalExcluyendo|number_format(2, ',', '.') }} €</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+

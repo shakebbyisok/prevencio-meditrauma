@@ -1,0 +1,203 @@
+{% set page = app.request.attributes.get('_route') %}
+<!-- Sidebar content -->
+<div class="sidebar-content">
+
+    <!-- Main navigation -->
+    <div class="card card-sidebar-mobile">
+        <ul class="nav nav-sidebar" data-nav-type="accordion">
+
+            <!-- Main -->
+{#            <li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Main</div> <i class="icon-menu" title="Main"></i></li>#}
+            <li class="nav-item">
+                <a href="{{ path('dashboard') }}" class="nav-link {% if page starts with 'dashboard' %}active{% endif %}">
+                    <i class="icon-home4"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item nav-item-submenu" id="adm">
+                <a href="#" class="nav-link"><i class="icon-calculator2"></i><span>{% trans %}TRANS_MENU_ADM{% endtrans %}</span></a>
+
+                <ul class="nav nav-group-sub" data-submenu-title="Administración">
+
+                    {% if app.session.get('privilegiosRol').empresaSn is defined and app.session.get('privilegiosRol').empresaSn is not null %}
+                        {% if app.session.get('privilegiosRol').empresaSn %}
+                            <li class="nav-item"><a href="{{ path('empresa_show') }}" class="nav-link {% if page starts with 'empresa_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_EMPRESAS{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    <li class="nav-item-divider"></li>
+
+                    {#                    {% if app.session.get('privilegiosRol').balanceEconomicoSn is defined and app.session.get('privilegiosRol').balanceEconomicoSn is not null %}#}
+                    {#                        {% if app.session.get('privilegiosRol').balanceEconomicoSn %}#}
+                    {#                            <li class="nav-item"><a href="{{ path('balance_economico_view') }}" class="nav-link {% if page starts with 'balance_economico_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_BALANCE{% endtrans %}</a></li>#}
+                    {#                        {% endif %}#}
+                    {#                    {% endif %}#}
+
+{#                    {% if app.session.get('privilegiosRol').centroTrabajoSn is defined and app.session.get('privilegiosRol').centroTrabajoSn is not null %}#}
+{#                        {% if app.session.get('privilegiosRol').centroTrabajoSn %}#}
+{#                            <li class="nav-item"><a href="{{ path('centro_show') }}" class="nav-link {% if page starts with 'centro_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_CENTROS_TRABAJO{% endtrans %}</a></li>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+
+                    {% if app.session.get('privilegiosRol').contratoSn is defined and app.session.get('privilegiosRol').contratoSn is not null %}
+                        {% if app.session.get('privilegiosRol').contratoSn %}
+                            <li class="nav-item"><a href="{{ path('contrato_show') }}" class="nav-link {% if page starts with 'contrato_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_CONTRATOS{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {#                    {% if app.session.get('privilegiosRol').datosBancariosSn is defined and app.session.get('privilegiosRol').datosBancariosSn is not null %}#}
+                    {#                        {% if app.session.get('privilegiosRol').datosBancariosSn %}#}
+                    {#                            <li class="nav-item"><a href="{{ path('datos_bancarios_show') }}" class="nav-link {% if page starts with 'datos_bancarios_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_DATOS_BANCARIOS{% endtrans %}</a></li>#}
+                    {#                        {% endif %}#}
+                    {#                    {% endif %}#}
+
+                    {% if app.session.get('privilegiosRol').facturacionSn is defined and app.session.get('privilegiosRol').facturacionSn is not null %}
+                        {% if app.session.get('privilegiosRol').facturacionSn %}
+                            <li class="nav-item"><a href="{{ path('factura_show') }}" class="nav-link {% if page starts with 'factura_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_FACTURACION{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').pagoPendienteSn is defined and app.session.get('privilegiosRol').pagoPendienteSn is not null %}
+                        {% if app.session.get('privilegiosRol').pagoPendienteSn %}
+                            <li class="nav-item"><a href="{{ path('pago_pendiente_show') }}" class="nav-link {% if page starts with 'pago_pendiente_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_PAGOS_PENDIENTES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').pagoPendienteSn is defined and app.session.get('privilegiosRol').pagoPendienteSn is not null %}
+                        {% if app.session.get('privilegiosRol').pagoPendienteSn %}
+                            <li class="nav-item"><a href="{{ path('pago_por_facturar_show') }}" class="nav-link {% if page starts with 'pago_por_facturar_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_PAGOS_POR_FACURAR{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').remesaSn is defined and app.session.get('privilegiosRol').remesaSn is not null %}
+                        {% if app.session.get('privilegiosRol').remesaSn %}
+                            <li class="nav-item"><a href="{{ path('remesa_show') }}" class="nav-link {% if page starts with 'remesa_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_REMESAS{% endtrans %}</a></li>
+                            <li class="nav-item"><a href="{{ path('remesas_generadas_show') }}" class="nav-link {% if page starts with 'remesas_generadas' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_REMESAS_GENERADAS{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+{#                    {% if app.session.get('privilegiosRol').renovacionSn is defined and app.session.get('privilegiosRol').renovacionSn is not null %}#}
+{#                        {% if app.session.get('privilegiosRol').renovacionSn %}#}
+{#                            <li class="nav-item"><a href="{{ path('renovacion_show') }}" class="nav-link {% if page starts with 'renovacion_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_RENOVACIONES{% endtrans %}</a></li>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+
+{#                    {% if app.session.get('privilegiosRol').trabajadorSn is defined and app.session.get('privilegiosRol').trabajadorSn is not null %}#}
+{#                        {% if app.session.get('privilegiosRol').trabajadorSn %}#}
+{#                            <li class="nav-item"><a href="{{ path('trabajador_show') }}" class="nav-link {% if page starts with 'trabajador_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_TRABAJADORES{% endtrans %}</a></li>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+
+                    {% if app.session.get('privilegiosRol').buscadorSn is defined and app.session.get('privilegiosRol').buscadorSn is not null %}
+                        {% if app.session.get('privilegiosRol').buscadorSn %}
+                            <li class="nav-item-divider"></li>
+                            <li class="nav-item"><a href="{{ path('buscadores_show') }}" class="nav-link {% if page starts with 'buscadores_' %}active{% endif %}">{% trans %}TRANS_MENU_ADM_BUSCADORES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </li>
+
+            <li class="nav-item nav-item-submenu" id="tec">
+                <a href="#" class="nav-link"><i class="icon-hammer"></i> <span>{% trans %}TRANS_MENU_TEC{% endtrans %}</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="Técnico">
+                    {% if app.session.get('privilegiosRol').agendaTecnicoSn is defined and app.session.get('privilegiosRol').agendaTecnicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').agendaTecnicoSn %}
+                            <li class="nav-item"><a href="{{ path('tecnico_agenda_show') }}" class="nav-link {% if page starts with 'tecnico_agenda' %}active{% endif %}">{% trans %}TRANS_AGENDA_TECNICO{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if app.session.get('privilegiosRol').empresaTecnicoSn is defined and app.session.get('privilegiosRol').empresaTecnicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').empresaTecnicoSn %}
+                            <li class="nav-item"><a href="{{ path('tecnico_empresa_show') }}" class="nav-link {% if page starts with 'tecnico_empresa' %}active{% endif %}">{% trans %}TRANS_MENU_TEC_EMPRESAS{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if app.session.get('privilegiosRol').evaluacionSn is defined and app.session.get('privilegiosRol').evaluacionSn is not null %}
+                        {% if app.session.get('privilegiosRol').evaluacionSn %}
+                            <li class="nav-item"><a href="{{ path('tecnico_evaluaciones_show') }}" class="nav-link {% if page starts with 'tecnico_evaluaciones_' %}active{% endif %}">{% trans %}TRANS_MENU_TEC_EVALUACIONES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+{#                    {% if app.session.get('privilegiosRol').puestoTrabajoSn is defined and app.session.get('privilegiosRol').puestoTrabajoSn is not null %}#}
+{#                        {% if app.session.get('privilegiosRol').puestoTrabajoSn %}#}
+{#                            <li class="nav-item"><a href="{{ path('tecnico_puesto_trabajo_show') }}" class="nav-link {% if page starts with 'tecnico_puesto_trabajo' %}active{% endif %}">{% trans %}TRANS_MENU_TEC_PUESTOS_TRABAJO{% endtrans %}</a></li>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+                    {% if app.session.get('privilegiosRol').trabajadorTecnicoSn is defined and app.session.get('privilegiosRol').trabajadorTecnicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').trabajadorTecnicoSn %}
+                            <li class="nav-item"><a href="{{ path('tecnico_trabajador_show') }}" class="nav-link {% if page starts with 'tecnico_trabajador' %}active{% endif %}">{% trans %}TRANS_MENU_TEC_TRABAJADORES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </li>
+
+            <li class="nav-item nav-item-submenu" id="med">
+                <a href="#" class="nav-link"><i class="icon-heart5"></i> <span>{% trans %}TRANS_MENU_MED{% endtrans %}</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="Médico">
+                    {% if app.session.get('privilegiosRol').empresaMedicoSn is defined and app.session.get('privilegiosRol').empresaMedicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').empresaMedicoSn %}
+                            <li class="nav-item"><a href="{{ path('medico_empresa_show') }}" class="nav-link {% if page starts with 'medico_empresa_' %}active{% endif %}">{% trans %}TRANS_MENU_MED_EMPRESAS{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if app.session.get('privilegiosRol').investigacionSn is defined and app.session.get('privilegiosRol').investigacionSn is not null %}
+                        {% if app.session.get('privilegiosRol').investigacionSn %}
+                            <li class="nav-item"><a href="#" class="nav-link">{% trans %}TRANS_MENU_MED_INVESTIGACIONES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if app.session.get('privilegiosRol').revisionSn is defined and app.session.get('privilegiosRol').revisionSn is not null %}
+                        {% if app.session.get('privilegiosRol').revisionSn %}
+                            <li class="nav-item"><a href="{{ path('medico_revision_show') }}" class="nav-link {% if page starts with 'medico_revision_' %}active{% endif %}">{% trans %}TRANS_MENU_MED_REVISIONES{% endtrans %}</a></li>
+                            <li class="nav-item"><a href="{{ path('medico_revision_show_pendientes') }}" class="nav-link {% if page starts with 'medico_revision_show_pendientes' %}active{% endif %}">{% trans %}TRANS_MENU_MED_REVISIONES_PENDIENTES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if app.session.get('privilegiosRol').trabajadorMedicoSn is defined and app.session.get('privilegiosRol').trabajadorMedicoSn is not null %}
+                        {% if app.session.get('privilegiosRol').trabajadorMedicoSn %}
+                            <li class="nav-item"><a href="{{ path('medico_trabajador_show') }}" class="nav-link {% if page starts with 'medico_trabajador_' %}active{% endif %}">{% trans %}TRANS_MENU_MED_TRABAJADORES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    <li class="nav-item-divider"></li>
+
+                    {% if app.session.get('privilegiosRol').mantenimientoReconocimientosSn is defined and app.session.get('privilegiosRol').mantenimientoReconocimientosSn is not null %}
+                        {% if app.session.get('privilegiosRol').mantenimientoReconocimientosSn %}
+                            <li class="nav-item"><a href="{{ path('mantenimiento_reconocimientos') }}" class="nav-link {% if page starts with 'mantenimiento_reconocimientos' %}active{% endif %}">{% trans %}TRANS_MENU_MED_MANTENIMIENTO_RECONOCIMIENTOS{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloCuestionarioSn is defined and app.session.get('privilegiosRol').puestoTrabajoProtocoloCuestionarioSn is not null %}
+                        {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloCuestionarioSn %}
+                            <li class="nav-item"><a href="{{ path('puesto_trabajo_protocolo_cuestionario') }}" class="nav-link {% if page starts with 'puesto_trabajo_protocolo_cuestionario' %}active{% endif %}">{% trans %}TRANS_MENU_MED_PUESTO_TRABAJO_PROTOCOLO_CUESTIONARIO{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').enfermedadProfesionalSn is defined and app.session.get('privilegiosRol').enfermedadProfesionalSn is not null %}
+                        {% if app.session.get('privilegiosRol').enfermedadProfesionalSn %}
+                            <li class="nav-item"><a href="{{ path('medico_enfermedad_show') }}" class="nav-link {% if page starts with 'medico_enfermedad_' %}active{% endif %}">{% trans %}TRANS_MENU_MED_ENFERMEDADES{% endtrans %}</a></li>
+                        {% endif %}
+                    {% endif %}
+
+                </ul>
+            </li>
+
+            <li class="nav-item nav-item-submenu" id="cit">
+                <a href="#" class="nav-link"><i class="icon-calendar2"></i> <span>{% trans %}TRANS_MENU_MED_CITACIONES{% endtrans %}</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="Citaciones">
+                    {% if app.session.get('privilegiosRol').citacionSn is defined and app.session.get('privilegiosRol').citacionSn is not null %}
+                        {% if app.session.get('privilegiosRol').citacionSn %}
+                            <li class="nav-item"><a href="{{ path('citacion_show') }}" class="nav-link {% if page starts with 'citacion_' %}active{% endif %}"><span>{% trans %}TRANS_MENU_CITACIONES_CALENDARIO{% endtrans %}</span></a></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.session.get('privilegiosRol').citacionSn is defined and app.session.get('privilegiosRol').citacionSn is not null %}
+                        {% if app.session.get('privilegiosRol').citacionSn %}
+                            <li class="nav-item"><a href="{{ path('citacion_show_lista') }}" class="nav-link {% if page starts with 'citacion_' %}active{% endif %}"><span>{% trans %}TRANS_MENU_CITACIONES_LISTA{% endtrans %}</span></a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </li>
+
+            <!-- /main -->
+
+        </ul>
+    </div>
+    <!-- /main navigation -->
+
+</div>
+<!-- /sidebar content -->

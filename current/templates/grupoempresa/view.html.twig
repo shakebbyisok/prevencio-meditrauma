@@ -1,0 +1,99 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'puestotrabajo' %}
+
+{% block arrow %}<a href="{{ path('puesto_trabajo_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_PUESTOS_TRABAJO{% endtrans %} {% endblock %}
+{% block subtitle %}
+{% endblock %}
+
+{% block card %}
+
+    <script src="{{ asset('jstree/jstree.min.js') }}"></script>
+    <link href="{{ asset('jstree/themes/default/style.min.css') }}" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var json = {{ tree | raw }};
+
+            $(function () {
+                $("#tree")
+                    .jstree({
+                        'core': {
+                            'data': json,
+                            'check_callback': true
+                        },
+
+                        'plugins': ["search", "sort", "state"]
+
+                    })
+                    .on('changed.jstree', function (e, data) {
+                        if (xhr && xhr.readyState != 4) {
+                            xhr.abort();
+                        }
+
+                        ControlViews();
+                    })
+                    .on('ready.jstree', function (e, data) {
+                        var fileUploadedID = location.search.split('fileid=')[1];
+                        //console.log(fileUploadedID);
+                        if (typeof(fileUploadedID) != "undefined") {
+                            var node = "fileId" + fileUploadedID;
+                            $('#tree').jstree('deselect_all');
+                            setTimeout(function(){
+                                $('#tree').jstree('select_node', node);
+                            },300);
+
+                        }
+                    });
+            });
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {% trans %}TRANS_EMPRESA{% endtrans %}:
+                    <strong>{{ app.session.get('empresa').codigo }}</strong>
+                    -
+                    <strong>{{ app.session.get('empresa').empresa }}</strong>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    {% trans %}TRANS_CENTRO{% endtrans %}:
+                    {% if centro is defined and centro is not empty %}
+                        <strong>{{ centro.centro.codigo }}</strong>
+                        -
+                        <strong>{{ centro.centro.nombre }}</strong>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div id="tree" style="border: 1px solid #DDD; border-radius: 5px; padding:20px; margin:0 auto;"></div>
+                </div>
+                <div class="col-lg-6">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

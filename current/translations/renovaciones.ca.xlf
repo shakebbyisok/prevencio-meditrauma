@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_RENOVACIONES</source>
+                <target>Renovacions</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVA_RENOVACION</source>
+                <target>Nova renovació</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CONTRATO</source>
+                <target>Contracte</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_FECHA</source>
+                <target>Data</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_VENCIMIENTO</source>
+                <target>Vencimient</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_RENOVADO</source>
+                <target>Renovat</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_DOCUMENTO_RENOVACION</source>
+                <target>Document de renovació a generar</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_RENOVACION_CON_CONTRATO</source>
+                <target>Renovació amb contracte. Generar un contracte de renovació</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_RENOVACION_CON_FACTURA</source>
+                <target>Renovació amb factura. Generar una factura de Renovació</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_RENOVACION_TACITAS</source>
+                <target>Renovacions tàcites. No generar document de renovació</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_RENOVACION_CON_PROGRAMA_ANUAL</source>
+                <target>Renovacions amb Programa Anual. Generar un Programa Anual de renovació</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_FECHA_RENOVACION</source>
+                <target>Data de renovació</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_MANTENER_FECHA_RENOVACION</source>
+                <target>Mantenir la data de vencimient de la renovació</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_UTILIZAR_SIGUIENTE_FECHA_RENOVACION</source>
+                <target>Utilitzar la següent data como data de renovació</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_FRACCIONAMIENTO_PAGO</source>
+                <target>Fraccionament del pagament</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_MANTENER_MISMO_NUMERO_PAGOS</source>
+                <target>Mantenir el mateix numero de pagaments que el contracte inicial</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_UTILIZAR_FRACC_PAGOS</source>
+                <target>Utilitzar el fraccionamient de pagament segons els rangs definits en el manteniment</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_GENERAR_NUMERO_PAGOS</source>
+                <target>Generar el següent numero de pagaments</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_PLANIFIFCACIONES_VIGILANCIA_SALUD</source>
+                <target>Planificacions de vigilància de la salut</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_GENERAR_NUEVA_PLANIFICACION</source>
+                <target>Si el contracte és de salut o mitxe amb serveis de salut, generar una nova planificació pels metges</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_RENOVACION</source>
+                <target>Renovació</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_PUESTO_TRABAJO</source>
+                <target>Lloc de treball</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_CNO</source>
+                <target>Certificació Nacional d'Ocupació</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_CATEGORIA_PROF</source>
+                <target>Categoría professional</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_REGIMEN_SS</source>
+                <target>Règim de cotització a la S.S</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_SITUACION_PROF</source>
+                <target>Situació professional</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_AUTOMONO</source>
+                <target>És un treballador autònom</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_ETT</source>
+                <target>Pertany a E.T.T.</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_SUBVENCIONADO</source>
+                <target>És un treballador subvencionat</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_EXCLUSION_RATIOS</source>
+                <target>Exclusió als ratis</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_EXCLUIR_RATIO</source>
+                <target>Excloure aquest treballador pel càlcul de ratis.</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_NO_APLICABLE_VIG_SALUD</source>
+                <target>(No aplicable per contractes especifics de salut)</target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_CANCELADA</source>
+                <target>Cancel·lada</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_RENOVADO_CON</source>
+                <target>Renovat amb</target>
+            </trans-unit>
+
+            <trans-unit id="38">
+                <source>TRANS_RENOVADO_OP_1</source>
+                <target>Renovat mitjançant un contracte</target>
+            </trans-unit>
+
+            <trans-unit id="39">
+                <source>TRANS_RENOVADO_OP_2</source>
+                <target>Renovat mitjançant una factura</target>
+            </trans-unit>
+
+            <trans-unit id="40">
+                <source>TRANS_RENOVADO_OP_3</source>
+                <target>Renovació tàcita</target>
+            </trans-unit>
+
+            <trans-unit id="41">
+                <source>TRANS_RENOVADO_OP_4</source>
+                <target>Renovació amb programa anual</target>
+            </trans-unit>
+
+            <trans-unit id="42">
+                <source>Tipus</source>
+                <target>Tipo</target>
+            </trans-unit>
+
+            <trans-unit id="43">
+                <source>TRANS_RENOVACION_MULTIPLE</source>
+                <target>Renovació múltiple</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

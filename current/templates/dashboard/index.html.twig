@@ -1,0 +1,253 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'dashboard' %}
+
+{% block title %} {% trans %}TRANS_DASHBOARD{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_INICIO{% endtrans %} {% endblock %}
+
+{% block card %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var giros_bancarios = document.getElementById('giros_bancarios');
+            var pagos = document.getElementById('pagos');
+            var facturacion = document.getElementById('facturacion');
+            var contratos = document.getElementById('contratos');
+            var facturasgiros = document.getElementById('facturasgiros');
+            var sidebarToggle = document.querySelector('.sidebar-control');
+
+            if(giros_bancarios) {
+                // Generate chart
+                var giros_bancarios_chart = c3.generate({
+                    bindto: giros_bancarios,
+                    size: { width: 200 },
+                    color: {
+                        pattern: ['#2ec7c9','#b6a2de','#5ab1ef','#ffb980','#d87a80']
+                    },
+                    data: {
+                        columns: [
+                            ['{% trans %}TRANS_GIROS_BANCARIOS_REMESADOS{% endtrans %}', {{ girosRemesados }}],
+                            ['{% trans %}TRANS_GIROS_BANCARIOS_SIN_REMESAR{% endtrans %}', {{ girosNoRemesados }}],
+                            ['{% trans %}TRANS_GIROS_BANCARIOS_GIRADOS{% endtrans %}', {{ girosGirados }}],
+                            ['{% trans %}TRANS_GIROS_BANCARIOS_NO_GIRADOS{% endtrans %}', {{ girosNoGirados }}],
+                        ],
+                        type : 'pie'
+                    },
+                    legend: {
+                        item: {
+                            onclick: function (event){
+                                switch (event) {
+                                    case 'Remesados':
+                                        location.href = '{{ path('balance_economico_giros_remesados_dashboard') }}';
+                                        break;
+                                    case 'No remesados':
+                                        location.href = '{{ path('balance_economico_giros_no_remesados_dashboard') }}';
+                                        break;
+                                    case 'Girados':
+                                        location.href = '{{ path('balance_economico_giros_girados_dashboard') }}';
+                                        break;
+                                    case 'No girados':
+                                        location.href = '{{ path('balance_economico_giros_no_girados_dashboard') }}';
+                                        break;
+                                }
+                            }
+                        }
+                    },
+                });
+                // Resize chart on sidebar width change
+                sidebarToggle && sidebarToggle.addEventListener('click', function() {
+                    giros_bancarios_chart.resize();
+                });
+            }
+
+            if(pagos) {
+                // Generate chart
+                var pagos_chart = c3.generate({
+                    bindto: pagos,
+                    size: { width: 200 },
+                    color: {
+                        pattern: ['#58D68D','#EC7063']
+                    },
+                    data: {
+                        columns: [
+                            ['{% trans %}TRANS_PAGOS_PAGADOS{% endtrans %}', {{ pagosPagados }}],
+                            ['{% trans %}TRANS_PAGOS_PENDIENTES{% endtrans %}', {{ pagosPendientes }}],
+                        ],
+                        type : 'pie'
+                    },
+                    legend: {
+                        item: {
+                            onclick: function (event){
+                                switch (event) {
+                                    case 'Pagados':
+                                        location.href = '{{ path('pago_pendiente_show_pagados_dashboard') }}';
+                                        break;
+                                    case 'Pendientes':
+                                        location.href = '{{ path('pago_pendiente_show_pendientes_dashboard') }}';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                });
+                // Resize chart on sidebar width change
+                sidebarToggle && sidebarToggle.addEventListener('click', function() {
+                    pagos_chart.resize();
+                });
+            }
+
+            if(facturacion) {
+                // Generate chart
+                var facturacion_chart = c3.generate({
+                    bindto: facturacion,
+                    size: { width: 200 },
+                    color: {
+                        pattern: ['#58D68D','#EC7063']
+                    },
+                    data: {
+                        columns: [
+                            ['{% trans %}TRANS_FACTURACION_PAGADA{% endtrans %}', {{ facturasPagadas }}],
+                            ['{% trans %}TRANS_FACTURACION_NO_PAGADA{% endtrans %}', {{ facturasNoPagadas }}],
+                        ],
+                        type : 'pie'
+                    },
+                    legend: {
+                        item: {
+                            onclick: function (event){
+                                switch (event) {
+                                    case 'Pagada':
+                                        location.href = '{{ path('factura_show_pagadas_dashboard') }}';
+                                        break;
+                                    case 'No pagada':
+                                        location.href = '{{ path('factura_show_no_pagadas_dashboard') }}';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                });
+                // Resize chart on sidebar width change
+                sidebarToggle && sidebarToggle.addEventListener('click', function() {
+                    facturacion_chart.resize();
+                });
+            }
+
+            if(contratos) {
+                // Generate chart
+                var contratos_chart = c3.generate({
+                    bindto: contratos,
+                    size: { width: 200 },
+                    color: {
+                        pattern: ['#58D68D','#EC7063']
+                    },
+                    data: {
+                        columns: [
+                            ['{% trans %}TRANS_CONTRATOS_RENOVADO{% endtrans %}', {{ contratosRenovados }}],
+                            ['{% trans %}TRANS_CONTRATOS_NO_RENOVADO{% endtrans %}', {{ contratosNoRenovados }}],
+                        ],
+                        type : 'pie'
+                    },
+                    legend: {
+                        item: {
+                            onclick: function (event){
+                                switch (event) {
+                                    case 'Renovado':
+                                        location.href = '{{ path('contrato_show_renovados_dashboard') }}';
+                                        break;
+                                    case 'No renovado':
+                                        location.href = '{{ path('contrato_show_no_renovados_dashboard') }}';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                });
+                // Resize chart on sidebar width change
+                sidebarToggle && sidebarToggle.addEventListener('click', function() {
+                    contratos_chart.resize();
+                });
+            }
+
+            if(facturasgiros) {
+                // Generate chart
+                var facturasgiros_chart = c3.generate({
+                    bindto: facturasgiros,
+                    size: { width: 200 },
+                    color: {
+                        pattern: ['#5ab1ef','#EC7063']
+                    },
+                    data: {
+                        columns: [
+                            ['Vencidos ({{ importeFacturasVencidas|number_format(2, ",", ".") }} €)', {{ facturasVencidas }}],
+                            ['Impagados ({{ importeGirosDevueltos|number_format(2, ",", ".") }} €)', {{ girosDevueltos }}],
+                        ],
+                        type : 'pie'
+                    },
+                    legend: {
+                        item: {
+                            onclick: function (event){
+                                if(event.indexOf('Impagados') != -1){
+                                    location.href = '{{ path('factura_giros_devueltos_show') }}';
+                                }
+                                if(event.indexOf('Vencidos') != -1){
+                                    location.href = '{{ path('factura_vencidas_show') }}';
+                                }
+                            }
+                        }
+                    }
+                });
+                // Resize chart on sidebar width change
+                sidebarToggle && sidebarToggle.addEventListener('click', function() {
+                    facturasgiros_chart.resize();
+                });
+            }
+        });
+    </script>
+
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="text-center">
+                <h5 class="card-title">{% trans %}TRANS_GIROS_BANCARIOS{% endtrans %}</h5>
+            </div>
+            <div class="chart-container text-center">
+                <div class="d-inline-block" id="giros_bancarios"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="text-center">
+                <h5 class="card-title">{% trans %}TRANS_PAGOS{% endtrans %}</h5>
+            </div>
+            <div class="chart-container text-center">
+                <div class="d-inline-block" id="pagos"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="text-center">
+                <h5 class="card-title">{% trans %}TRANS_FACTURACION{% endtrans %}</h5>
+            </div>
+            <div class="chart-container text-center">
+                <div class="d-inline-block" id="facturacion"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="text-center">
+                <h5 class="card-title">{% trans %}TRANS_CONTRATOS{% endtrans %}</h5>
+            </div>
+            <div class="chart-container text-center">
+                <div class="d-inline-block" id="contratos"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="text-center">
+                <h5 class="card-title">{% trans %}TRANS_IMPAGADOS_VENCIDOS{% endtrans %}</h5>
+            </div>
+            <div class="chart-container text-center">
+                <div class="d-inline-block" id="facturasgiros"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

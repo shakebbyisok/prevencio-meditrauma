@@ -1,0 +1,899 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block arrow %}
+    {% if app.session.get('evaluacionId') is defined and app.session.get('evaluacionId') is not empty %}
+        <a href="{{ path('tecnico_evaluaciones_evaluacion_update', { "id": app.session.get('evaluacionId') }) }}" style="color: black;"><i class="icon-arrow-left52 mr-2"></i></a>
+    {% endif %}
+{% endblock %}
+{% block title %} {% trans %}TRANS_EVALUACION{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ desc }} - {{ fechaEvaluacion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+    <a href="#" class="btn btn-labeled btn-labeled-left bg-slate" data-popup="tooltip" title="Generar fichero" data-container="body" data-toggle="modal" data-target="#modal_generate_ficha_riesgos" style="margin-right: 10px;">{% trans %}TRANS_IMPRIMIR_FICHA_DE_RIESGOS{% endtrans %}<b><i class="icon-printer"></i></b></a>
+{% endblock %}
+
+{% block card %}
+    <script src="{{ asset('js/jquery.table2excel.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var arrayData = [];
+            var arrayDataQuimicos = [];
+
+            {% for m in maquinaria %}
+            var array = [];
+            var actions = '<div class="list-icons">';
+            actions += '<a href="#" data-id="{{ m.id}}" target="_self" class="list-icons-item eliminarMaquinaEmpresa"><i class="icon-trash"></i></a>';
+            actions += '</div>';
+
+            array.push('{{ m.maquinaEmpresa.descripcion }}','{{ m.maquinaEmpresa.codigo }}','{{ m.maquinaEmpresa.fabricante }}', '{{ m.maquinaEmpresa.modelo }}', '{{ m.maquinaEmpresa.numSerie }}', '{{ m.maquinaEmpresa.anyoFabricacion }}', '{{ m.maquinaEmpresa.anyoCompra }}', '{{ m.maquinaEmpresa.marcadoCE }}', '{{ m.maquinaEmpresa.observaciones }}',actions);
+            arrayData.push(array);
+            {% endfor %}
+            {% for pq in productosQuimicos %}
+            var array = [];
+            var actions = '<div class="list-icons">';
+            actions += '<a href="#" data-id="{{ pq.id }}" target="_self" class="list-icons-item eliminarQuimicos"><i class="icon-trash"></i></a>';
+            actions += '</div>';
+            array.push('{{ pq.nombre }}', '{{ pq.cas }}','{{ pq.epis }}', '{{ pq.composicion }}',actions);
+            arrayDataQuimicos.push(array);
+
+            {% endfor %}
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    decimal: ',',
+                    thousands: '.',
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+
+            });
+            //Boton que elimina la maquinaria seleccionada
+            $(document).on('click', 'a.eliminarMaquina', function(){
+                var id = $(this).data('id');
+                bootbox.confirm({
+                    title: '{% trans from 'messages' %}TRANS_ELIMINAR_TECNICO{% endtrans %}',
+                    message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                    buttons: {
+                        confirm: {
+                            label: 'Si',
+                            className: 'btn-primary'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-link'
+                        }
+                    },
+                    callback: function (result) {
+                        if(result == true){
+                            deleteTecnicoEvaluacion(id)
+                        }
+                    }
+                });
+            });
+            var table = $('.maquinaria').DataTable({
+                data: arrayData,
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        className: 'btn btn-success',
+                        text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                        fieldSeparator: '\t',
+                        extension: '.xlsx'
+                    }
+                ]
+            });
+
+            // Configura la extensión HTML5 file input de maquinaria
+            new $.fn.dataTable.Buttons(table, {
+                buttons: [
+                    {
+                        text: '<i class="icon-file-spreadsheet mr-2"></i> Importar Excel',
+                        className: 'btn btn-success',
+                        action: function () {
+                            $('#fileInputMaquinaria').trigger('click');
+                        }
+                    }
+                ]
+            });
+            table.buttons(1, null).containers().appendTo($('.table-actions'));
+
+            // Configura el manejo del archivo seleccionado para maquinaria
+            $('#fileInputMaquinaria').on('change', function (e) {
+                var input = e.target;
+                if (input.files && input.files[0]) {
+                    var file = input.files[0];
+                    var empreId = {{ empresaId }};
+                    // Verifica si el archivo es un archivo XLSX
+                    if (file.name.endsWith('.xlsx')) {
+                        var reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            var data = new Uint8Array(e.target.result);
+                            var workbook = XLSX.read(data, { type: 'array' });
+
+                            // Supongamos que el archivo XLSX tiene una sola hoja
+                            var sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                            // Convierte la hoja de cálculo a un objeto JSON
+                            var jsonData = XLSX.utils.sheet_to_json(sheet);
+                            console.log(jsonData);
+                            // Ahora jsonData contiene los datos del archivo XLSX
+
+
+                            // Aquí puedes realizar más operaciones con los datos, como mostrarlos en una tabla o procesarlos de otra manera.
+
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ path('import_excel_maquinas') }}",
+                                data: JSON.stringify({
+                                    'contenido': jsonData,
+                                    'empresa':empreId
+                                }),
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8",  // Agrega esta línea
+                                success: function (data) {
+                                    $('#importButton').click(); // Simula un clic en el botón
+                                },
+                                error: function () {
+                                    alert("Error en la solicitud.");
+                                }
+                            });
+                        };
+
+                        reader.readAsArrayBuffer(file);
+                    } else {
+                        alert('El archivo seleccionado no es un archivo XLSX.');
+                    }
+                }
+            });
+
+            <!--Peticio 01/09/2023-->
+            var tableQuimics = $('.productosQuimicos').DataTable({
+                data: arrayDataQuimicos,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+            // Configura la extensión HTML5 file input de quimicos
+            new $.fn.dataTable.Buttons(tableQuimics, {
+                buttons: [
+                    {
+                        text: '<i class="icon-file-spreadsheet mr-2"></i> Importar Excel (Otra Tabla)',
+                        className: 'btn btn-success',
+                        action: function () {
+                            $('.fileInputQuimics').trigger('click');
+                        }
+                    }
+                ]
+            });
+            tableQuimics.buttons(1, null).containers().appendTo($('.table-actions'));
+
+
+            // Configura el manejo del archivo seleccionado de quimicos
+            $('#fileInputQuimics').on('change', function (e) {
+                var input = e.target;
+                if (input.files && input.files[0]) {
+                    var file = input.files[0];
+                    var puestId = {{ puestotrabajoid }};
+                    // Verifica si el archivo es un archivo XLSX
+                    if (file.name.endsWith('.xlsx')) {
+                        var reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            var data = new Uint8Array(e.target.result);
+                            var workbook = XLSX.read(data, { type: 'array' });
+
+                            // Supongamos que el archivo XLSX tiene una sola hoja
+                            var sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                            // Convierte la hoja de cálculo a un objeto JSON
+                            var jsonData = XLSX.utils.sheet_to_json(sheet);
+                            console.log(jsonData);
+                            // Ahora jsonData contiene los datos del archivo XLSX
+
+
+                            // Aquí puedes realizar más operaciones con los datos, como mostrarlos en una tabla o procesarlos de otra manera.
+
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ path('import_excel_quimicos') }}",
+                                data: JSON.stringify({
+                                    'contenido': jsonData,
+                                    'puesto':puestId
+                                }),
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8",  // Agrega esta línea
+                                success: function (data) {
+                                    $('#importButton2').click(); // Simula un clic en el botón
+                                },
+                                error: function () {
+                                    alert("Error en la solicitud.");
+                                }
+                            });
+                        };
+
+                        reader.readAsArrayBuffer(file);
+                    } else {
+                        alert('El archivo seleccionado no es un archivo XLSX.');
+                    }
+                }
+            });
+
+
+
+            function buscaValorRiesgo(severidad, probabilidad){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_busca_valor_riesgo') }}",
+                    data: {
+                        'severidadId': severidad,
+                        'probabilidadId': probabilidad
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data != "") {
+                            $('#listValorRiesgo').val(data.valorRiesgo).change();
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+
+            //Evento cuando cambia severidad
+            $("#listSeveridad").change(function () {
+                var severidad = $("#listSeveridad").val();
+                var probabilidad = $("#listProbabilidad").val();
+
+                if(severidad != "" && probabilidad != ""){
+                    buscaValorRiesgo(severidad, probabilidad);
+                }
+            });
+
+            //Evento cuando cambia severidad
+            $("#listProbabilidad").change(function () {
+                var severidad = $("#listSeveridad").val();
+                var probabilidad = $("#listProbabilidad").val();
+
+                if(severidad != "" && probabilidad != ""){
+                    buscaValorRiesgo(severidad, probabilidad);
+                }
+            });
+
+            //Boton que modifica la zona de trabajo
+            $('#btnAddMaquinaEmpresaTrabajador').click(function () {
+
+                if($('#nombreZonaEdit').val() == '' || $('#maquinaManual').val() == ''){
+                    return false;
+                }
+
+                $('#btnAddMaquinaEmpresaTrabajador').prop("disabled", true);
+                $('#btnAddMaquinaEmpresaTrabajador').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_add_maquina_empresa_trabajador') }}",
+                    data: {
+                        'puestoTrabajoEvaluacionId': '{{ app.request.get('id') }}',
+                        'maquinaEmpresaId': $('#maquinaEmpresaTrabajador').val(),
+                        'maquinaManual': $('#maquinaManual').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddMaquinaEmpresaTrabajador').prop("disabled", false);
+                        $('#btnAddMaquinaEmpresaTrabajador').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            {% if zonaTrabajoSn is defined and zonaTrabajoSn == true %}
+            $('label[for=zona_trabajo_evaluar_tarea]').css("display", "none");
+            $('#zona_trabajo_evaluar_tarea').css("display", "none");
+            {% endif %}
+
+            //Boton que genera la ficha
+            $('#btnGeneraFicha').click(function(){
+
+                $('#btnGeneraFicha').prop("disabled", true);
+                $('#btnGeneraFicha').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': $('#plantilla').val(),
+                        'id': '{{ app.request.get('id') }}',
+                        'tipo': 12
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnGeneraFicha').prop("disabled", false);
+                            $('#btnGeneraFicha').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnGeneraFicha').prop("disabled", false);
+                        $('#btnGeneraFicha').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+        });
+
+        function deleteRiesgoCausa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_riesgo_causa') }}",
+                data: {
+                    'riesgoCausaId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el riesgo-causa seleccionado
+        $(document).on('click', 'a.eliminarRiesgoCausa', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_ELIMINAR_RIESGO_CAUSA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteRiesgoCausa(id)
+                    }
+                }
+            });
+        });
+        //Delete function quimicos
+        function deleteQuimicos(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_quimicos2_empresa_trabajador') }}",
+                data: {
+                    'id': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+
+        //Delete maquinas function
+        function deleteMaquinaEmpresa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_delete_maquina_empresa_trabajador') }}",
+                data: {
+                    'maquinaEmpresaTrabajadorId': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el quimico del puesto de trabajo seleccionado
+        $(document).on('click', 'a.eliminarQuimicos', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: 'Eliminar Quimicos',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteQuimicos(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la maquina del puesto de trabajo seleccionado
+        $(document).on('click', 'a.eliminarMaquinaEmpresa', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'empresas' %}TRANS_DELETE_MAQUINARIA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteMaquinaEmpresa(id)
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', 'a.eliminarPuestoTrabajoTrabajador', function(){
+            var id = $(this).data('id');
+
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_PUESTO_TRABAJO_TRABAJADOR{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deletePuestoTrabajoTrabajador(id)
+                    }
+                }
+            });
+        });
+
+        function deletePuestoTrabajoTrabajador(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_delete_trabajador') }}",
+                data: {
+                    'puestoTrabajoTrabajadorId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">General</a></li>
+                    {% if zonaTrabajoSn is defined and zonaTrabajoSn == false %}
+                        <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_TRABAJADORES{% endtrans %}</a></li>
+                        <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans from 'empresas' %}TRANS_MAQUINARIA{% endtrans %}</a></li>
+                        <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_PRODUCTOS_QUIMICOS{% endtrans %}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">General</a></li>
+                    {% if zonaTrabajoSn is defined and zonaTrabajoSn == false %}
+                        <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_TRABAJADORES{% endtrans %}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans from 'empresas' %}TRANS_MAQUINARIA{% endtrans %}</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_PRODUCTOS_QUIMICOS{% endtrans %}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        {{ form_row(form.tarea) }}
+                    </div>
+                </div>
+                <div class="tab-pane fade active show" id="tab1">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.tarea) }}
+                        </div>
+                    </div>
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_EVALUACION{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <a href="{{ path('tecnico_evaluaciones_evaluacion_create_riesgo_causa') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans %}TRANS_AÑADIR_RIESGO_CAUSA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="riesgosCausas">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_RIESGO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_CAUSA{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_VALORACION{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_FINALIZADO{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if riesgosCausas is defined and riesgosCausas is not empty %}
+                                            {% for rc in riesgosCausas %}
+                                                {% if rc.ultimo_modificado %}
+                                                    <tr style="background-color: #c9cccf; font-weight: bolder; color: black;">
+                                                {% else %}
+                                                    <tr>
+                                                {% endif %}
+                                                <td>{{ rc.riesgo }}</td>
+                                                <td>{{ rc.causa }}</td>
+                                                <td>{{ rc.valoracion }}</td>
+                                                <td>
+                                                    {% if rc.finalizado == true %}
+                                                        <span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>
+                                                    {% else %}
+                                                        <span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="list-icons">
+                                                        <a href="{{ path('tecnico_evaluaciones_evaluacion_update_riesgo_causa', { "id": rc.id }) }}" style="margin-right: 30px;" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                        <a href="#" data-id="{{ rc.id }}" target="_self" class="list-icons-item eliminarRiesgoCausa"><i class="icon-trash"></i></a>
+                                                    </div>
+                                                </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_add_trabajador') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans %}TRANS_AÑADIR_TRABAJADOR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <table class="table" id="trabajadores">
+                                    <thead>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans %}TRANS_NOMBRE{% endtrans %}</th>
+                                        <th>{% trans %}TRANS_CENTRO{% endtrans %}</th>
+                                        <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if trabajadoresPuestoTrabajo is defined and trabajadoresPuestoTrabajo is not empty %}
+                                        {% for tpt in trabajadoresPuestoTrabajo %}
+                                            <tr>
+                                                <td>{{ tpt.nombre }}</td>
+                                                {% if tpt.centro is not empty %}
+                                                    <td>{{ tpt.centro }}</td>
+                                                {% else %}
+                                                    <td>{{ tpt.empresa }}</td>
+                                                {% endif %}
+                                                <td>
+                                                    <div class="list-icons">
+                                                        <a href="{{ path('tecnico_evaluaciones_evaluacion_puesto_trabajo_update_trabajador', { "id": tpt.id, "empresaId": empresaId }) }}" class="list-icons-item"><i class="icon-pencil7"></i></a>
+                                                        <a href="#" data-id="{{ tpt.id }}" class="list-icons-item eliminarPuestoTrabajoTrabajador"><i class="icon-trash"></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_maquina_empresa_trabajador">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <!--Peticio 01/09/2023-->
+                                <table class="table maquinaria dataTable no-footer" id="maquinaria" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                    <thead>
+                                    <input type="file" id="fileInputMaquinaria" accept=".xlsx, .xls">
+                                    <button hidden id="importButton">Importar Excel</button>
+                                    <tr role="row">
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-sort="ascending" aria-label="Descripcion">Descripción
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Codigo">Codigo
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Fabricante">Fabricante
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Modelo">Modelo
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Número de serie">Número de serie
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Año de fabricación">Año de fabricación
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Año de compra">Año de compra
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Marcado CE">Marcado CE
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Observaciones">Observaciones
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            aria-label="Actions">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="{{ path('tecnico_evaluaciones_evaluacion_create_producto_quimico_puesto_trabajo') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans %}TRANS_AÑADIR_PRODUCTO_QUIMICO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-bordered">
+                                <!--Peticio 01/09/2023-->
+                                <table class="table productosQuimicos dataTable no-footer" id="productosQuimicos" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                    <thead>
+                                    <input type="file" id="fileInputQuimics" accept=".xlsx, .xls">
+                                    <button hidden id="importButton2">Importar Excel</button>
+                                    <tr class="bg-grey-300">
+                                        <th>{% trans %}TRANS_NOMBRE{% endtrans %}</th>
+                                        <th>CAS</th>
+                                        <th>EPIS</th>
+                                        <th>Composición</th>
+                                        <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir maquina empresa trabajador -->
+    <div id="modal_añadir_maquina_empresa_trabajador" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans from 'empresas' %}TRANS_AÑADIR_MAQUINARIA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!--Peticio 01/09/2023-->
+                <div class="modal-body">
+                    <label>{% trans from 'empresas' %}TRANS_MAQUINA_EMPRESA{% endtrans %}</label>
+                    <select id="maquinaEmpresaTrabajador" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listMaquinasEmpresa is defined and listMaquinasEmpresa is not empty %}
+                            {% for lme in listMaquinasEmpresa %}
+                                <option value="{{ lme.id }}">{{ lme.descripcion }}({{ lme.empresa }})</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <br/>
+                    <br/>
+                    <input type="text" id="maquinaManual" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddMaquinaEmpresaTrabajador">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir maquina empresa zona trabajo -->
+
+    <!-- Modal generacion ficha de riesgos -->
+    <div id="modal_generate_ficha_riesgos" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_FICHA_DE_RIESGOS{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasFichaRiesgos is defined and listPlantillasFichaRiesgos is not empty %}
+                            {% for lp in listPlantillasFichaRiesgos %}
+                                <option value="{{ lp.id }}">{{ lp.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGeneraFicha">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal generacion ficha de riesgos -->
+
+{% endblock %}
+
+
+

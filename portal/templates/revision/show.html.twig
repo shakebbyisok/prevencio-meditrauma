@@ -1,0 +1,174 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'revision' %}
+
+{% block title %} {% trans %}TRANS_REVISIONES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    <a href="#" class="btn btn-labeled btn-labeled-left bg-blue" id="btnDescargarAptitud" style="margin-left: 10px;">{% trans %}TRANS_DESCARGAR_APTITUD{% endtrans %}<b><i class="icon-download"></i></b></a>
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for revision in revisiones %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                var input = '';
+                {% if revision.fichero_id is not null %}
+                    input = '<div class="uniform-checker" id="uniform-{{ revision.id }}"><span><input type="checkbox" name="revision" id="{{ revision.id }}" class="form-check-input-styled form-check-input" value="1" /></span></div>';
+                    actions += '<a href="{{ path('gdoc_down_file', { "fileId": revision.fichero_id, "tipo": "11" }) }}" class="list-icons-item"><img src="{{ asset('images/down_pdf.png') }}" title="Imprimir" width="25px;" /></a>';
+                {% endif %}
+
+                actions += '</div>';
+
+                var apto = '';
+
+                {% if revision.apto_id is not empty %}
+                    {% if revision.apto_id == 1 %}
+                        apto = '<span class="badge badge-success"><i class="icon-check"></i></span>';
+                    {% elseif revision.apto_id == 2 %}
+                        apto = '<span class="badge badge-warning"><i class="icon-check"></i></span>';
+                    {% elseif revision.apto_id == 3 %}
+                        apto = '<span class="badge badge-danger"><i class="icon-cross"></i></span>';
+                    {% endif %}
+                {% else %}
+                    apto = '';
+                {% endif %}
+
+                array.push(input, actions, '{{ revision.fecha|date('d/m/Y') }}', apto, '{{ revision.trabajador }}', '{{ revision.puesto }}');
+                arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: false,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 100000], [10, 25, 50, 100, "Todo"]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            $('.dt-buttons').css('display', 'none');
+
+            //Boton que descarga las aptitudes seleccionadas
+            $('#btnDescargarAptitud').click(function () {
+                if(arrayRevisiones.length == 0){
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_ERROR_DESCARGAR_APTITUD{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+
+                location.href = '{{ path('gdoc_down_aptitudes') }}?revisiones='+arrayRevisiones;
+            });
+
+        });
+
+        var arrayRevisiones = [];
+        $(document).on('click', 'input[name=\'revision\']', function(){
+            var revisionId = $(this).attr('id');
+            if ($(this).prop('checked')) {
+                $('#uniform-'+revisionId+' span').addClass('checked');
+                arrayRevisiones.push(revisionId);
+            }else{
+                $('#uniform-'+revisionId+' span').removeClass('checked');
+                arrayRevisiones.splice($.inArray(revisionId, arrayRevisiones),1);
+            }
+        });
+
+        $(document).on('click', 'input[name=\'revisionesAll\']', function(){
+            var table = $('.datatable-export-excel').DataTable();
+            var rowsCount = table.rows().count();
+            var rows = table.rows({ search: 'applied' }).data();
+
+            if($(this).prop('checked')){
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'revision\']");
+                    var revisionId = $(check).attr('id');
+                    $('#uniform-'+revisionId+' span').addClass('checked');
+                    arrayRevisiones.push(revisionId);
+                }
+            }else{
+                for(var i=0 ; rowsCount>i;i++){
+                    var dataCheckbox = rows[i][0];
+                    var check = $(dataCheckbox).find("input[name=\'revision\']");
+                    var revisionId = $(check).attr('id');
+                    $('#uniform-'+revisionId+' span').removeClass('checked');
+                }
+                arrayRevisiones.splice(0, arrayRevisiones.length);
+            }
+        });
+
+    </script>
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Select" width="25px">
+                            <input type="checkbox" name="revisionesAll" id="selectRevisionesAll"  class="form-check-input-styled form-check-input" value="1" /> {% trans from 'messages' %}TRANS_SELECT_ALL{% endtrans %}
+                        </th>
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fecha" aria-sort="descending">{% trans %}TRANS_FECHA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Apto" aria-sort="descending">{% trans %}TRANS_APTO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Trabajador">{% trans %}TRANS_TRABAJADOR{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

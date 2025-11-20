@@ -1,0 +1,66 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'renovaciones' %}
+
+{% block arrow %}<a href="{{ path('renovacion_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_RENOVACION{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+
+        {% if form.vars.value.contrato is not null %}
+            {{ form.vars.value.contrato.contrato }}
+        {% endif %}
+
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.contrato) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.fechainicio) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.fechavencimiento) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(form.renovado) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(form.cancelada) }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editRenovacionSn is defined and app.session.get('privilegiosRol').editRenovacionSn is not null %}
+                {% if app.session.get('privilegiosRol').editRenovacionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+
+

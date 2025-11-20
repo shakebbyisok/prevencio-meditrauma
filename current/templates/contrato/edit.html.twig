@@ -1,0 +1,2145 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'contratos' %}
+
+{% block arrow %}<a href="{{ path('datos_bancarios_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_CONTRATO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.contrato }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //Añadir tarifa reconocimiento o servicio
+            $("#btnAddTarifaReconocimientoServicio").click(function () {
+
+                if($('#conceptoTarifaRecoServ').val() == ''){
+                    $('#conceptoTarifaRecoServ').focus();
+                    return false;
+                }
+
+                $('#btnAddTarifaReconocimientoServicio').prop("disabled", true);
+                $('#btnAddTarifaReconocimientoServicio').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_add_tarifa') }}",
+                    data: {
+                        'concepto': $('#conceptoTarifaRecoServ').val(),
+                        'importe': $('#importeTarifaRecoServ').val(),
+                        'iva': $('#importeIvaTarifaRecoServ').val(),
+                        'tipo': 1,
+                        'contratoId': '{{ app.request.get('id') }}'
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperarTarifaReconocimiento();
+
+                            $('#btnAddTarifaReconocimientoServicio').prop("disabled", false);
+                            $('#btnAddTarifaReconocimientoServicio').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                            $('#conceptoTarifaRecoServ').val("");
+                            $('#importeTarifaRecoServ').val("");
+                            $('#importeIvaTarifaRecoServ').val("");
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_AÑADIDO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_AÑADIDO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddTarifaReconocimientoServicio').prop("disabled", false);
+                        $('#btnAddTarifaReconocimientoServicio').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Añadir tarifa analiticas
+            $("#btnAddTarifaAnaliticas").click(function () {
+
+                if($('#conceptoTarifaAnaliticas').val() == ''){
+                    $('#conceptoTarifaAnaliticas').focus();
+                    return false;
+                }
+
+                $('#btnAddTarifaAnaliticas').prop("disabled", true);
+                $('#btnAddTarifaAnaliticas').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_add_tarifa') }}",
+                    data: {
+                        'concepto': $('#conceptoTarifaAnaliticas').val(),
+                        'importe': $('#importeTarifaAnaliticas').val(),
+                        'iva': $('#importeIvaTarifaAnaliticas').val(),
+                        'tipo': 2,
+                        'contratoId': '{{ app.request.get('id') }}'
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperarTarifaAnaliticas();
+
+                            $('#btnAddTarifaAnaliticas').prop("disabled", false);
+                            $('#btnAddTarifaAnaliticas').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                            $('#conceptoTarifaAnaliticas').val("");
+                            $('#importeTarifaAnaliticas').val("");
+                            $('#importeIvaTarifaAnaliticas').val("");
+
+                            new PNotify({
+                                title: '{% trans from 'messages' %}TRANS_AVISO_AÑADIDO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_AÑADIDO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddTarifaAnaliticas').prop("disabled", false);
+                        $('#btnAddTarifaAnaliticas').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que editar la tarifa seleccionada
+            $("#btnUpdateTarifa").click(function(){
+
+                if($('#conceptoTarifaEditar').val() == ''){
+                    $('#conceptoTarifaEditar').focus();
+                    return false;
+                }
+
+                $('#btnUpdateTarifa').prop("disabled", true);
+                $('#btnUpdateTarifa').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_update_tarifa') }}",
+                    data: {
+                        'tarifaContratoId': $('#idTarifaEditar').val(),
+                        'concepto': $('#conceptoTarifaEditar').val(),
+                        'importe': $('#importeTarifaEditar').val(),
+                        'importeIva': $('#importeIvaTarifaEditar').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            var tipo = $('#tipoTarifaEditar').val();
+
+                            if(tipo == '1'){
+                                recuperarTarifaReconocimiento();
+                            }else{
+                                recuperarTarifaAnaliticas();
+                            }
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#idTarifaEditar').val("");
+                            $('#tipoTarifaEditar').val("");
+                            $('#conceptoTarifaEditar').val("");
+                            $('#importeTarifaEditar').val("");
+                            $('#importeIvaTarifaEditar').val("");
+
+                            $('#btnUpdateTarifa').prop("disabled", false);
+                            $('#btnUpdateTarifa').html("Guardar");
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateTarifa').prop("disabled", false);
+                        $('#btnUpdateTarifa').html("Guardar");
+                    }
+                });
+            });
+
+            //Boton copiar comisiones
+            $('#btnCopyComisiones').click(function(){
+
+                $('#btnCopyComisiones').prop("disabled", true);
+                $('#btnCopyComisiones').html("<b><i class='icon-spinner2 spinner mr-2'></i></b>{% trans %}TRANS_COPIAR_COMISIONES{% endtrans %}");
+
+                var contratoComiCol = $('#contrato_contratoComiCol').is(':checked');
+                var comision1Col = $('#contrato_comision1aCol').val();
+                var comisionAnyosSucCol = $('#contrato_comisionASucCol').val();
+                var contratoComiTec = $('#contrato_contratoComiTec').is(':checked');
+                var comision1Tec = $('#contrato_comision1aTec').val();
+                var comisionAnyosSucTec = $('#contrato_comisionASucTec').val();
+                var contratoComiCom = $('#contrato_contratoComiCom').is(':checked');
+                var comision1Com = $('#contrato_comision1aCom').val();
+                var comisionAnyosSucCom = $('#contrato_comisionASucCom').val();
+
+                $('#btnCopyComisiones').prop("disabled", false);
+                $('#btnCopyComisiones').html("<b><i class='icon-arrow-down7'></i></b>{% trans %}TRANS_COPIAR_COMISIONES{% endtrans %}");
+
+                $('#contrato_comision1aColCopy').val(comision1Col);
+                $('#contrato_comisionASucColCopy').val(comisionAnyosSucCol);
+                $('#contrato_comision1aTecCopy').val(comision1Tec);
+                $('#contrato_comisionASucTecCopy').val(comisionAnyosSucTec);
+                $('#contrato_comision1aComCopy').val(comision1Com);
+                $('#contrato_comisionASucComCopy').val(comisionAnyosSucCom);
+
+                /*if(contratoComiCol){
+                    $('#uniform-contrato_contratoComiColCopy span').addClass('checked');
+                    $('#contrato_contratoComiColCopy').attr("checked", "checked");
+                }else{
+                    $('#uniform-contrato_contratoComiColCopy span').removeClass("checked");
+                }
+
+                if(contratoComiTec){
+                    $('#uniform-contrato_contratoComiTecCopy span').addClass('checked');
+                    $('#contrato_contratoComiTecCopy').attr("checked", "checked");
+                }else{
+                    $('#uniform-contrato_contratoComiTecCopy span').removeClass('checked');
+                }
+
+                if(contratoComiCom){
+                    $('#uniform-contrato_contratoComiComCopy span').addClass('checked');
+                    $('#contrato_contratoComiComCopy').attr("checked", "checked");
+                }else{
+                    $('#contrato_contratoComiComCopy span').removeClass('checked');
+                }*/
+
+            });
+
+            //Evento para cuando se cambio el tipo de contrato
+            $('#contrato_tipoContrato').change(function(){
+                var tipoContrato = $('#contrato_tipoContrato').val();
+                switch (tipoContrato) {
+                    case "1":
+                        $('[href="#tab2"]').closest('li').hide();
+                        $('[href="#tab3"]').closest('li').hide();
+                        $('[href="#tab4"]').closest('li').hide();
+                        $('.esconder').hide();
+                        $('label[for="contrato_comision1aCol"]').html('{% trans %}TRANS_IMPORTE_COMISION{% endtrans %}');
+                        $('label[for="contrato_comision1aTec"]').html('{% trans %}TRANS_IMPORTE_COMISION{% endtrans %}');
+                        $('label[for="contrato_comision1aCom"]').html('{% trans %}TRANS_IMPORTE_COMISION{% endtrans %}');
+                        $('#contrato_comisionASucCol').hide();
+                        $('label[for="contrato_comisionASucCol"]').hide();
+                        $('#contrato_comisionASucTec').hide();
+                        $('label[for="contrato_comisionASucTec"]').hide();
+                        $('#contrato_comisionASucCom').hide();
+                        $('label[for="contrato_comisionASucCom"]').hide();
+                        break;
+                    case "2":
+                        $('[href="#tab2"]').closest('li').show();
+                        $('[href="#tab3"]').closest('li').show();
+                        $('[href="#tab4"]').closest('li').show();
+                        $('.esconder').show();
+                        $('label[for="contrato_comision1aCol"]').html('{% trans %}TRANS_COMISION_1_AÑO{% endtrans %}');
+                        $('label[for="contrato_comision1aTec"]').html('{% trans %}TRANS_COMISION_1_AÑO{% endtrans %}');
+                        $('label[for="contrato_comision1aCom"]').html('{% trans %}TRANS_COMISION_1_AÑO{% endtrans %}');
+                        $('#contrato_comisionASucCol').show();
+                        $('label[for="contrato_comisionASucCol"]').show();
+                        $('#contrato_comisionASucTec').show();
+                        $('label[for="contrato_comisionASucTec"]').show();
+                        $('#contrato_comisionASucCom').show();
+                        $('label[for="contrato_comisionASucCom"]').show();
+                        break;
+                }
+            });
+
+            $('#contrato_tipoContrato').each(function(){
+                var tipoContrato = $('#contrato_tipoContrato').val();
+                switch (tipoContrato) {
+                    case "1":
+                        $('[href="#tab2"]').closest('li').hide();
+                        $('[href="#tab3"]').closest('li').hide();
+                        $('[href="#tab4"]').closest('li').hide();
+                        $('.esconder').hide();
+                        $('label[for="contrato_comision1aCol"]').html('{% trans %}TRANS_IMPORTE_COMISION{% endtrans %}');
+                        $('label[for="contrato_comision1aTec"]').html('{% trans %}TRANS_IMPORTE_COMISION{% endtrans %}');
+                        $('label[for="contrato_comision1aCom"]').html('{% trans %}TRANS_IMPORTE_COMISION{% endtrans %}');
+                        $('#contrato_comisionASucCol').hide();
+                        $('label[for="contrato_comisionASucCol"]').hide();
+                        $('#contrato_comisionASucTec').hide();
+                        $('label[for="contrato_comisionASucTec"]').hide();
+                        $('#contrato_comisionASucCom').hide();
+                        $('label[for="contrato_comisionASucCom"]').hide();
+                        break;
+                    case "2":
+                        $('[href="#tab2"]').closest('li').show();
+                        $('[href="#tab3"]').closest('li').show();
+                        $('[href="#tab4"]').closest('li').show();
+                        $('.esconder').show();
+                        $('label[for="contrato_comision1aCol"]').html('{% trans %}TRANS_COMISION_1_AÑO{% endtrans %}');
+                        $('label[for="contrato_comision1aTec"]').html('{% trans %}TRANS_COMISION_1_AÑO{% endtrans %}');
+                        $('label[for="contrato_comision1aCom"]').html('{% trans %}TRANS_COMISION_1_AÑO{% endtrans %}');
+                        $('#contrato_comisionASucCol').show();
+                        $('label[for="contrato_comisionASucCol"]').show();
+                        $('#contrato_comisionASucTec').show();
+                        $('label[for="contrato_comisionASucTec"]').show();
+                        $('#contrato_comisionASucCom').show();
+                        $('label[for="contrato_comisionASucCom"]').show();
+                        break;
+                }
+            });
+
+            //Añadir servicio contratado
+            $("#btnAddServicio").click(function () {
+
+                if($('#servicioContratado').val() == ''){
+                    $('#servicioContratado').focus();
+                    return false;
+                }
+
+                $('#btnAddServicio').prop("disabled", true);
+                $('#btnAddServicio').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_add_servicio') }}",
+                    data: {
+                        'servicio': $('#servicioContratado').val(),
+                        'importe': $('#importeServicio').val(),
+                        'contratoId': '{{ app.request.get('id') }}',
+                        'importeRenovacion': $('#importeRenovacionServicio').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperaServicios();
+
+                            $('#btnAddServicio').prop("disabled", false);
+                            $('#btnAddServicio').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                            $('#servicioContratado').val("").change();
+                            $('#importeServicio').val("");
+                            $('#importeRenovacionServicio').val("");
+
+                            new PNotify({
+                                title: '{% trans from 'messages' %}TRANS_AVISO_AÑADIDO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_AÑADIDO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddServicio').prop("disabled", false);
+                        $('#btnAddServicio').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que editar el servicio seleccionado
+            $("#btnUpdateServicio").click(function(){
+
+                if($('#servicioContratadoEditar').val() == ''){
+                    $('#servicioContratadoEditar').focus();
+                    return false;
+                }
+
+                $('#btnUpdateServicio').prop("disabled", true);
+                $('#btnUpdateServicio').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_update_servicio') }}",
+                    data: {
+                        'servicioContratadoId': $('#idServicioContratadoEditar').val(),
+                        'servicio': $('#servicioContratadoEditar').val(),
+                        'importe': $('#importeServicioEditar').val(),
+                        'importeRenovacion': $('#importeRenovacionServicioEditar').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                           recuperaServicios();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#idServicioContratadoEditar').val("");
+                            $('#servicioContratadoEditar').val("").change();
+                            $('#importeServicioEditar').val("");
+                            $('#importeRenovacionServicioEditar').val("")
+
+                            $('#btnUpdateServicio').prop("disabled", false);
+                            $('#btnUpdateServicio').html("Guardar");
+
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateServicio').prop("disabled", false);
+                        $('#btnUpdateServicio').html("Guardar");
+                    }
+                });
+            });
+
+            //Boton que edita el pago seleccionado
+            $("#btnUpdatePago").click(function(){
+
+                $('#btnUpdatePago').prop("disabled", true);
+                $('#btnUpdatePago').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_update_pago') }}",
+                    data: {
+                        'contratoPagoId': $('#idPagoEditar').val(),
+                        'concepto': $('#pagoConceptoEditar').val(),
+                        'vencimiento': $('#pagoVencimiento').val(),
+                        'importeSinIva': $('#pagoSinIvaEditar').val(),
+                        'importeExento': $('#pagoExentoEditar').val(),
+                        'importeSujeto': $('#pagoSujetoEditar').val(),
+                        'importeIva': $('#pagoIvaEditar').val(),
+                        'importeTotal': $('#pagoTotalEditar').val(),
+                        'facturado': $('#pagoFacturado').is(':checked'),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+
+                        if(data == "OK"){
+
+                            recuperaPagos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_MODIFICADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#idPagoEditar').val("");
+                            $('#pagoConceptoEditar').val("");
+                            $('#pagoVencimiento').val("");
+                            $('#pagoSinIvaEditar').val("");
+                            $('#pagoExentoEditar').val("");
+                            $('#pagoSujetoEditar').val("");
+                            $('#pagoIvaEditar').val("");
+                            $('#pagoTotalEditar').val("");
+
+                            $('#btnUpdatePago').prop("disabled", false);
+                            $('#btnUpdatePago').html("Guardar");
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdatePago').prop("disabled", false);
+                        $('#btnUpdatePago').html("Guardar");
+                    }
+                });
+            });
+
+            //Boton que fracciona los pagos de forma automatica
+            $("#btnFraccionaPagosAutomatico").click(function(){
+
+                $('#btnFraccionaPagosAutomatico').prop("disabled", true);
+                $('#btnFraccionaPagosAutomatico').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_fracciona_pagos_automatico') }}",
+                    data: {
+                        'contratoId': '{{ app.request.get('id') }}',
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+
+                            recuperaPagos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_FRACCIONADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_FRACCIONADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#btnFraccionaPagosAutomatico').prop("disabled", false);
+                            $('#btnFraccionaPagosAutomatico').html("<b><i class='icon-equalizer2'></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+                        }else{
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_ATENCION{% endtrans %}',
+                                text: '{% trans %}TRANS_SIN_SERVICIOS{% endtrans %}',
+                                icon: 'icon-warning22',
+                                type: 'warning'
+                            });
+
+                            $('#btnFraccionaPagosAutomatico').prop("disabled", false);
+                            $('#btnFraccionaPagosAutomatico').html("<b><i class='icon-equalizer2'></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnFraccionaPagosAutomatico').prop("disabled", false);
+                        $('#btnFraccionaPagosAutomatico').html("<b><i class='icon-equalizer2'></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que fracciona los pagos de forma manual
+            $("#btnFraccionaPagosManual").click(function(){
+
+                var numPagos = $('#contrato_numeroPagos').val();
+
+                if(numPagos == ''){
+                    $('#contrato_numeroPagos').focus();
+                    return false;
+                }
+
+                var diaPago = $('#contrato_pagoDia').val();
+
+                if(diaPago == ''){
+                    $('#contrato_pagoDia').focus();
+                    return false;
+                }
+
+                if(!$('#contrato_pagoFrecuencia_0').is(':checked') && !$('#contrato_pagoFrecuencia_1').is(':checked')){
+                    $('#contrato_pagoFrecuencia_0').focus();
+                    return false;
+                }
+
+                var frecuencia = '';
+                if($('#contrato_pagoFrecuencia_0').is(':checked')){
+                    frecuencia = 1;
+                }
+                if($('#contrato_pagoFrecuencia_1').is(':checked')){
+                    frecuencia = 2;
+                }
+
+                $('#btnFraccionaPagosManual').prop("disabled", true);
+                $('#btnFraccionaPagosManual').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('contrato_fracciona_pagos_manual') }}",
+                    data: {
+                        'contratoId': '{{ app.request.get('id') }}',
+                        'pagos': numPagos,
+                        'frecuencia': frecuencia,
+                        'dia': diaPago
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+
+                            recuperaPagos();
+
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_AVISO_FRACCIONADO{% endtrans %}',
+                                text: '{% trans from "messages" %}TRANS_AVISO_FRACCIONADO_MSG{% endtrans %}',
+                                icon: 'icon-checkmark3',
+                                type: 'success'
+                            });
+
+                            $('#btnFraccionaPagosManual').prop("disabled", false);
+                            $('#btnFraccionaPagosManual').html("<b><i class='icon-plus2'></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+                        }else{
+                            new PNotify({
+                                title: '{% trans from "messages" %}TRANS_ATENCION{% endtrans %}',
+                                text: '{% trans %}TRANS_SIN_SERVICIOS{% endtrans %}',
+                                icon: 'icon-warning22',
+                                type: 'warning'
+                            });
+
+                            $('#btnFraccionaPagosManual').prop("disabled", false);
+                            $('#btnFraccionaPagosManual').html("<b><i class='icon-equalizer2'></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}");
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnFraccionaPagosManual').prop("disabled", false);
+                        $('#btnFraccionaPagosManual').html("<b><i class='icon-plus2'></i></b>{% trans %}TRANS_AÑADIR_PAGO{% endtrans %}");
+                    }
+                });
+            });
+
+            $('#copiarDatosEmpresa').click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('empresa_busca_datos_autonomo') }}",
+                    data: {
+                        'empresaId': $('#contrato_empresa').val()
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if (data != "") {
+                            $('#contrato_nombreApellidos').val(data.nombre_representante);
+                            $('#contrato_dni').val(data.dni_representante);
+                            $('#contrato_calidad').val(data.cargo_representante);
+                        }
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            });
+
+        });
+
+        function recuperarTarifaReconocimiento(){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_tarifas') }}",
+                data: {
+                    'tipo': 1,
+                    'contratoId': '{{ app.request.get('id') }}'
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#tarifaRecServ").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans from 'contratos' %}TRANS_TIPO_RECONOCIMIENTO_SERVICIO{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IMPORTE{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IVA{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    table += "</tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr  class="grid-row-cells even"> ';
+                             }
+
+                            if (item["descripcion"] != undefined) {
+                                table += '<td>' + item["descripcion"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe"] != undefined) {
+                                table += '<td>' + parseFloat(item["importe"]).toFixed(2)+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeIva"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeIva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" data-tipo="1" class="list-icons-item" onclick="recuperaTarifa('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_tarifa"><i class="icon-pencil7"></i></a>';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarTarifaReco"><i class="icon-trash"></i></a>';
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='4' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#tarifaRecServ").html("");
+                    $("#tarifaRecServ").html(table);
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperarTarifaAnaliticas(){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_tarifas') }}",
+                data: {
+                    'tipo': 2,
+                    'contratoId': '{{ app.request.get('id') }}'
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#tarifaAnaliticas").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans from 'contratos' %}TRANS_TIPO_RECONOCIMIENTO_SERVICIO{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IMPORTE{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IVA{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    table += "<tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr  class="grid-row-cells even"> ';
+                             }
+
+                            if (item["descripcion"] != undefined) {
+                                table += '<td>' + item["descripcion"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe"] != undefined) {
+                                table += '<td>' + parseFloat(item["importe"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importeIva"] != undefined) {
+                                table += '<td>' + parseFloat(item["importeIva"]).toFixed(2)+ ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" data-tipo="2" class="list-icons-item" onclick="recuperaTarifa('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_tarifa"><i class="icon-pencil7"></i></a>';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarTarifaAna"><i class="icon-trash"></i></a>';
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='4' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#tarifaAnaliticas").html("");
+                    $("#tarifaAnaliticas").html(table);
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaServicios(){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_servicios') }}",
+                data: {
+                    'contratoId': '{{ app.request.get('id') }}'
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#serviciosContratados").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans from 'contratos' %}TRANS_CONCEPTO{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_PRECIO_SERVICIO_RENOVACION{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_PRECIO_SERVICIO{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    table += "<tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr  class="grid-row-cells even"> ';
+                             }
+
+                            {#if (item["tipo_id"] != undefined) {#}
+                            {#    if(item["tipo_id"] == "1") {#}
+                            {#        table += '<td><span class="badge badge-success">{% trans %}TRANS_SERV_PREV{% endtrans %}</span></td>';#}
+                            {#    }#}
+
+                            {#    if(item["tipo_id"] == "2") {#}
+                            {#        table += '<td><span class="badge badge-primary">{% trans %}TRANS_SERV_MED{% endtrans %}</span></td>';#}
+                            {#    }#}
+
+                            {#    if(item["tipo_id"] == "3") {#}
+                            {#        table += '<td><span class="badge badge-warning">{% trans %}TRANS_SERVICIO_OTRO{% endtrans %}</span></td>';#}
+                            {#    }#}
+                            {#}#}
+                            {#else {#}
+                            {#    table += '<td></td>';#}
+                            {#}#}
+
+                            if (item["descripcion"] != undefined) {
+                                table += '<td>' + item["descripcion"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["precio"] != undefined) {
+                                table += '<td>' + item["precio"] + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["precio_renovacion"] != undefined) {
+                                table += '<td>' + item["precio_renovacion"] + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item" onclick="recuperaServicio('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_servicio"><i class="icon-pencil7"></i></a>';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarServicio"><i class="icon-trash"></i></a>';
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='3' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#serviciosContratados").html("");
+                    $("#serviciosContratados").html(table);
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaTarifa(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_tarifa') }}",
+                data: {
+                    'tarifaContratoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+
+                        $('#idTarifaEditar').val(data.id);
+                        $('#tipoTarifaEditar').val(data.tipo);
+                        $('#conceptoTarifaEditar').val(data.concepto);
+                        $('#importeTarifaEditar').val(data.importe);
+                        $('#importeIvaTarifaEditar').val(data.iva);
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaServicio(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_servicio') }}",
+                data: {
+                    'servicioContratadoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        $('#idServicioContratadoEditar').val(data.id);
+                        $('#servicioContratadoEditar').val(data.descripcion).change();
+                        $('#importeServicioEditar').val(data.importe);
+                        $('#importeRenovacionServicioEditar').val(data.importerenovacion);
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaPago(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_pago') }}",
+                data: {
+                    'contratoPagoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        $('#idPagoEditar').val(data.id);
+                        $('#pagoConceptoEditar').val(data.concepto);
+                        $('#pagoVencimiento').val(data.vencimiento);
+                        $('#pagoSinIvaEditar').val(data.sinIva);
+                        $('#pagoExentoEditar').val(data.exento);
+                        $('#pagoSujetoEditar').val(data.sujeto);
+                        $('#pagoIvaEditar').val(data.iva);
+                        $('#pagoTotalEditar').val(data.total);
+
+                        if(data.facturado == true){
+                            $('#uniform-pagoFacturado span').addClass('checked');
+                        }else{
+                            $('#uniform-pagoFacturado span').removeClass('checked');
+                        }
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaPagos(){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_recupera_pagos') }}",
+                data: {
+                    'contratoId': '{{ app.request.get('id') }}'
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#fraccionamientPagos").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+
+                    var table = '<thead><tr class="bg-grey-300"><th>{% trans from 'contratos' %}TRANS_CONCEPTO{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_VENCIMIENTO{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_EXENTO_IVA{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_SUJETO_IVA{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IMPORTE_IVA{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_IMPORTE_TOTAL{% endtrans %}</th><th>{% trans from 'contratos' %}TRANS_FACTURADO{% endtrans %}</th><th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th></tr></thead>';
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item["texto_pago"] != undefined) {
+                                table += '<td>' + item["texto_pago"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["vencimiento"] != undefined) {
+                                table += '<td>' + item["vencimiento"]+ '</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe_sin_iva"] != undefined) {
+                                table += '<td>' + item["importe_sin_iva"] + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe_exento_iva"] != undefined) {
+                                var importeExentoIva = item["importe_exento_iva"].replace('.', ',');
+                                importeExentoIva = parseFloat(item["importe_exento_iva"]).toFixed(2)+'';
+                                importeExentoIva = importeExentoIva.replace('.', ',');
+                                table += '<td>' + importeExentoIva + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe_sujeto_iva"] != undefined) {
+                                var importeSujetoIva = item["importe_sujeto_iva"].replace('.', ',');
+                                importeSujetoIva = parseFloat(item["importe_sujeto_iva"]).toFixed(2)+'';
+                                importeSujetoIva = importeSujetoIva.replace('.', ',');
+                                table += '<td>' + importeSujetoIva + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe_iva"] != undefined) {
+                                var importeIva = item["importe_iva"].replace('.', ',');
+                                importeIva = parseFloat(item["importe_iva"]).toFixed(2)+'';
+                                importeIva = importeIva.replace('.', ',');
+                                table += '<td>' + importeIva + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["importe_total"] != undefined) {
+                                var importeTotal = item["importe_total"].replace('.', ',');
+                                importeTotal = parseFloat(item["importe_total"]).toFixed(2)+'';
+                                importeTotal = importeTotal.replace('.', ',');
+                                table += '<td>' + importeTotal + ' €</td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            if (item["facturado"] == true) {
+                                table += '<td><span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span></td>';
+                            }
+                            else {
+                                table += '<td><span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>';
+                            }
+
+                            if (item["id"] != undefined) {
+                                table += '<td><div class="list-icons">';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item" onclick="recuperaPago('+ item["id"]+');" data-toggle="modal" data-target="#modal_editar_pago"><i class="icon-pencil7"></i></a>';
+                                table += '<a href="#" data-id="' + item["id"]+ '" target="_self" class="list-icons-item eliminarPago"><i class="icon-trash"></i></a>';
+                                table += '</div></td>';
+                            }
+                            else {
+                                table += '<td></td>';
+                            }
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                        table += "</tbody>";
+
+                    }else{
+                        table += "<tr><td colspan='9' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    $("#fraccionamientPagos").html("");
+                    $("#fraccionamientPagos").html(table);
+
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteServicio(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_delete_servicio') }}",
+                data: {
+                    'servicioContratadoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+
+                        recuperaServicios();
+
+                        new PNotify({
+                            title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                            icon: 'icon-checkmark3',
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deletePago(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_delete_pago') }}",
+                data: {
+                    'pagoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+
+                        recuperaPagos();
+
+                        new PNotify({
+                            title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                            icon: 'icon-checkmark3',
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteTarifa(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('contrato_delete_tarifa') }}",
+                data: {
+                    'tarifaContratoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+
+                        if(tipo == 1){
+                            recuperarTarifaReconocimiento();
+                        }
+
+                        if(tipo == 2){
+                            recuperarTarifaAnaliticas();
+                        }
+
+                        new PNotify({
+                            title: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO{% endtrans %}',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ELIMINADO_MSG{% endtrans %}',
+                            icon: 'icon-checkmark3',
+                            type: 'success'
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la tarifa de reconocimientos medicos seleccionada
+        $(document).on('click', 'a.eliminarServicio', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_SERVICIO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteServicio(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina el pago seleccionado
+        $(document).on('click', 'a.eliminarPago', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_PAGO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deletePago(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la tarifa de analiticas seleccionada
+        $(document).on('click', 'a.eliminarTarifaReco', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_TARIFA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteTarifa(id, 1)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina el servicio seleccionado
+        $(document).on('click', 'a.eliminarTarifaAna', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_TARIFA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteTarifa(id, 2)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+
+        {{ form_start(form) }}
+
+        <div class="card-body">
+
+            <ul class="nav nav-tabs nav-tabs-highlight">
+
+
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_3{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_4{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab5" class="nav-link" data-toggle="tab">{% trans %}TRANS_MENU_5{% endtrans %}</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_MENU_1{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_2{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_3{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_4{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab5" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_MENU_5{% endtrans %}</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.cancelado) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.facturado) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.empresa) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.contrato) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.origen) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.referencia) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.fechainicio) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.fechavencimiento) }}
+                        </div>
+                        <div class="col-lg-4">
+                            {{ form_row(form.duracionRenovacion) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.contratoModalidad) }}
+                        </div>
+                        <div class="col-lg-6">
+                            {{ form_row(form.faseSituacion) }}
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_FIRMANTE{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <a href="#" id="copiarDatosEmpresa" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'contratos' %}TRANS_COPIAR_DATOS_EMPRESA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.nombreApellidos) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.dni) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.calidad) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CENTROS_TRABAJOS_ENGLOBADOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.centro) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_SERVICIOS_CONTRATADOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_servicio">{% trans from 'messages' %}TRANS_AÑADIR_SERVICIO{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="serviciosContratados">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+{#                                            <th>{% trans %}TRANS_TIPO_REGISTRO{% endtrans %}</th>#}
+                                            <th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_PRECIO_SERVICIO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_PRECIO_SERVICIO_RENOVACION{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if serviciosContratados is not empty %}
+                                            {% for sc in serviciosContratados %}
+                                                <tr>
+                                                    {% if sc.servicio is not null %}
+                                                        <td>{{ sc.servicio }}</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                    <td>{{ sc.precio|number_format(2, ',', '.') }} €</td>
+                                                    {% if sc.precio_renovacion is not empty %}
+                                                        <td>{{ sc.precio_renovacion|number_format(2, ',', '.') }} €</td>
+                                                    {% else %}
+                                                        <td></td>
+                                                    {% endif %}
+                                                    <td>
+                                                        <div class="list-icons">
+                                                            <a href="#" data-id="{{ sc.id }}" target="_self" class="list-icons-item" onclick="recuperaServicio('{{ sc.id }}');" data-toggle="modal" data-target="#modal_editar_servicio"><i class="icon-pencil7"></i></a>
+                                                            <a href="#" data-id="{{ sc.id }}" target="_self" class="list-icons-item eliminarServicio"><i class="icon-trash"></i></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_NUMERO_TRABAJADORES_CONCERTADOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.trabajadoresPrevencionTecnica) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.trabajadoresVigilanciaSalud) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.trabajadoresOtros) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_VISITAS_INCLUIDAS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                {{ form_row(form.visitasConcertadas) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_IMPORTE_SEGUN_SERVICIOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                {{ form_row(form.importeContrato, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.importeExentoIva, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.importeSujetoIva, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-3">
+                                {{ form_row(form.importeIva, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PRECIOS_POR_TRABAJADOR_RECONOCIMIENTOS_MEDICOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_tarifa_reco_serv">{% trans from 'messages' %}TRANS_AÑADIR_TARIFA{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="tarifaRecServ">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_TIPO_RECONOCIMIENTO_SERVICIO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_IMPORTE{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_IVA{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                       {% if tarifaContratoReconocimientosServicios is not empty %}
+                                           {% for tcrs in tarifaContratoReconocimientosServicios %}
+                                               <tr>
+                                                   <td>{{ tcrs.descripcion }}</td>
+                                                   <td>{{ tcrs.importe|number_format(2, ',', '.') }} €</td>
+                                                   <td>{{ tcrs.importeIva }} €</td>
+                                                   <td>
+                                                       <div class="list-icons">
+                                                           <a href="#" data-id="{{ tcrs.id }}" target="_self" data-tipo="1" class="list-icons-item" onclick="recuperaTarifa('{{ tcrs.id }}');" data-toggle="modal" data-target="#modal_editar_tarifa"><i class="icon-pencil7"></i></a>
+                                                           <a href="#" data-id="{{ tcrs.id }}" target="_self" class="list-icons-item eliminarTarifaReco"><i class="icon-trash"></i></a>
+                                                       </div>
+                                                   </td>
+                                               </tr>
+                                           {% endfor %}
+                                        {% else %}
+                                           <tr>
+                                               <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                           </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+{#                    <fieldset>#}
+{#                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PRECIOS_POR_TRABAJADOR_ANALITICAS{% endtrans %}</legend>#}
+{#                        <div class="row">#}
+{#                            <div class="col-lg-12">#}
+{#                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_tarifa_analiticas">{% trans from 'messages' %}TRANS_AÑADIR_TARIFA{% endtrans %}<b><i class="icon-plus3"></i></b></a>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <br/>#}
+{#                        <div class="row">#}
+{#                            <div class="col-lg-12">#}
+{#                                <div class="table-bordered">#}
+{#                                    <table class="table" id="tarifaAnaliticas">#}
+{#                                        <thead>#}
+{#                                        <tr class="bg-grey-300">#}
+{#                                            <th>{% trans %}TRANS_TIPO_ANALITICA{% endtrans %}</th>#}
+{#                                            <th>{% trans %}TRANS_IMPORTE{% endtrans %}</th>#}
+{#                                            <th>{% trans %}TRANS_IVA{% endtrans %}</th>#}
+{#                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>#}
+{#                                        </tr>#}
+{#                                        </thead>#}
+{#                                        <tbody>#}
+{#                                        {% if tarifaContratoAnaliticas is not empty %}#}
+{#                                            {% for tca in tarifaContratoAnaliticas %}#}
+{#                                                <tr>#}
+{#                                                    <td>{{ tca.descripcion }}</td>#}
+{#                                                    <td>{{ tca.importe|number_format(2, ',', '.') }} €</td>#}
+{#                                                    <td>{{ tca.importeIva }} €</td>#}
+{#                                                    <td>#}
+{#                                                        <div class="list-icons">#}
+{#                                                            <a href="#" data-id="{{ tca.id }}" target="_self" data-tipo="2" class="list-icons-item" onclick="recuperaTarifa('{{ tca.id }}');" data-toggle="modal" data-target="#modal_editar_tarifa"><i class="icon-pencil7"></i></a>#}
+{#                                                            <a href="#" data-id="{{ tca.id }}" target="_self" class="list-icons-item eliminarTarifaAna"><i class="icon-trash"></i></a>#}
+{#                                                        </div>#}
+{#                                                    </td>#}
+{#                                                </tr>#}
+{#                                            {% endfor %}#}
+{#                                        {% else %}#}
+{#                                            <tr>#}
+{#                                                <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>#}
+{#                                            </tr>#}
+{#                                        {% endif %}#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                </div>#}
+
+{#                            </div>#}
+{#                        </div>#}
+{#                    </fieldset>#}
+
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_FRACCIONAMIENTO_PAGOS{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5>{% trans %}TRANS_FRACCIONAMIENTO_PAGOS_AUTO{% endtrans %}</h5>
+                                <button type="button" id="btnFraccionaPagosAutomatico" class="btn btn-labeled btn-labeled-left bg-orange"><b><i class="icon-equalizer2"></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}</button>
+                            </div>
+                            <div class="col-lg-9">
+                                <h5>{% trans %}TRANS_FRACCIONAMIENTO_MANUAL{% endtrans %}</h5>
+                                <div class="row">
+                                    <div class="col-lg-2">
+                                        {{ form_row(form.numeroPagos, {'attr': {'class': 'type_text_to_number'}}) }}
+                                    </div>
+                                    <div class="col-lg-2">
+                                        {{ form_row(form.pagoDia) }}
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>De cada:</label>
+                                        {{ form_row(form.pagoFrecuencia) }}
+                                    </div>
+                                </div>
+                                <button type="button" id="btnFraccionaPagosManual" class="btn btn-labeled btn-labeled-left bg-brown"><b><i class="icon-equalizer2"></i></b>{% trans %}TRANS_FRACCIONAR{% endtrans %}</button>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="fraccionamientPagos">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_CONCEPTO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_VENCIMIENTO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_EXENTO_IVA{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_SUJETO_IVA{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_IMPORTE_IVA{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_IMPORTE_TOTAL{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_FACTURADO{% endtrans %}</th>
+                                            <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if pagosContrato is not empty %}
+                                            {% for p in pagosContrato %}
+                                                <tr>
+                                                    <td>{{ p.textoPago }}</td>
+                                                    <td>{{ p.vencimiento|date('d/m/Y') }}</td>
+                                                    <td>{{ p.importeSinIva|number_format(3, ',', '.') }} €</td>
+                                                    <td>{{ p.importeExentoIva|number_format(3, ',', '.') }} €</td>
+                                                    <td>{{ p.importeSujetoIva|number_format(2, ',', '.') }} €</td>
+                                                    <td>{{ p.importeIva|number_format(2, ',', '.') }} €</td>
+                                                    <td>{{ p.importeTotal|number_format(2, ',', '.') }} €</td>
+                                                    {% if p.facturado == false %}
+                                                        <td><span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span></td>
+                                                    {% else %}
+                                                        <td><span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span></td>
+                                                    {% endif %}
+                                                    <td>
+                                                        <div class="list-icons">
+                                                            <a href="#" data-id="{{ p.id }}" target="_self" data-tipo="2" class="list-icons-item" onclick="recuperaPago('{{ p.id }}');" data-toggle="modal" data-target="#modal_editar_pago"><i class="icon-pencil7"></i></a>                                                            <a href="#" data-id="{{ p.id }}" target="_self" class="list-icons-item eliminarPago"><i class="icon-trash"></i></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="9" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
+
+{#                        <div class="row">#}
+{#                            <div class="col-lg-12">#}
+{#                                <strong class="text-blue">{% trans %}TRANS_TOTAL_SIN_IVA{% endtrans %}</strong> 0 €#}
+{#                                <strong class="text-blue">{% trans %}TRANS_EXENTO_IVA{% endtrans %}</strong> 0 €#}
+{#                                <strong class="text-blue">{% trans %}TRANS_SUJETO_IVA{% endtrans %}</strong> 0 €#}
+{#                                <strong class="text-blue">{% trans %}TRANS_PAGOS_IVA{% endtrans %}</strong> 0 €#}
+{#                                <strong class="text-blue">{% trans %}TRANS_TOTAL{% endtrans %}</strong> 0 €#}
+{#                            </div>#}
+{#                        </div>#}
+
+                    </fieldset>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_TEXTO_FORMA_PAGO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                               {{ form_row(form.textoFormaPago) }}
+                            </div>
+                            {#                            <div class="col-lg-6">#}
+                            {#                                <button type="button" class="btn btn-labeled btn-labeled-left bg-orange"><b><i class="icon-drawer-in"></i></b>{% trans %}TRANS_OBTENER_FORMA_PAGO_AUTO{% endtrans %}</button>#}
+                            {#                            </div>#}
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div class="tab-pane fade" id="tab5">
+
+                    <fieldset class="esconder">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DETALLE_COMISIONES_SERVICIO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-bordered">
+                                    <table class="table" id="comisionesServicio">
+                                        <thead>
+                                        <tr class="bg-grey-300">
+                                            <th>{% trans %}TRANS_SERVICIO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_IMPORTE{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_COMISION_COL{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_COL_2_AÑO{% endtrans %}</th>
+                                            <th>{% trans %}TRANS_COMISION_COMERCIAL{% endtrans %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan="5" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <br/>
+
+                    <div class="text-center">
+                        <button type="button" class="btn btn-labeled btn-labeled-left bg-brown"><b><i class="icon-arrow-down7"></i></b>{% trans %}TRANS_OBTENER_COMISIONES_CONTRATO{% endtrans %}</button>
+                    </div>
+
+                    <br/>
+
+                    <fieldset>
+                        <legend class="text-uppercase font-size-sm font-weight-bold esconder">{% trans %}TRANS_IMPORTE_COMISIONES_CALC_AUTO{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.contratoComiCol) }}
+                                {{ form_row(form.comision1aCol, {'attr': {'class': 'type_text_to_number'}}) }}
+                                {{ form_row(form.comisionASucCol, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.contratoComiTec) }}
+                                {{ form_row(form.comision1aTec, {'attr': {'class': 'type_text_to_number'}}) }}
+                                {{ form_row(form.comisionASucTec, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.contratoComiCom) }}
+                                {{ form_row(form.comision1aCom, {'attr': {'class': 'type_text_to_number'}}) }}
+                                {{ form_row(form.comisionASucCom, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="text-center esconder">
+                        <button type="button" class="btn btn-labeled btn-labeled-left bg-brown" id="btnCopyComisiones"><b><i class="icon-arrow-down7"></i></b>{% trans %}TRANS_COPIAR_COMISIONES{% endtrans %}</button>
+                    </div>
+
+                    <fieldset class="esconder">
+                        <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_IMPORTE_COMISIONES_APLICAR{% endtrans %}</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.contratoComiColCopy) }}
+                                {{ form_row(form.comision1aColCopy, {'attr': {'class': 'type_text_to_number'}}) }}
+                                {{ form_row(form.comisionASucColCopy, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.contratoComiTecCopy) }}
+                                {{ form_row(form.comision1aTecCopy, {'attr': {'class': 'type_text_to_number'}}) }}
+                                {{ form_row(form.comisionASucTecCopy, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.contratoComiComCopy) }}
+                                {{ form_row(form.comision1aComCopy, {'attr': {'class': 'type_text_to_number'}}) }}
+                                {{ form_row(form.comisionASucComCopy, {'attr': {'class': 'type_text_to_number'}}) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').editContratoSn is defined and app.session.get('privilegiosRol').editContratoSn is not null %}
+                {% if app.session.get('privilegiosRol').editContratoSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+    <!-- Modal añadir tarifa reconocimiento o servicio -->
+    <div id="modal_tarifa_reco_serv" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_TARIFA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <input type="text" id="conceptoTarifaRecoServ" class="form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE{% endtrans %}</label>
+                    <input type="text" id="importeTarifaRecoServ" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="importeIvaTarifaRecoServ" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddTarifaReconocimientoServicio">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir tarifa reconocimiento o servicio -->
+
+    <!-- Modal añadir tarifa analiticas -->
+    <div id="modal_tarifa_analiticas" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_TARIFA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <input type="text" id="conceptoTarifaAnaliticas" class="form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE{% endtrans %}</label>
+                    <input type="text" id="importeTarifaAnaliticas" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="importeIvaTarifaAnaliticas" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddTarifaAnaliticas">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir tarifa analiticas -->
+
+    <!-- Modal editar tarifa -->
+    <div id="modal_editar_tarifa" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_EDITAR_TARIFA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <input type="text" id="conceptoTarifaEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE{% endtrans %}</label>
+                    <input type="text" id="importeTarifaEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IVA{% endtrans %}</label>
+                    <input type="text" id="importeIvaTarifaEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control"  />
+                    <input type="hidden" id="idTarifaEditar"/>
+                    <input type="hidden" id="tipoTarifaEditar"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateTarifa">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal editar tarifa -->
+
+    <!-- Modal añadir servicio -->
+    <div id="modal_añadir_servicio" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_SERVICIO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <select id="servicioContratado" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listServicios is not empty %}
+                            {% for ls in listServicios %}
+                                <option value="{{ ls.id }}">{{ ls.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <label>{% trans %}TRANS_PRECIO_SERVICIO{% endtrans %}</label>
+                    <input type="text" id="importeServicio" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_PRECIO_SERVICIO_RENOVACION{% endtrans %}</label>
+                    <input type="text" id="importeRenovacionServicio" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <input type="hidden" id="idServicioContratado"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddServicio">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir servicio -->
+
+    <!-- Modal añadir servicio -->
+    <div id="modal_editar_servicio" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_EDITAR_SERVICIO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <select id="servicioContratadoEditar" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listServicios is not empty %}
+                            {% for ls in listServicios %}
+                                <option value="{{ ls.id }}">{{ ls.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <label>{% trans %}TRANS_PRECIO_SERVICIO{% endtrans %}</label>
+                    <input type="text" id="importeServicioEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_PRECIO_SERVICIO_RENOVACION{% endtrans %}</label>
+                    <input type="text" id="importeRenovacionServicioEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <input type="hidden" id="idServicioContratadoEditar"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateServicio">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir servicio -->
+
+    <!-- Modal editar pago -->
+    <div id="modal_editar_pago" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_EDITAR_PAGO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CONCEPTO{% endtrans %}</label>
+                    <input type="text" id="pagoConceptoEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_VENCIMIENTO{% endtrans %}</label>
+                    <input type="date" id="pagoVencimiento" class="form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE_SIN_IVA{% endtrans %}</label>
+                    <input type="text" id="pagoSinIvaEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_EXENTO_IVA{% endtrans %}</label>
+                    <input type="text" id="pagoExentoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_SUJETO_IVA{% endtrans %}</label>
+                    <input type="text" id="pagoSujetoEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE_IVA{% endtrans %}</label>
+                    <input type="text" id="pagoIvaEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <label>{% trans %}TRANS_IMPORTE_TOTAL{% endtrans %}</label>
+                    <input type="text" id="pagoTotalEditar" min="0" max="999999999.9999" step="0.001" class="type_text_to_number form-control" />
+
+                    <br/>
+                    <br/>
+
+                    <div class="form-check">
+                        <input type="checkbox" id="pagoFacturado" name="pagoFacturado" class="form-check-input-styled form-check-input" />
+                        <label class="form-check-label" for="pagoFacturado">{% trans %}TRANS_FACTURADO{% endtrans %}</label>
+                    </div>
+
+                    <input type="hidden" id="idPagoEditar"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdatePago">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal editar pago -->
+
+{% endblock %}
+
+
+

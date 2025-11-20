@@ -1,0 +1,57 @@
+{% set page = app.request.attributes.get('_route') %}
+<!-- Sidebar content -->
+<div class="sidebar-content">
+
+    <!-- Main navigation -->
+    <div class="card card-sidebar-mobile">
+        <ul class="nav nav-sidebar" data-nav-type="accordion">
+
+            <!-- Main -->
+{#            <li class="nav-item-header"><div class="text-uppercase font-size-xs line-height-xs">Main</div> <i class="icon-menu" title="Main"></i></li>#}
+            <li class="nav-item">
+{#                <a href="{{ path('dashboard') }}" class="nav-link {% if page starts with 'dashboard' %}active{% endif %}">#}
+{#                    <i class="icon-home4"></i>#}
+{#                    <span>Dashboard</span>#}
+{#                </a>#}
+                <a href="{{ path('certificaciones_show') }}" class="nav-link {% if page starts with 'certificaciones_' %}active{% endif %}">
+                    <i class="icon-file-text2"></i>
+                    <span>{% trans %}TRANS_CERTIFICACIONES{% endtrans %}</span>
+                </a>
+                <a href="{{ path('contrato_show') }}" class="nav-link {% if page starts with 'contrato_' %}active{% endif %}">
+                    <i class="icon-file-empty"></i>
+                    <span>{% trans %}TRANS_CONTRATOS{% endtrans %}</span>
+                </a>
+                <a href="{{ path('factura_show') }}" class="nav-link {% if page starts with 'factura_' %}active{% endif %}">
+                    <i class="icon-file-stats"></i>
+                    <span>{% trans %}TRANS_FACTURAS{% endtrans %}</span>
+                </a>
+                <a href="{{ path('evaluacion_show') }}" class="nav-link {% if page starts with 'evaluacion_' %}active{% endif %}">
+                    <i class="icon-list3"></i>
+                    <span>{% trans %}TRANS_EVALUACIONES{% endtrans %}</span>
+                </a>
+                <a href="{{ path('revision_show') }}" class="nav-link {% if page starts with 'revision_' %}active{% endif %}">
+                    <i class="icon-clipboard2"></i>
+                    <span>{% trans %}TRANS_REVISIONES{% endtrans %}</span>
+                </a>
+                <a href="{{ path('manualvs_show') }}" class="nav-link {% if page starts with 'manualvs_' %}active{% endif %}">
+                    <i class="icon-folder"></i>
+                    <span>{% trans %}TRANS_MANUAL_VS{% endtrans %}</span>
+                </a>
+                <a href="{{ path('formacion_show') }}" class="nav-link {% if page starts with 'formacion_' %}active{% endif %}">
+                    <i class="icon-stack2"></i>
+                    <span>{% trans %}TRANS_FORMACION{% endtrans %}</span>
+                </a>
+                <a href="{{ path('documentos_adicionales_show') }}" class="nav-link {% if page starts with 'documentos_adicionales_' %}active{% endif %}">
+                    <i class="icon-stack"></i>
+                    <span>{% trans %}TRANS_DOCUMENTOS_ADDICIONALES{% endtrans %}</span>
+                </a>
+            </li>
+
+            <!-- /main -->
+
+        </ul>
+    </div>
+    <!-- /main navigation -->
+
+</div>
+<!-- /sidebar content -->

@@ -1,0 +1,281 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'puestotrabajoprotocolocuestionario' %}
+
+{% block title %} {% trans %}TRANS_PUESTO_TRABAJO_PROTOCOLOS_CUESTIONARIOS{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+
+{% block card %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            var arrayDataPuestoTrabajoProtocolo = [];
+            var arrayDataProtocolo = [];
+
+            $.extend( $.fn.dataTable.defaults, {
+                autoWidth: true,
+                columnDefs: [{
+                    width: 100,
+                }],
+                ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+            });
+
+            {% for ptp in puestoTrabajoProtocolo %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is defined and app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is not null %}
+                    {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn %}
+                        actions += '<a href="{{ path('puesto_trabajo_protocolo_cuestionario_puesto_trabajo_protocolo_update', { "empresaId": ptp.empresaid, "puestoTrabajoId": ptp.puestotrabajoid }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                var actualizado;
+                {% if ptp.actualizado == true %}
+                    actualizado = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+                {% else %}
+                    actualizado = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+                {% endif %}
+
+                array.push(actions, '{{ ptp.empresa }}', '{{ ptp.descripcion }}', actualizado);
+                arrayDataPuestoTrabajoProtocolo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-puestoTrabajoProtocolo').DataTable({
+                data: arrayDataPuestoTrabajoProtocolo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% for p in protocolos %}
+                var array = [];
+                var actions = '<div class="list-icons">';
+
+                {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is defined and app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is not null %}
+                    {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn %}
+                        actions += '<a href="{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_update', { "id": p.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is defined and app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is not null %}
+                    {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn %}
+                        actions += '<a href="#" data-id="{{ p.id }}" class="list-icons-item eliminarProtocolo" target="_self"><i class="icon-trash"></i></a>';
+                    {% endif %}
+                {% endif %}
+
+                actions += '</div>';
+
+                array.push(actions, '{{ p.descripcion }}', '{{ p.descripcionCa }}');
+                arrayDataProtocolo.push(array);
+            {% endfor %}
+
+            $('.datatable-export-excel-protocolo').DataTable({
+                data: arrayDataProtocolo,
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+        });
+
+        function deleteProtocolo(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_delete') }}",
+                data: {
+                    'protocoloId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el protocolo seleccionado
+        $(document).on('click', 'a.eliminarProtocolo', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_PROTOCOLO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteProtocolo(id)
+                    }
+                }
+            });
+        });
+
+        function deletePuestoTrabajoProtocolo(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('puesto_trabajo_protocolo_cuestionario_puesto_trabajo_protocolo_delete') }}",
+                data: {
+                    'puestoTrabajoProtocoloId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el puesto trabajo - protocolo seleccionado
+        $(document).on('click', 'a.eliminarPuestoTrabajoProtocolo', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_PUESTO_TRABAJO_PROTOCOLO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deletePuestoTrabajoProtocolo(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header header-elements-inline">
+                        <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_PROTOCOLOS{% endtrans %}</h3>
+                        {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                            {% if app.session.get('privilegiosRol').protocoloSn %}
+                                <a href="{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div id="datatable" class="dataTables_wrapper no-footer">
+                            <div class="datatable-scroll">
+                                <table class="table datatable-export-excel-protocolo dataTable no-footer" id="protocolo" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                    <thead>
+                                    <tr class="bg-grey-300" role="row">
+                                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="ProtocoloEs" aria-sort="ascending">{% trans %}TRANS_PROTOCOLO_ES{% endtrans %}</th>
+                                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="ProtocoloCa" aria-sort="ascending">{% trans %}TRANS_PROTOCOLO_CA{% endtrans %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header header-elements-inline">
+                    <h3 style="text-align: center; font-weight: bolder;">{% trans %}TRANS_PUESTO_TRABAJO_PROTOCOLO{% endtrans %}</h3>
+{#                    {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is defined and app.session.get('privilegiosRol').puestoTrabajoProtocoloSn is not null %}#}
+{#                        {% if app.session.get('privilegiosRol').puestoTrabajoProtocoloSn %}#}
+{#                            <a href="{{ path('puesto_trabajo_protocolo_cuestionario_puesto_trabajo_protocolo_add') }}" class="btn btn-labeled btn-labeled-left bg-grey-300">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+                </div>
+                <div class="card-body">
+                    <div id="datatable" class="dataTables_wrapper no-footer">
+                        <div class="datatable-scroll">
+                            <table class="table datatable-export-excel-puestoTrabajoProtocolo dataTable no-footer" id="puestoTrabajoProtocolo" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100% !important;">
+                                <thead>
+                                <tr class="bg-grey-300" role="row">
+                                    <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions" style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="PuestoTrabajo" aria-sort="ascending">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}</th>
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Actualizado">{% trans %}TRANS_ACTUALIZADO{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

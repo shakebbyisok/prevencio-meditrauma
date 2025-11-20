@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_GRUPOS_EMPRESAS</source>
+                <target>Grupos de empresas</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Listado</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NOMBRE</source>
+                <target>Nombre</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_DESCRIPCION</source>
+                <target>Descripcion</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_GRUPO_EMPRESA</source>
+                <target>Grupo de empresa</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_MENU_1</source>
+                <target>Datos generales</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_MENU_2</source>
+                <target>Empresas</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_AÑADIR_EMPRESA</source>
+                <target>Añadir empresa</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_AÑADIR_GRUPO_EMPRESA</source>
+                <target>Añadir grupo de empresa</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

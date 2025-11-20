@@ -1,0 +1,670 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'puestotrabajoprotocolocuestionario' %}
+
+{% block arrow %}
+    <a href="{{ path('puesto_trabajo_protocolo_cuestionario') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>
+{% endblock %}
+{% block title %} {% trans %}TRANS_PROTOCOLO{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.descripcion }}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVO{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            //Boton que añade el cuestionario al protocolo
+            $('#btnAddCuestionario').click(function(){
+
+                if($('#listCuestionario').val() == ""){
+                    $('#listCuestionario').focus();
+                    return false;
+                }
+
+                $('#btnAddCuestionario').prop("disabled", true);
+                $('#btnAddCuestionario').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_add') }}",
+                    data: {
+                        'protocoloId': '{{ app.request.get('id') }}',
+                        'cuestionarioId': $('#listCuestionario').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddCuestionario').prop("disabled", false);
+                        $('#btnAddCuestionario').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que modifica el cuestionario del protocolo
+            $('#btnUpdateCuestionario').click(function(){
+
+                if($('#listCuestionarioEdit').val() == ""){
+                    $('#listCuestionarioEdit').focus();
+                    return false;
+                }
+
+                $('#btnUpdateCuestionario').prop("disabled", true);
+                $('#btnUpdateCuestionario').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_update') }}",
+                    data: {
+                        'protocoloCuestionarioId': $('#cuestionarioEditId').val(),
+                        'cuestionarioId': $('#listCuestionarioEdit').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateCuestionario').prop("disabled", false);
+                        $('#btnUpdateCuestionario').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que añade la exploracion al protocolo
+            $('#btnAddExploracion').click(function(){
+
+                if($('#listExploracion').val() == ""){
+                    $('#listExploracion').focus();
+                    return false;
+                }
+
+                $('#btnAddExploracion').prop("disabled", true);
+                $('#btnAddExploracion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_add') }}",
+                    data: {
+                        'protocoloId': '{{ app.request.get('id') }}',
+                        'cuestionarioId': $('#listExploracion').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnAddExploracion').prop("disabled", false);
+                        $('#btnAddExploracion').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que modifica la exploracion del protocolo
+            $('#btnUpdateExploracion').click(function(){
+
+                if($('#listExploracionEdit').val() == ""){
+                    $('#listExploracionEdit').focus();
+                    return false;
+                }
+
+                $('#btnUpdateExploracion').prop("disabled", true);
+                $('#btnUpdateExploracion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_update') }}",
+                    data: {
+                        'protocoloCuestionarioId': $('#exploracionEditId').val(),
+                        'cuestionarioId': $('#listExploracionEdit').val(),
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateExploracion').prop("disabled", false);
+                        $('#btnUpdateExploracion').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+        });
+
+        function recuperaCuestionario(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_recupera') }}",
+                data: {
+                    'protocoloCuestionarioId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        $('#cuestionarioEditId').val(data.id);
+                        $('#listCuestionarioEdit').val(data.cuestionario).change();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function recuperaExploracion(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_recupera') }}",
+                data: {
+                    'protocoloCuestionarioId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data != null) {
+                        $('#exploracionEditId').val(data.id);
+                        $('#listExploracionEdit').val(data.cuestionario).change();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteCuestionarioExploracion(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_delete') }}",
+                data: {
+                    'protocoloCuestionarioId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el cuestionario seleccionado
+        $(document).on('click', 'a.eliminarCuestionario', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_CUESTIONARIO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteCuestionarioExploracion(id)
+                    }
+                }
+            });
+        });
+
+        //Boton que elimina la exploracion seleccionada
+        $(document).on('click', 'a.eliminarExploracion', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_EXPLORACION{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteCuestionarioExploracion(id)
+                    }
+                }
+            });
+        });
+
+        //Funcion que recupera las preguntas del cuestionario
+        function recuperaPreguntas(id){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('puesto_trabajo_protocolo_cuestionario_protocolo_cuestionario_preguntas_recupera') }}",
+                data: {
+                    'protocoloCuestionarioId': id
+                },
+                dataType: "JSON",
+                beforeSend: function (){
+                    $("#preguntas").block({
+                        message: '<i class="icon-spinner2 spinner"></i>',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+                    var table = '<thead><tr class="bg-grey-300"><th>Num.</th><th>{% trans from 'mantenimientoreconocimientos' %}TRANS_ORDEN{% endtrans %}</th><th>{% trans from 'mantenimientoreconocimientos' %}TRANS_GRUPO{% endtrans %}</th><th>{% trans from 'mantenimientoreconocimientos' %}TRANS_TEXTO_PREGUNTA{% endtrans %}</th><th>{% trans from 'mantenimientoreconocimientos' %}TRANS_TIPO_RESPUESTA{% endtrans %}</th></tr></thead>';
+
+                    table += "<tbody>";
+
+                    if(JSON.parse(data) != ""){
+                        var item = 1;
+
+                        $.each(JSON.parse(data), function (key, item) {
+
+                            if (item % 2 == 0) {
+                                 table += '<tr class="grid-row-cells odd"> ';
+                             }
+                             else {
+                                 table += '<tr  class="grid-row-cells even"> ';
+                             }
+
+                            table += '<td>' + item["id"]+ '</td>';
+                            table += '<td>' + item["orden"]+ '</td>';
+                            table += '<td>' + item["grupo"]+ '</td>';
+                            table += '<td>' + item["pregunta"]+ '</td>';
+                            table += '<td>' + item["tipo"]+ '</td>';
+
+                            item++;
+
+                            table += '</tr>';
+                        });
+
+                    }else{
+                        table += "<tr><td colspan='5' align='center'>{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>";
+                    }
+
+                    table += "</tbody>";
+
+                    $("#preguntas").html("");
+                    $("#preguntas").html(table);
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {{ form_row(form.descripcion) }}
+                </div>
+                <div class="col-lg-6">
+                    {{ form_row(form.descripcionCa) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4 style="font-weight: bolder;">{% trans %}TRANS_CUESTIONARIOS{% endtrans %}</h4>
+                    {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                        {% if app.session.get('privilegiosRol').protocoloSn %}
+                            {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_cuestionario">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                <br/>
+                                <br/>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    <div class="table-bordered">
+                        <table class="table" id="cuestionarios">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>{% trans %}TRANS_CUESTIONARIO{% endtrans %}</th>
+                                <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if cuestionarios is defined and cuestionarios is not empty %}
+                                {% for c in cuestionarios %}
+                                    <tr>
+                                        <td>{{ c.descripcion }}</td>
+                                        <td>
+                                            <div class="list-icons">
+                                                {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').protocoloSn %}
+                                                        <a href="#" data-id="{{ c.id }}" onclick="recuperaCuestionario('{{ c.id }}')" class="list-icons-item" data-toggle="modal" data-target="#modal_editar_cuestionario"><i class="icon-pencil7"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                <a href="#" onclick="recuperaPreguntas('{{ c.id }}')" class="list-icons-item" data-popup="tooltip" title="Ver preguntas" data-container="body"><i class="icon-select2"></i></a>
+
+                                                {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').protocoloSn %}
+                                                        <a href="#" data-id="{{ c.id }}" target="_self" class="list-icons-item eliminarCuestionario"><i class="icon-trash"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h4 style="font-weight: bolder;">{% trans %}TRANS_EXPLORACIONES{% endtrans %}</h4>
+                    {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                        {% if app.session.get('privilegiosRol').protocoloSn %}
+                            {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_añadir_exploracion">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+                                <br/>
+                                <br/>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    <div class="table-bordered">
+                        <table class="table" id="exploraciones">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>{% trans %}TRANS_EXPLORACION{% endtrans %}</th>
+                                <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if exploraciones is defined and exploraciones is not empty %}
+                                {% for e in exploraciones %}
+                                    <tr>
+                                        <td>{{ e.descripcion }}</td>
+                                        <td>
+                                            <div class="list-icons">
+                                                {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').protocoloSn %}
+                                                        <a href="#" data-id="{{ e.id }}" onclick="recuperaExploracion('{{ e.id }}')"  class="list-icons-item" data-toggle="modal" data-target="#modal_editar_exploracion"><i class="icon-pencil7"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                <a href="#" onclick="recuperaPreguntas('{{ e.id }}')" class="list-icons-item" data-popup="tooltip" title="Ver preguntas" data-container="body"><i class="icon-select2"></i></a>
+
+                                                {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                                                    {% if app.session.get('privilegiosRol').protocoloSn %}
+                                                        <a href="#" data-id="{{ e.id }}" target="_self" class="list-icons-item eliminarExploracion"><i class="icon-trash"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+            <br/>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 style="font-weight: bolder;">{% trans from 'mantenimientoreconocimientos' %}TRANS_PREGUNTAS{% endtrans %}</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-bordered">
+                        <table class="table" id="preguntas">
+                            <thead>
+                            <tr class="bg-grey-300">
+                                <th>Num.</th>
+                                <th>{% trans from 'mantenimientoreconocimientos' %}TRANS_GRUPO{% endtrans %}</th>
+                                <th>{% trans from 'mantenimientoreconocimientos' %}TRANS_ORDEN{% endtrans %}</th>
+                                <th>{% trans from 'mantenimientoreconocimientos' %}TRANS_TEXTO_PREGUNTA{% endtrans %}</th>
+                                <th>{% trans from 'mantenimientoreconocimientos' %}TRANS_TIPO_RESPUESTA{% endtrans %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center border-top-0">
+            {% if app.session.get('privilegiosRol').protocoloSn is defined and app.session.get('privilegiosRol').protocoloSn is not null %}
+                {% if app.session.get('privilegiosRol').protocoloSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal añadir cuestionario al protocolo -->
+    <div id="modal_añadir_cuestionario" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_CUESTIONARIO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CUESTIONARIO{% endtrans %}</label>
+                    <select id="listCuestionario" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listCuestionarios is defined and listCuestionarios is not empty %}
+                            {% for lc in listCuestionarios %}
+                                <option value="{{ lc.id }}">{{ lc.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddCuestionario">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir cuestionario al protocolo -->
+
+    <!-- Modal modificar cuestionario al protocolo -->
+    <div id="modal_editar_cuestionario" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MODIFICAR_CUESTIONARIO{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_CUESTIONARIO{% endtrans %}</label>
+                    <select id="listCuestionarioEdit" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listCuestionarios is defined and listCuestionarios is not empty %}
+                            {% for lc in listCuestionarios %}
+                                <option value="{{ lc.id }}">{{ lc.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="hidden" id="cuestionarioEditId" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateCuestionario">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal modificar cuestionario al protocolo -->
+
+    <!-- Modal añadir exploracion al protocolo -->
+    <div id="modal_añadir_exploracion" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_AÑADIR_EXPLORACION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_EXPLORACION{% endtrans %}</label>
+                    <select id="listExploracion" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listExploraciones is defined and listExploraciones is not empty %}
+                            {% for le in listExploraciones %}
+                                <option value="{{ le.id }}">{{ le.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddExploracion">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal añadir exploracion al protocolo -->
+
+    <!-- Modal modificar exploracion al protocolo -->
+    <div id="modal_editar_exploracion" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MODIFICAR_EXPLORACION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_EXPLORACION{% endtrans %}</label>
+                    <select id="listExploracionEdit" class="form-control select-search">
+                        <option value=""></option>
+                        {% if listExploraciones is defined and listExploraciones is not empty %}
+                            {% for le in listExploraciones %}
+                                <option value="{{ le.id }}">{{ le.descripcion }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="hidden" id="exploracionEditId" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateExploracion">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal modificar exploracion al protocolo -->
+
+
+{% endblock %}
+
+
+

@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="ca" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_PAGOS_PENDIENTES</source>
+                <target>Pagaments pendients</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NUEVO_PAGO</source>
+                <target>Nou pagament</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_ID</source>
+                <target>ID</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CONCEPTO_PAGO</source>
+                <target>Concept del pagament</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_VENCIMIENTO</source>
+                <target>Vencimient</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_PORCENTAJE</source>
+                <target>Percentatge</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_IMPORTE_SIN_IVA</source>
+                <target>Import sense IVA</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_EXENTO_IVA</source>
+                <target>Exempt d'IVA</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_SUJETO_IVA</source>
+                <target>Subjecte a IVA</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_IVA</source>
+                <target>IVA</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_TOTAL</source>
+                <target>Total</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_ESTADO</source>
+                <target>Estat</target>
+            </trans-unit>
+
+            <trans-unit id="14">
+                <source>TRANS_FACTURADO</source>
+                <target>Facturat</target>
+            </trans-unit>
+
+            <trans-unit id="15">
+                <source>TRANS_PENDIENTE</source>
+                <target>Pendent</target>
+            </trans-unit>
+
+            <trans-unit id="16">
+                <source>TRANS_VENCIDO</source>
+                <target>Vençut</target>
+            </trans-unit>
+
+            <trans-unit id="17">
+                <source>TRANS_PAGO</source>
+                <target>Pagament pendent</target>
+            </trans-unit>
+
+            <trans-unit id="18">
+                <source>TRANS_PORCENTAJE_DESC</source>
+                <target>Percentatge</target>
+            </trans-unit>
+
+            <trans-unit id="19">
+                <source>TRANS_PAGADO</source>
+                <target>Pagat</target>
+            </trans-unit>
+
+            <trans-unit id="20">
+                <source>TRANS_EMPRESA</source>
+                <target>Empresa</target>
+            </trans-unit>
+
+            <trans-unit id="21">
+                <source>TRANS_NUM_FAC</source>
+                <target>Numero factura</target>
+            </trans-unit>
+
+            <trans-unit id="22">
+                <source>TRANS_FORMA_PAGO</source>
+                <target>Forma de pagament</target>
+            </trans-unit>
+
+            <trans-unit id="23">
+                <source>TRANS_SALDO</source>
+                <target>Saldo</target>
+            </trans-unit>
+
+            <trans-unit id="24">
+                <source>TRANS_TECNICO</source>
+                <target>Tècnic</target>
+            </trans-unit>
+
+            <trans-unit id="25">
+                <source>TRANS_COMERCIAL</source>
+                <target>Comercial</target>
+            </trans-unit>
+
+            <trans-unit id="26">
+                <source>TRANS_COLABORADOR</source>
+                <target>Col·laborador</target>
+            </trans-unit>
+
+            <trans-unit id="27">
+                <source>TRANS_BASE</source>
+                <target>Base</target>
+            </trans-unit>
+
+            <trans-unit id="28">
+                <source>TRANS_FACTURAR_MULTIPLE</source>
+                <target>Facturar pagament/s</target>
+            </trans-unit>
+
+            <trans-unit id="29">
+                <source>TRANS_AVISO_CONTRATOS_A_RENOVAR</source>
+                <target>Es facturaran els pagaments seleccionats. Si està segur premi el botó Facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="30">
+                <source>TRANS_FACTURAR</source>
+                <target>Facturar</target>
+            </trans-unit>
+
+            <trans-unit id="31">
+                <source>TRANS_ERROR_PAGOS_MULTIPLE</source>
+                <target>Has de seleccionar com a mínim un pagament a facturar.</target>
+            </trans-unit>
+
+            <trans-unit id="32">
+                <source>TRANS_PAGOS_FACTURADOS_OK</source>
+                <target>Els pagaments s'han facturat amb èxit.</target>
+            </trans-unit>
+
+            <trans-unit id="33">
+                <source>TRANS_PAGOS_FACTURADOS</source>
+                <target>Pagaments pendents facturats</target>
+            </trans-unit>
+
+            <trans-unit id="34">
+                <source>TRANS_GENERA_VENCIMIENTO</source>
+                <target>Generar venciment</target>
+            </trans-unit>
+
+            <trans-unit id="35">
+                <source>TRANS_AVISO_NO_FORMA_PAGO</source>
+                <target>L'empresa </target>
+            </trans-unit>
+
+            <trans-unit id="36">
+                <source>TRANS_AVISO_NO_FORMA_PAGO_2</source>
+                <target> no té una forma de pagament definida.</target>
+            </trans-unit>
+
+            <trans-unit id="37">
+                <source>TRANS_PAGOS_POR_FACTURAR</source>
+                <target>Pagaments por facturar</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

@@ -1,0 +1,2556 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'revision' %}
+
+{% block arrow %}<a href="{{ path('medico_revision_show') }}" style="color: black;" onclick="return confirm('{% trans from 'messages' %}TRANS_CONFIRM_RETURN{% endtrans %}')"><i class="icon-arrow-left52 mr-2"></i></a>{% endblock %}
+{% block title %} {% trans %}TRANS_REVISION{% endtrans %} {% endblock %}
+{% block subtitle %}
+    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+        {{ form.vars.value.empresa.empresa }}
+        {% if form.vars.value.trabajador is defined and form.vars.value.trabajador is not empty %}
+            - {{ form.vars.value.trabajador.nombre }}
+        {% endif %}
+    {% else %}
+        {% trans from 'messages' %}TRANS_NUEVA{% endtrans %}
+    {% endif %}
+{% endblock %}
+
+{% block actions %}
+{% endblock %}
+
+{% block card %}
+
+    <style>
+        .selected{
+            background-color: #E5E7E9;
+            font-weight: bolder;
+        }
+        .custom-file-label { opacity: 0; }
+        .custom-file-input { opacity: 1; }
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('.html5-uploader').pluploadQueue({
+                runtimes: 'html5',
+                url: '{{ path('medico_revision_add_documento_adjunto') }}',
+                chunk_size: '200mb',
+                unique_names: true,
+                preinit: attachCallbacks,
+                filters: {
+                    max_file_size: '200mb',
+                    mime_types: [{
+                        title: 'Documentos adjuntos',
+                        extensions: 'pdf'
+                    }]
+                },
+                resize: {
+                    width: 320,
+                    height: 240,
+                    quality: 90
+                },
+                views: {
+                    list: true,
+                    thumbs: true, // Show thumbs
+                    active: 'thumbs'
+                },
+            });
+
+            function attachCallbacks(Uploader) {
+                Uploader.bind('FileUploaded', function(Up, File, Response) {
+                    if( (Uploader.total.uploaded + 1) == Uploader.files.length)
+                    {
+                        location.reload();
+                    }
+                });
+            }
+
+            $('.summernote').summernote();
+
+            //Cuando se selecciona la empresa buscamos los trabajadores
+            $('#revision_empresa').change(function () {
+                var empresaId = $(this).val();
+                if(empresaId != ""){
+                    buscaTrabajador(empresaId);
+                }
+            });
+
+            /*$('#revision_empresa').each(function () {
+                var empresaId = $(this).val();
+                if(empresaId != ""){
+                    buscaTrabajador(empresaId);
+                }
+            });*/
+
+            $('#revision_trabajador').change(function () {
+                var trabajadorId = $(this).val();
+                if(trabajadorId != ""){
+                    buscaPuestoTrabajoTrabajador(trabajadorId);
+                    buscaCitacionesTrabajador(trabajadorId);
+                }
+            });
+
+            $('#revision_trabajador').each(function () {
+                var trabajadorId = $(this).val();
+                if(trabajadorId != ""){
+                    buscaPuestoTrabajoTrabajador(trabajadorId);
+                }
+            });
+
+            $('#revision_apto').change(function () {
+                var val = $(this).val();
+                if(val == 2){
+                    $('#revision_aptitudRestriccion').prop('disabled', false);
+                }else{
+                    $('#revision_aptitudRestriccion').prop('disabled', true);
+                    $('#revision_aptitudRestriccion').val('').change();
+                }
+            });
+
+            $('#revision_apto').each(function () {
+                var val = $(this).val();
+                if(val == 2){
+                    $('#revision_aptitudRestriccion').prop('disabled', false);
+                }else{
+                    $('#revision_aptitudRestriccion').prop('disabled', true);
+                }
+            });
+
+            $('#protocolos tbody').on( 'click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    $('#protocolos tbody tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+            $('#cuestionarios tbody').on( 'click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    $('#cuestionarios tbody tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+            $('#cuestionariosRellenar tbody').on( 'click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    $('#cuestionariosRellenar tbody tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+            //Boton que guarda el formulario
+            $('#btnUpdateRespuestas').click(function () {
+
+                var arrayRespuestas = [];
+                //Buscamos los inputs del formulario
+                $('#respuestasCuestionarios input[type=text]').each(function () {
+                    var id = $(this).attr('id');
+                    var val = $(this).val();
+
+                    var respuesta = new Object();
+                    respuesta['id'] = id;
+                    respuesta['val'] = val;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                $('#respuestasCuestionarios input[type=radio]:checked').each(function () {
+                    var id = $(this).attr('id');
+                    var val = $(this).val();
+
+                    var respuesta = new Object();
+                    respuesta['id'] = id;
+                    respuesta['val'] = val;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                $('#respuestasCuestionarios select').each(function () {
+                    var id = $(this).attr('id');
+                    var val = $('select#'+id+' option:selected').text();
+
+                    var respuesta = new Object();
+                    respuesta['id'] = id;
+                    respuesta['val'] = val;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                $('#respuestasCuestionarios input[type=checkbox]').each(function () {
+                    var id = $(this).attr('id');
+                    var c = $(this).attr('class');
+
+                    var selected = "";
+                    $('input.'+c+'[type=checkbox]:checked').each(function () {
+                        var idInput = $(this).attr('id');
+                        var value = $('#'+idInput).data('value');
+                        selected += ";"+value;
+                    });
+
+                    selected += selected+";";
+
+                    var respuesta = new Object();
+                    respuesta['id'] = c;
+                    respuesta['val'] = selected;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                var cuestionarioId = $('#cuestionariosRellenar tbody tr.selected').data('id');
+
+                if(cuestionarioId != "" && cuestionarioId != undefined){
+
+                    if(arrayRespuestas.length > 0){
+
+                        $('#btnUpdateRespuestas').prop("disabled", true);
+                        $('#btnUpdateRespuestas').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}");
+
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ path('medico_revision_guardar_respuestas') }}",
+                            data: {
+                                'revisionId': '{{ app.request.get('id') }}',
+                                'respuestas': arrayRespuestas,
+                                'cuestionarioId': cuestionarioId
+                            },
+                            dataType: "JSON",
+                            success: function (data) {
+                                if (data == "OK") {
+                                    new PNotify({
+                                        title: '{% trans %}TRANS_ACTUALIZADO{% endtrans %}',
+                                        text: '{% trans %}TRANS_DATOS_ACTUALIZADOS{% endtrans %}',
+                                        icon: 'icon-checkmark3',
+                                        type: 'success'
+                                    });
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "{{ path('medico_revision_busca_pregunta_respuesta') }}",
+                                        data: {
+                                            'cuestionarioId': cuestionarioId,
+                                            'revisionId': '{{ app.request.get('id') }}'
+                                        },
+                                        dataType: "JSON",
+                                        beforeSend: function(data){
+                                            $("#respuestasCuestionarios").block({
+                                                message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_BUSCANDO{% endtrans %}...',
+                                                overlayCSS: {
+                                                    backgroundColor: '#fff',
+                                                    opacity: 0.8,
+                                                    cursor: 'wait'
+                                                },
+                                                css: {
+                                                    border: 0,
+                                                    padding: 0,
+                                                    backgroundColor: 'none'
+                                                }
+                                            });
+                                        },
+                                        success: function (data) {
+                                            $("#tbodyRespuestas").empty();
+                                            if (JSON.parse(data) != "") {
+                                                $.each(JSON.parse(data), function (key, item) {
+                                                    var append = "<tr data-id="+item['id']+">";
+                                                    append += "<td>"+item['orden']+".</td>";
+                                                    append += "<td>"+item['descripcion']+"</td>";
+                                                    append += "<td>"+item['respuesta']+"</td>";
+                                                    append += "</tr>";
+                                                    $("#tbodyRespuestas").append(append);
+                                                });
+                                            }else{
+                                                $('#tbodyRespuestas').append("<tr><td colspan=\"3\" align=\"center\">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>");
+                                            }
+                                        },
+                                        complete: function (){
+                                            $("#respuestasCuestionarios").unblock();
+                                            $('#btnUpdateRespuestas').prop("disabled", false);
+                                            $('#btnUpdateRespuestas').html("{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}<b><i class=\"icon-plus3\"></i></b>");
+                                        },
+                                        error: function () {
+                                            new PNotify({
+                                                title: 'Ops!',
+                                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                                icon: 'icon-blocked',
+                                                type: 'error'
+                                            });
+                                        }
+                                    });
+                                }
+                            },
+                            error: function () {
+                                new PNotify({
+                                    title: 'Ops!',
+                                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                    icon: 'icon-blocked',
+                                    type: 'error'
+                                });
+
+                                $('#btnUpdateRespuestas').prop("disabled", false);
+                                $('#btnUpdateRespuestas').html("{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}<b><i class=\"icon-plus3\"></i></b>");
+                            }
+                        });
+                    }else{
+                        new PNotify({
+                            title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                            text: '{% trans %}TRANS_CUESTIONARIO_NO_DATOS{% endtrans %}',
+                            icon: 'icon-warning22',
+                            type: 'warning'
+                        });
+                    }
+                }else{
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_SELECT_CUESTIONARIO{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                }
+            });
+
+            $('#btnUpdateRespuestasAnaliticas').click(function () {
+
+                var arrayRespuestas = [];
+                //Buscamos los inputs del formulario
+                $('#respuestasAnaliticas input[type=text]').each(function () {
+                    var id = $(this).attr('id');
+                    var val = $(this).val();
+
+                    var respuesta = new Object();
+                    respuesta['id'] = id;
+                    respuesta['val'] = val;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                $('#respuestasAnaliticas input[type=radio]:checked').each(function () {
+                    var id = $(this).attr('id');
+                    var val = $(this).val();
+
+                    var respuesta = new Object();
+                    respuesta['id'] = id;
+                    respuesta['val'] = val;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                $('#respuestasAnaliticas select').each(function () {
+                    var id = $(this).attr('id');
+                    var val = $('select#'+id+' option:selected').text();
+
+                    var respuesta = new Object();
+                    respuesta['id'] = id;
+                    respuesta['val'] = val;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                $('#respuestasAnaliticas input[type=checkbox]').each(function () {
+                    var id = $(this).attr('id');
+                    var c = $(this).attr('class');
+
+                    var selected = "";
+                    $('input.'+c+'[type=checkbox]:checked').each(function () {
+                        var idInput = $(this).attr('id');
+                        var value = $('#'+idInput).data('value');
+                        selected += ";"+value;
+                    });
+
+                    selected += selected+";";
+
+                    var respuesta = new Object();
+                    respuesta['id'] = c;
+                    respuesta['val'] = selected;
+                    arrayRespuestas.push(respuesta);
+                });
+
+                var cuestionarioId = 2;
+
+                if(cuestionarioId != "" && cuestionarioId != undefined){
+
+                    if(arrayRespuestas.length > 0){
+
+                        $('#btnUpdateRespuestasAnaliticas').prop("disabled", true);
+                        $('#btnUpdateRespuestasAnaliticas').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}");
+
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ path('medico_revision_guardar_respuestas') }}",
+                            data: {
+                                'revisionId': '{{ app.request.get('id') }}',
+                                'respuestas': arrayRespuestas,
+                                'cuestionarioId': cuestionarioId
+                            },
+                            dataType: "JSON",
+                            success: function (data) {
+                                if (data == "OK") {
+                                    new PNotify({
+                                        title: '{% trans %}TRANS_ACTUALIZADO{% endtrans %}',
+                                        text: '{% trans %}TRANS_DATOS_ACTUALIZADOS{% endtrans %}',
+                                        icon: 'icon-checkmark3',
+                                        type: 'success'
+                                    });
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "{{ path('medico_revision_busca_pregunta_respuesta') }}",
+                                        data: {
+                                            'cuestionarioId': cuestionarioId,
+                                            'revisionId': '{{ app.request.get('id') }}'
+                                        },
+                                        dataType: "JSON",
+                                        beforeSend: function(data){
+                                            $("#respuestasAnaliticas").block({
+                                                message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_BUSCANDO{% endtrans %}...',
+                                                overlayCSS: {
+                                                    backgroundColor: '#fff',
+                                                    opacity: 0.8,
+                                                    cursor: 'wait'
+                                                },
+                                                css: {
+                                                    border: 0,
+                                                    padding: 0,
+                                                    backgroundColor: 'none'
+                                                }
+                                            });
+                                        },
+                                        success: function (data) {
+                                            $("#tbodyRespuestasAnaliticas").empty();
+                                            if (JSON.parse(data) != "") {
+                                                $.each(JSON.parse(data), function (key, item) {
+                                                    var append = "<tr data-id="+item['id']+">";
+                                                    append += "<td>"+item['orden']+".</td>";
+                                                    append += "<td>"+item['descripcion']+"</td>";
+                                                    append += "<td>"+item['respuesta']+"</td>";
+                                                    append += "</tr>";
+                                                    $("#tbodyRespuestasAnaliticas").append(append);
+                                                });
+                                            }else{
+                                                $('#tbodyRespuestasAnaliticas').append("<tr><td colspan=\"3\" align=\"center\">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>");
+                                            }
+                                        },
+                                        complete: function (){
+                                            $("#respuestasAnaliticas").unblock();
+                                            $('#btnUpdateRespuestasAnaliticas').prop("disabled", false);
+                                            $('#btnUpdateRespuestasAnaliticas').html("{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}<b><i class=\"icon-plus3\"></i></b>");
+                                        },
+                                        error: function () {
+                                            new PNotify({
+                                                title: 'Ops!',
+                                                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                                icon: 'icon-blocked',
+                                                type: 'error'
+                                            });
+                                        }
+                                    });
+                                }
+                            },
+                            error: function () {
+                                new PNotify({
+                                    title: 'Ops!',
+                                    text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                    icon: 'icon-blocked',
+                                    type: 'error'
+                                });
+
+                                $('#btnUpdateRespuestasAnaliticas').prop("disabled", false);
+                                $('#btnUpdateRespuestasAnaliticas').html("{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}<b><i class=\"icon-plus3\"></i></b>");
+                            }
+                        });
+                    }else{
+                        new PNotify({
+                            title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                            text: '{% trans %}TRANS_CUESTIONARIO_NO_DATOS{% endtrans %}',
+                            icon: 'icon-warning22',
+                            type: 'warning'
+                        });
+                    }
+                }else{
+                    new PNotify({
+                        title: '{% trans from 'messages' %}TRANS_ATENCION{% endtrans %}',
+                        text: '{% trans %}TRANS_SELECT_CUESTIONARIO{% endtrans %}',
+                        icon: 'icon-warning22',
+                        type: 'warning'
+                    });
+                }
+            });
+
+            //Boton que genera la revisión
+            $('#btnImprimirRevision').click(function(){
+
+                var plantilla = $('#plantilla').val();
+                if(plantilla == ""){
+                    $('#plantilla').focus();
+                    return false;
+                }
+
+                $('#btnImprimirRevision').prop("disabled", true);
+                $('#btnImprimirRevision').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': plantilla,
+                        'id': '{{ app.request.get('id') }}',
+                        'tipo': 10
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnImprimirRevision').prop("disabled", false);
+                            $('#btnImprimirRevision').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnImprimirRevision').prop("disabled", false);
+                        $('#btnImprimirRevision').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que genera la aptitud
+            $('#btnImprimirAptitud').click(function(){
+
+                var plantilla = $('#plantillaAptitud').val();
+                if(plantilla == ""){
+                    $('#plantillaAptitud').focus();
+                    return false;
+                }
+
+                $('#btnImprimirAptitud').prop("disabled", true);
+                $('#btnImprimirAptitud').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': plantilla,
+                        'id': '{{ app.request.get('id') }}',
+                        'tipo': 11
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnImprimirAptitud').prop("disabled", false);
+                            $('#btnImprimirAptitud').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnImprimirAptitud').prop("disabled", false);
+                        $('#btnImprimirAptitud').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que genera la revision medica
+            $('#btnImprimirRevisionMedica').click(function(){
+
+                var plantilla = $('#plantillaRevisionMedica').val();
+                if(plantilla == ""){
+                    $('#plantillaRevisionMedica').focus();
+                    return false;
+                }
+
+                $('#btnImprimirRevisionMedica').prop("disabled", true);
+                $('#btnImprimirRevisionMedica').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': plantilla,
+                        'id': '{{ app.request.get('id') }}',
+                        'tipo': 14
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnImprimirRevisionMedica').prop("disabled", false);
+                            $('#btnImprimirRevisionMedica').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnImprimirRevisionMedica').prop("disabled", false);
+                        $('#btnImprimirRevisionMedica').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            //Boton que genera la restriccion
+            $('#btnImprimirRestriccion').click(function(){
+
+                var plantilla = $('#plantillaRestriccion').val();
+                if(plantilla == ""){
+                    $('#plantillaRestriccion').focus();
+                    return false;
+                }
+
+                $('#btnImprimirRestriccion').prop("disabled", true);
+                $('#btnImprimirRestriccion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('gdoc_generar_file') }}",
+                    data: {
+                        'plantillaId': plantilla,
+                        'id': '{{ app.request.get('id') }}',
+                        'tipo': 17
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data != ""){
+
+                            $('#btnImprimirRestriccion').prop("disabled", false);
+                            $('#btnImprimirRestriccion').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+
+                            var w = window.open();
+                            w.location = data.url;
+
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnImprimirRestriccion').prop("disabled", false);
+                        $('#btnImprimirRestriccion').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");
+                    }
+                });
+            });
+
+            $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+                localStorage.setItem('activeTabRevision', $(e.target).attr('href'));
+            });
+            var activeTab = localStorage.getItem('activeTabRevision');
+            if(activeTab){
+                $('#tabs a[href="' + activeTab + '"]').tab('show');
+            }
+
+            $("#revision_numeroPeticion").on('copy', function(e){
+                e.preventDefault();
+            });
+
+            $("#revision_numeroPeticionVerificacion").on('paste', function(e){
+                e.preventDefault();
+            });
+
+            $('#revision_guardar').click(function () {
+                var movil = $('#revision_telefono').val();
+                if (movil.length != 9 || isNaN(movil)) {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_TELEFONO_NO_VALIDO{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                {% if rolId is defined and rolId is not empty %}
+
+                var rolId = parseInt({{ rolId }});
+                var estadoId = $('#revision_estado').val();
+
+                if(estadoId == 4 && (rolId != 1 && rolId != 5)){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans %}TRANS_ERROR_ESTADO_NO_VALIDO{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                {% endif %}
+
+                var dni = $('#revision_dni').val();
+                if (dni == "") {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans %}TRANS_DNI_OBLIGATORIO{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                if($('#revision_dni').val().length != 9){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans %}TRANS_DNI_VALIDO{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                var dtnac = $('#revision_fechaNacimiento').val();
+                if (dtnac == "") {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans %}TRANS_DTNAC_OBLIGATORIO{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                var numeroPeticion = $('#revision_numeroPeticion').val();
+                var numeroPeticionVerificacion = $('#revision_numeroPeticionVerificacion').val();
+
+                if (numeroPeticion != "") {
+                    if(numeroPeticion.length != 8){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans %}TRANS_NUMERO_PETICION_LONGITUD{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                        return false;
+                    }
+                    if(numeroPeticionVerificacion == ""){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans %}TRANS_NUMERO_PETICION_VERIFICACION_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                        return false;
+                    }else{
+                        if(numeroPeticion !== numeroPeticionVerificacion){
+                            new PNotify({
+                                title: 'Ops!',
+                                text: '{% trans %}TRANS_NUMERO_PETICION_VERIFICACION_ERROR_2{% endtrans %}',
+                                icon: 'icon-blocked',
+                                type: 'error'
+                            });
+                            return false;
+                        }
+                    }
+                }
+
+                {% if app.request.get('id') is defined and app.request.get('id') is not empty %}
+                var estado = $('#revision_estado').val();
+                if (estado == "") {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans %}TRANS_ESTADO_OBLIGATORIO{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                {% endif %}
+
+                $('#form').submit();
+            });
+
+            {% if app.request.get('id') is defined and app.request.get('id') is not empty %}
+            buscaPreguntasCuestionarioAnalitica(2);
+            {% endif %}
+        });
+
+        function addZero(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+
+        function buscaTrabajador(empresaId){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_busca_trabajador_empresa') }}",
+                data: {
+                    'empresaId': empresaId,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (JSON.parse(data) != "") {
+                        $('#revision_trabajador').empty();
+                        $("#revision_trabajador").append('<option value=""></option>');
+                        $.each(JSON.parse(data), function (i, item) {
+                            $('#revision_trabajador').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function buscaPuestoTrabajoTrabajador(trabajadorId){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_busca_puesto_trabajo') }}",
+                data: {
+                    'trabajadorId': trabajadorId,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (JSON.parse(data.puestos) != "") {
+
+                        if($('#revision_telefono').val() == ""){
+                            $('#revision_telefono').val(data.telefono);
+                        }
+
+                        if($('#revision_dni').val() == ""){
+                            $('#revision_dni').val(data.dni);
+                        }
+
+                        if($('#revision_fechaNacimiento').val() == ""){
+                            $('#revision_fechaNacimiento').val(data.dtnacimiento);
+                        }
+
+                        $('#revision_puestoTrabajo').empty();
+                        $("#revision_puestoTrabajo").append('<option value=""></option>');
+                        $.each(JSON.parse(data.puestos), function (i, item) {
+                            $('#revision_puestoTrabajo').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                        });
+                    }
+                },
+                complete: function (){
+                    {% if puestoTrabajo is defined and puestoTrabajo is not empty %}
+                    $("#revision_puestoTrabajo").val({{ puestoTrabajo.id }}).change();
+                    {% endif %}
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function buscaCitacionesTrabajador(trabajadorId){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_busca_citas_trabajador') }}",
+                data: {
+                    'trabajadorId': trabajadorId,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (JSON.parse(data) != "") {
+
+                        $('#revision_citacion').empty();
+                        $("#revision_citacion").append('<option value=""></option>');
+                        $.each(JSON.parse(data), function (i, item) {
+                            $('#revision_citacion').append('<option value="' + item['id'] + '">' + item['descripcion'] + '</option>');
+                        });
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        $(document).on('click', '#protocolos tbody tr', function () {
+            var id = $(this).data('id');
+            if(id != ''){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('medico_revision_busca_cuestionarios') }}",
+                    data: {
+                        'protocoloId': id,
+                    },
+                    dataType: "JSON",
+                    beforeSend: function(data){
+                        $("#cuestionarios").block({
+                            message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_BUSCANDO{% endtrans %}...',
+                            overlayCSS: {
+                                backgroundColor: '#fff',
+                                opacity: 0.8,
+                                cursor: 'wait'
+                            },
+                            css: {
+                                border: 0,
+                                padding: 0,
+                                backgroundColor: 'none'
+                            }
+                        });
+                    },
+                    success: function (data) {
+                        $("#tbodyCuestionarios").empty();
+                        if (JSON.parse(data) != "") {
+                            $.each(JSON.parse(data), function (key, item) {
+                                var append = "<tr data-id="+item['id']+">";
+                                append += "<td>"+item['descripcion']+"</td>";
+                                append += "</tr>";
+                                $("#tbodyCuestionarios").append(append);
+                            });
+                        }else{
+                            $('#tbodyCuestionarios').append("<tr><td align=\"center\">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>");
+                        }
+                    },
+                    complete: function (){
+                        $("#cuestionarios").unblock();
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '#cuestionarios tbody tr', function () {
+            var id = $(this).data('id');
+
+            if(id != ''){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('medico_revision_busca_preguntas') }}",
+                    data: {
+                        'cuestionarioId': id,
+                    },
+                    dataType: "JSON",
+                    beforeSend: function(data){
+                        $("#preguntas").block({
+                            message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_BUSCANDO{% endtrans %}...',
+                            overlayCSS: {
+                                backgroundColor: '#fff',
+                                opacity: 0.8,
+                                cursor: 'wait'
+                            },
+                            css: {
+                                border: 0,
+                                padding: 0,
+                                backgroundColor: 'none'
+                            }
+                        });
+                    },
+                    success: function (data) {
+                        $("#tbodyPreguntas").empty();
+                        if (JSON.parse(data) != "") {
+                            $.each(JSON.parse(data), function (key, item) {
+                                var append = "<tr data-id="+item['id']+">";
+                                append += "<td>"+item['orden']+".</td>";
+                                append += "<td>"+item['descripcion']+"</td>";
+                                append += "</tr>";
+                                $("#tbodyPreguntas").append(append);
+                            });
+                        }else{
+                            $('#tbodyPreguntas').append("<tr><td colspan=\"2\" align=\"center\">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>");
+                        }
+                    },
+                    complete: function (){
+                        $("#preguntas").unblock();
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '#cuestionariosRellenar tbody tr', function () {
+            var id = $(this).data('id');
+
+            if(id != ''){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('medico_revision_busca_pregunta_respuesta') }}",
+                    data: {
+                        'cuestionarioId': id,
+                        'revisionId': '{{ app.request.get('id') }}'
+                    },
+                    dataType: "JSON",
+                    beforeSend: function(data){
+                        $("#respuestasCuestionarios").block({
+                            message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_BUSCANDO{% endtrans %}...',
+                            overlayCSS: {
+                                backgroundColor: '#fff',
+                                opacity: 0.8,
+                                cursor: 'wait'
+                            },
+                            css: {
+                                border: 0,
+                                padding: 0,
+                                backgroundColor: 'none'
+                            }
+                        });
+                    },
+                    success: function (data) {
+                        $("#tbodyRespuestas").empty();
+                        if (JSON.parse(data) != "") {
+                            $.each(JSON.parse(data), function (key, item) {
+                                var append = "<tr data-id="+item['id']+">";
+                                append += "<td>"+item['orden']+".</td>";
+                                append += "<td>"+item['descripcion']+"</td>";
+                                append += "<td>"+item['respuesta']+"</td>";
+                                append += "</tr>";
+                                $("#tbodyRespuestas").append(append);
+                            });
+                        }else{
+                            $('#tbodyRespuestas').append("<tr><td colspan=\"3\" align=\"center\">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>");
+                        }
+                    },
+                    complete: function (){
+                        $("#respuestasCuestionarios").unblock();
+                    },
+                    error: function () {
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            }
+        });
+
+        //Calculamos el IMC
+        $(document).on('keyup', '#63', function () {
+            var peso = $(this).val();
+            var altura = $('#64').val();
+            var imc = "";
+            var imcValor = "";
+            if(peso != "" && altura != ""){
+                imc = calculoImc(peso, altura);
+                imcValor = buscaValorImc(imc);
+            }
+            $('#92').val(imc);
+            $('#369').val(imcValor);
+        });
+
+        $(document).on('keyup', '#64', function () {
+            var altura = $(this).val();
+            var peso = $('#63').val();
+            var imc = "";
+            var imcValor = "";
+            if(peso != "" && altura != ""){
+                imc = calculoImc(peso, altura);
+                imcValor = buscaValorImc(imc);
+            }
+            $('#92').val(imc);
+            $('#369').val(imcValor);
+        });
+
+        function buscaPreguntasCuestionarioAnalitica(id){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_busca_pregunta_respuesta') }}",
+                data: {
+                    'cuestionarioId': id,
+                    'revisionId': '{{ app.request.get('id') }}'
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#respuestasAnaliticas").block({
+                        message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_BUSCANDO{% endtrans %}...',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+                    $("#tbodyRespuestasAnaliticas").empty();
+                    if (JSON.parse(data) != "") {
+                        $.each(JSON.parse(data), function (key, item) {
+                            var append = "<tr data-id="+item['id']+">";
+                            append += "<td>"+item['orden']+".</td>";
+                            append += "<td>"+item['descripcion']+"</td>";
+                            append += "<td>"+item['respuesta']+"</td>";
+                            append += "</tr>";
+                            $("#tbodyRespuestasAnaliticas").append(append);
+                        });
+                    }else{
+                        $('#tbodyRespuestasAnaliticas').append("<tr><td colspan=\"3\" align=\"center\">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td></tr>");
+                    }
+                },
+                complete: function (){
+                    $("#respuestasAnaliticas").unblock();
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function calculoImc(peso, altura){
+            var imc;
+            peso = peso.replace(",", ".");
+            altura = altura.replace(",", ".");
+            imc = peso / (altura * altura);
+            return imc.toFixed(2);
+        }
+
+        function buscaValorImc(imc){
+            if(imc >= 18.5 && imc <= 24.9){
+                return 659;
+            }else if(imc >= 25 && imc <= 29.9){
+                return 660;
+            }else if(imc >= 30 && imc <= 34.4){
+                return 661;
+            }else if(imc >= 35 && imc <= 39.9){
+                return 662;
+            } else if(imc >= 40){
+                return 663;
+            }
+        }
+
+        //Boton que elimina la fecha de la recuperación de la analitica
+        $(document).on('click', 'a.eliminarFechaAnalitica', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_BORRAR_FECHA_ANALITICA{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFechaAnalitica('{{ app.request.get('id') }}');
+                    }
+                }
+            });
+        });
+
+        function deleteFechaAnalitica(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_delete_fecha_analitica') }}",
+                data: {
+                    'id': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina la imagen del electro
+        $(document).on('click', 'a.eliminarImagenElectro', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans %}TRANS_BORRAR_IMAGEN_ELECTRO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteImagenElectrocardiograma('{{ app.request.get('id') }}');
+                    }
+                }
+            });
+        });
+
+        function deleteImagenElectrocardiograma(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_delete_imagen_electrocardiograma') }}",
+                data: {
+                    'id': id,
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Calculamos el IMC
+        $(document).on('keyup', '#86_1_292', function () {
+            var a = $(this).val();
+            var b = $('#86_2_292').val();
+            var c = $('#86_3_292').val();
+            var d = $('#86_4_292').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#234').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#86_2_292', function () {
+            var b = $(this).val();
+            var a = $('#86_1_292').val();
+            var c = $('#86_3_292').val();
+            var d = $('#86_4_292').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#234').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#86_3_292', function () {
+            var c = $(this).val();
+            var a = $('#86_1_292').val();
+            var b = $('#86_2_292').val();
+            var d = $('#86_4_292').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#234').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#86_5_292', function () {
+            var d = $(this).val();
+            var a = $('#86_1_292').val();
+            var b = $('#86_2_292').val();
+            var c = $('#86_3_292').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#234').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#367_1_309', function () {
+            var a = $(this).val();
+            var b = $('#367_2_309').val();
+            var c = $('#367_3_309').val();
+            var d = $('#367_4_309').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#235').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#367_2_309', function () {
+            var b = $(this).val();
+            var a = $('#367_1_309').val();
+            var c = $('#367_3_309').val();
+            var d = $('#367_4_309').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#235').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#367_3_309', function () {
+            var c = $(this).val();
+            var a = $('#367_1_309').val();
+            var b = $('#367_2_309').val();
+            var d = $('#367_4_309').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#235').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+
+        $(document).on('keyup', '#367_5_309', function () {
+            var d = $(this).val();
+            var a = $('#367_1_309').val();
+            var b = $('#367_2_309').val();
+            var c = $('#367_3_309').val();
+            var pa = "";
+            if(a != "" && b != "" && c != "" && d != ""){
+                pa = calcularPerdidaAuditiva(a, b, c, d);
+            }
+            $('#235').val(pa);
+
+            var od = $('#234').val();
+            var oi = $('#235').val();
+            if(od != "" && oi != ""){
+                if(parseFloat(od) > parseFloat(oi)){
+                    pa = calcularPerdidaAuditivaBilateral(oi, od);
+                }else{
+                    pa = calcularPerdidaAuditivaBilateral(od, oi);
+                }
+                $('#236').val(pa);
+            }
+        });
+        //Ticket#2023112210000108 — RE: Valores audiometrias erroneas
+        function calcularPerdidaAuditiva(a, b, c, d){
+            var result = 0;
+
+            var a2 = 0;
+            var b2 = 0;
+            var c2 = 0;
+            var d2 = 0;
+            //Reconvertir amb les nous porcentatges donats per la Begoña.
+            switch(a)
+            {
+                case "10" :
+                    a2= 0.2;
+                    break;
+                case "15" :
+                    a2= 0.5;
+                    break;
+                case "20" :
+                    a2= 1.1;
+                    break;
+                case "25" :
+                    a2= 1.8;
+                    break;
+                case "30" :
+                    a2= 2.6;
+                    break;
+                case "35" :
+                    a2= 3.7;
+                    break;
+                case "40" :
+                    a2= 4.9;
+                    break;
+                case "45" :
+                    a2= 6.3;
+                    break;
+                case "50" :
+                    a2= 7.9;
+                    break;
+                case "55" :
+                    a2= 9.6;
+                    break;
+                case "60" :
+                    a2= 11.3;
+                    break;
+                case "65" :
+                    a2= 12.8;
+                    break;
+                case "70" :
+                    a2= 13.8;
+                    break;
+                case "75" :
+                    a2= 14.6;
+                    break;
+                case "80" :
+                    a2= 14.8;
+                    break;
+                case "85" :
+                    a2= 14.9;
+                    break;
+                case "90" :
+                    a2= 15;
+                    break;
+                case "95" :
+                    a2= 15;
+                    break;
+            }
+
+            switch(b)
+            {
+                case "10" :
+                    b2= 0.3;
+                    break;
+                case "15" :
+                    b2= 0.9;
+                    break;
+                case "20" :
+                    b2= 2.1;
+                    break;
+                case "25" :
+                    b2= 3.6;
+                    break;
+                case "30" :
+                    b2= 5.4;
+                    break;
+                case "35" :
+                    b2= 7.7;
+                    break;
+                case "40" :
+                    b2= 10.2;
+                    break;
+                case "45" :
+                    b2= 13;
+                    break;
+                case "50" :
+                    b2= 15.7;
+                    break;
+                case "55" :
+                    b2= 19;
+                    break;
+                case "60" :
+                    b2= 21.5;
+                    break;
+                case "65" :
+                    b2= 23.5;
+                    break;
+                case "70" :
+                    b2= 23.5;
+                    break;
+                case "75" :
+                    b2= 27.2;
+                    break;
+                case "80" :
+                    b2= 28.8;
+                    break;
+                case "85" :
+                    b2= 29.8;
+                    break;
+                case "90" :
+                    b2= 29.9;
+                    break;
+                case "95" :
+                    b2= 30;
+                    break;
+            }
+            switch(c)
+            {
+                case "10" :
+                    c2= 0.4;
+                    break;
+                case "15" :
+                    c2= 1.3;
+                    break;
+                case "20" :
+                    c2= 2.9;
+                    break;
+                case "25" :
+                    c2= 4.9;
+                    break;
+                case "30" :
+                    c2= 7.3;
+                    break;
+                case "35" :
+                    c2= 9.8;
+                    break;
+                case "40" :
+                    c2= 12.9;
+                    break;
+                case "45" :
+                    c2= 17.3;
+                    break;
+                case "50" :
+                    c2= 22.4;
+                    break;
+                case "55" :
+                    c2= 25.7;
+                    break;
+                case "60" :
+                    c2= 28;
+                    break;
+                case "65" :
+                    c2= 30.2;
+                    break;
+                case "70" :
+                    c2= 32.2;
+                    break;
+                case "75" :
+                    c2= 34;
+                    break;
+                case "80" :
+                    c2= 35.8;
+                    break;
+                case "85" :
+                    c2= 37.5;
+                    break;
+                case "90" :
+                    c2= 39.2;
+                    break;
+                case "95" :
+                    c2= 40;
+                    break;
+            }
+            switch(d)
+            {
+                case "10" :
+                    d2= 0.1;
+                    break;
+                case "15":
+                    d2= 0.3;
+                    break;
+                case "20" :
+                    d2= 0.9;
+                    break;
+                case "25" :
+                    d2= 1.7;
+                    break;
+                case "30" :
+                    d2= 2.7;
+                    break;
+                case "35" :
+                    d2= 3.8;
+                    break;
+                case "40" :
+                    d2= 5;
+                    break;
+                case "45" :
+                    d2= 6.4;
+                    break;
+                case "50" :
+                    d2= 8;
+                    break;
+                case "55" :
+                    d2= 9.7;
+                    break;
+                case "60" :
+                    d2= 11.2;
+                    break;
+                case "65" :
+                    d2= 12.5;
+                    break;
+                case "70" :
+                    d2= 13.5;
+                    break;
+                case "75" :
+                    d2= 14.2;
+                    break;
+                case "80" :
+                    d2= 14.6;
+                    break;
+                case "85" :
+                    d2= 14.8;
+                    break;
+                case "90" :
+                    d2= 14.9;
+                    break;
+                case "95" :
+                    d2= 15;
+                    break;
+            }
+
+            result = ((a2+b2+c2+d2));
+            return result.toFixed(1);
+        }
+        //Ticket#2023112210000108 — RE: Valores audiometrias erroneas
+        function calcularPerdidaAuditivaBilateral(a, b){
+            var result = 0;
+            var result2 = 0;
+            result = (7*parseFloat(a)) + parseFloat(b);
+            result2 = result / 8;
+            return result2.toFixed(2);
+        }
+
+        $(document).on('keyup', '#93', function () {
+            var ta = $(this).val();
+
+            if(ta >= 70 && ta <= 140){
+                $('#374').val(686).change();
+            }else if(ta >= 140 && ta <= 220){
+                $('#374').val(687).change();
+            }else if(ta >= 50 && ta <= 90){
+                $('#374').val(691).change();
+            }
+        });
+
+        $(document).on('keyup', '#72', function () {
+            var ta = $(this).val();
+
+            if(ta >= 30 && ta <= 59){
+                $('#375').val(690).change();
+            }else if(ta >= 60 && ta <= 85){
+                $('#375').val(692).change();
+            }else if(ta >= 86 && ta <= 150){
+                $('#375').val(693).change();
+            }
+        });
+
+        $(document).on('keyup', '#377', function () {
+            var fc = $(this).val();
+
+            if(fc < 60) {
+                $('#683').prop('checked', true);
+                $('#684').prop('checked', false);
+                $('#701').prop('checked', false);
+            }else if(fc >= 60 && fc <= 100){
+                $('#683').prop('checked', false);
+                $('#684').prop('checked', false);
+                $('#701').prop('checked', true);
+            }else if(fc > 100){
+                $('#683').prop('checked', false);
+                $('#684').prop('checked', true);
+                $('#701').prop('checked', false);
+            }else{
+                $('#683').prop('checked', false);
+                $('#684').prop('checked', false);
+                $('#701').prop('checked', false);
+            }
+        });
+
+        $(document).on('keyup', '#158', function () {
+            var te = $(this).val();
+
+            if(te >= 0 && te <= 6){
+                $('#150').val(697).change();
+            }else if(te >= 7 && te <= 13){
+                $('#150').val(698).change();
+            }else if(te >= 14 && te <= 19) {
+                $('#150').val(699).change();
+            }else if(te >= 20 && te <= 24){
+                $('#150').val(700).change();
+            }
+        });
+
+        function deleteDocumentoAdjunto(id) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('medico_revision_delete_documento_adjunto') }}",
+                data: {
+                    'documentoAdjuntoId': id
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el documento adjunto seleccionado
+        $(document).on('click', 'a.eliminarDocumentoAdjunto', function(){
+            var id = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_DOCUMENTO_ADJUNTO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteDocumentoAdjunto(id)
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            <ul class="nav nav-tabs nav-tabs-highlight" id="tabs">
+                {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_DATOS_GENERALES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">{% trans %}TRANS_ANALITICA{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab9" class="nav-link" data-toggle="tab">{% trans %}TRANS_ELECTROCARDIOGRAMA{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab3" class="nav-link" data-toggle="tab">{% trans %}TRANS_PROTOCOLOS_PUESTO_TRABAJO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab4" class="nav-link" data-toggle="tab">{% trans %}TRANS_GENERAR_CUESTIONARIO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab5" class="nav-link" data-toggle="tab">{% trans %}TRANS_RESPUESTAS{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab6" class="nav-link" data-toggle="tab">{% trans %}TRANS_VER_RESUMEN{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab7" class="nav-link" data-toggle="tab">{% trans %}TRANS_RECOMENDACIONES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab8" class="nav-link" data-toggle="tab">{% trans %}TRANS_APTITUD{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#tab10" class="nav-link" data-toggle="tab">{% trans %}TRANS_DOCUMENTOS_ADJUNTOS{% endtrans %}</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#tab1" class="nav-link active" data-toggle="tab">{% trans %}TRANS_DATOS_GENERALES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_ANALITICA{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_ELECTROCARDIOGRAMA{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_PROTOCOLOS_PUESTO_TRABAJO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_GENERAR_CUESTIONARIO{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_RESPUESTAS{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_VER_RESUMEN{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_RECOMENDACIONES{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_APTITUD{% endtrans %}</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="alert('{% trans from "messages" %}TRANS_MSG_GUARDAR_ANTES{% endtrans %}');">{% trans %}TRANS_DOCUMENTOS_ADJUNTOS{% endtrans %}</a></li>
+
+                {% endif %}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="tab1">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.empresa) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.trabajador) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.puestoTrabajo) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.citacion) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.fecha) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.telefono) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                {{ form_row(form.dni) }}
+                            </div>
+                            <div class="col-lg-4">
+                                {{ form_row(form.fechaNacimiento) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_row(form.pruebasComplementarias) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{ form_row(form.numeroPeticion) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.numeroPeticionVerificacion) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.fechaRecuperacionResultado) }}
+                        </div>
+                        {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                            {% if app.session.get('privilegiosRol').editRevisionSn %}
+                                {% if urlDocumentoAnalitica is defined and urlDocumentoAnalitica is not empty %}
+                                    <div class="col-lg-3">
+                                        <a href="#" class="btn btn-labeled btn-labeled-left bg-orange-300 eliminarFechaAnalitica">{% trans %}TRANS_BORRAR_FECHA_ANALITICA{% endtrans %}<b><i class="icon-trash"></i></b></a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {% if numeroPeticion is defined and numeroPeticion is not empty %}
+                                {% if urlDocumentoAnalitica is defined and urlDocumentoAnalitica is not empty %}
+                                    <embed src="{{ urlDocumentoAnalitica }}" width="100%" height="1000" type="application/pdf">
+                                {% else %}
+                                    <div class="alert alert-warning bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                                        {% trans %}TRANS_MSG_NO_RESULTADO{% endtrans %}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="alert alert-warning bg-white alert-styled-left alert-arrow-left alert-dismissible">
+                                    {% trans %}TRANS_MSG_NO_RECUPERAR_RESULTADO{% endtrans %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_RESPUESTAS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="respuestasAnaliticas">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th style="width: 10%;">N.</th>
+                                                    <th>{% trans %}TRANS_PREGUNTA{% endtrans %}</th>
+                                                    <th>{% trans %}TRANS_RESPUESTA{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="tbodyRespuestasAnaliticas">
+                                                <tr>
+                                                    <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editRevisionSn %}
+                                    <br/>
+                                    <button type="button" id="btnUpdateRespuestasAnaliticas" class="btn btn-labeled btn-labeled-left bg-success">{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}<b><i class="icon-plus3"></i></b></button>
+                                {% endif %}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab9">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {{ form_row(form.ficheroElectrocardiograma) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {% if electrocardiograma is defined and electrocardiograma is not empty %}
+                                <img src="../../../upload/media/electrocardiograma/{{ electrocardiograma }}" width="100%" />
+                            {% endif %}
+                        </div>
+                        {% if electrocardiograma is defined and electrocardiograma is not empty %}
+                            <div class="col-lg-3">
+                                <a href="#" class="btn btn-labeled btn-labeled-left bg-orange-300 eliminarImagenElectro">{% trans %}TRANS_BORRAR_IMAGEN_ELECTRO{% endtrans %}<b><i class="icon-trash"></i></b></a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab3">
+
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{ form_row(form.actualizado) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.protocolo) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab4">
+                    <div class="row">
+                        {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                            {% if app.session.get('privilegiosRol').editRevisionSn %}
+                                <div class="col-lg-3">
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_print_revision">{% trans %}TRANS_IMPRIMIR_CUESTIONARIO{% endtrans %}<b><i class="icon-file-text2"></i></b></a>
+                                </div>
+                                <div class="col-lg-3">
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_print_revision_medica">{% trans %}TRANS_IMPRIMIR_REVISION_MEDICA{% endtrans %}<b><i class="icon-file-text3"></i></b></a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        {#                        {% if app.session.get('privilegiosRol').sendCuestionarioRevisionSn is defined and app.session.get('privilegiosRol').sendCuestionarioRevisionSn is not null %}#}
+                        {#                            {% if app.session.get('privilegiosRol').sendCuestionarioRevisionSn %}#}
+                        {#                                <div class="col-lg-3">#}
+                        {#                                    {% if (app.request.get('id') is defined and app.request.get('id') is not empty ) %}#}
+                        {#                                        <a href="{{ path('medico_revision_enviar_cuestionario') }}?id={{ app.request.get('id') }}" target="_blank" class="btn btn-labeled btn-labeled-left bg-orange-300">{% trans %}TRANS_ENVIAR_CUESTIONARIO{% endtrans %}<b><i class="icon-envelop"></i></b></a>#}
+                        {#                                    {% endif %}#}
+                        {#                                </div>#}
+                        {#                            {% endif %}#}
+                        {#                        {% endif %}#}
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PROTOCOLOS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table tableSelect" id="protocolos">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th>{% trans %}TRANS_PROTOCOLO{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody style="cursor: pointer;">
+                                                {% if protocolos is defined and protocolos is not empty %}
+                                                    {% for p in protocolos %}
+                                                        <tr data-id="{{ p.protocolo.id }}">
+                                                            <td>{{ p.protocolo.descripcion }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-lg-4">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CUESTIONARIOS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="cuestionarios">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th>{% trans %}TRANS_CUESTIONARIO{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="tbodyCuestionarios" style="cursor: pointer;">
+                                                <tr>
+                                                    <td align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-lg-4">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_PREGUNTAS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="preguntas">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th style="width: 10%;">N.</th>
+                                                    <th>{% trans %}TRANS_PREGUNTA{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="tbodyPreguntas">
+                                                <tr>
+                                                    <td colspan="2" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab5">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CUESTIONARIOS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="cuestionariosRellenar">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th>{% trans %}TRANS_CUESTIONARIO{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody style="cursor: pointer;">
+                                                {% if cuestionariosRellenar is defined and cuestionariosRellenar is not empty %}
+                                                    {% for cr in cuestionariosRellenar %}
+                                                        <tr data-id="{{ cr.id }}">
+                                                            <td>{{ cr.cuestionario }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="1" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_RESPUESTAS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="respuestasCuestionarios">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th style="width: 10%;">N.</th>
+                                                    <th>{% trans %}TRANS_PREGUNTA{% endtrans %}</th>
+                                                    <th>{% trans %}TRANS_RESPUESTA{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="tbodyRespuestas">
+                                                <tr>
+                                                    <td colspan="4" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editRevisionSn %}
+                                    <br/>
+                                    <button type="button" id="btnUpdateRespuestas" class="btn btn-labeled btn-labeled-left bg-success">{% trans %}TRANS_GUARDAR_RESPUESTAS{% endtrans %}<b><i class="icon-plus3"></i></b></button>
+                                {% endif %}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_RESUMEN{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="resumen">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th>{% trans %}TRANS_PROTOCOLO{% endtrans %}</th>
+                                                    <th>{% trans %}TRANS_CUESTIONARIO{% endtrans %}</th>
+                                                    <th style="width: 10%;">{% trans %}TRANS_NO_INFORMADOS{% endtrans %}</th>
+                                                    <th style="width: 10%;">{% trans %}TRANS_INFORMADOS{% endtrans %}</th>
+                                                    <th style="width: 10%;">{% trans %}TRANS_TOTALES{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if resumen is defined and resumen is not empty %}
+                                                    {% for r in resumen %}
+                                                        <tr>
+                                                            <td>{{ r.protocolo }}</td>
+                                                            <td>{{ r.cuestionario }}</td>
+                                                            {% if r.noInformadas > 0 %}
+                                                                <td style="background-color: #F1948A;">{{ r.noInformadas }}</td>
+                                                            {% else %}
+                                                                <td style="background-color: #ABEBC6;">{{ r.noInformadas }}</td>
+                                                            {% endif %}
+                                                            {% if r.informadas == r.total %}
+                                                                <td style="background-color: #ABEBC6;">{{ r.informadas }}</td>
+                                                            {% else %}
+                                                                <td style="background-color: #F1948A;">{{ r.informadas }}</td>
+                                                            {% endif %}
+                                                            <td>{{ r.total }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="5" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane fade" id="tab7">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_CONSEJOS_MEDICOS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="consejos">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th>{% trans %}TRANS_CONSEJO{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% if consejos is defined and consejos is not empty %}
+                                                    {% for c in consejos %}
+                                                        <tr>
+                                                            <td>{{ c }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ form_row(form.recomendaciones) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab8">
+                    {% if form.vars.value.estado is defined and form.vars.value.estado is not empty %}
+                        {% if form.vars.value.estado.id == 4 %}
+                            {% if app.session.get('privilegiosRol').printAptitudRevisionSn is defined and app.session.get('privilegiosRol').printAptitudRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').printAptitudRevisionSn %}
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_print_aptitud">{% trans %}TRANS_IMPRIMIR_APTITUD{% endtrans %}<b><i class="icon-file-text2"></i></b></a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    <br/>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{ form_row(form.medico) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.estado) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.fechaFirma) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.validez) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.fechaEnvio) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.fechaCertificacion) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{ form_row(form.apto) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {{ form_row(form.aptitudRestriccion) }}
+                        </div>
+                        <div class="col-lg-2">
+                            {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                                {% if app.session.get('privilegiosRol').editRevisionSn %}
+                                    <a href="#" class="btn btn-labeled btn-labeled-left bg-grey-300" data-toggle="modal" data-target="#modal_print_restriccion">{% trans %}TRANS_IMPRIMIR_RESTRICCION{% endtrans %}<b><i class="icon-file-text2"></i></b></a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.observacionMedico) }}
+                        </div>
+                        <div class="col-lg-6">
+                            {{ form_row(form.observacionInterna) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            {{ form_row(form.observaciones) }}
+                        </div>
+                        <div class="col-lg-6">
+                            {{ form_row(form.conclusiones) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab10">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="html5-uploader"></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <fieldset>
+                                <legend class="text-uppercase font-size-sm font-weight-bold">{% trans %}TRANS_DOCUMENTOS_ADJUNTOS{% endtrans %}</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-bordered">
+                                            <table class="table" id="documentosAdjuntos">
+                                                <thead>
+                                                <tr class="bg-grey-300">
+                                                    <th>{% trans %}TRANS_DOCUMENTO{% endtrans %}</th>
+                                                    <th>Mostrar</th>
+                                                    <th>{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody style="cursor: pointer;">
+                                                {% if documentosAdjuntos is defined and documentosAdjuntos is not empty %}
+                                                    {% for da in documentosAdjuntos %}
+                                                        <tr data-id="{{ da.id }}">
+                                                            <td>{{ da.nombre }}</td>
+                                                            <td>
+                                                                {% if da.mostrar == true %}
+                                                                    <span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>
+                                                                {% else %}
+                                                                    <span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                <div class="list-icons">
+                                                                    <a href="{{ path('medico_revision_view_documento_adjunto', { "id": da.id }) }}" target="_blank" class="list-icons-item" title="Ver documento"><i class="icon-printer2"></i></a>
+
+                                                                    {% if da.mostrar == true %}
+                                                                        <a href="{{ path('medico_revision_no_mostrar_documento_adjunto', { "id": da.id }) }}" class="list-icons-item" title="No mostrar"><i class="icon-eye-blocked"></i></a>
+                                                                    {% else %}
+                                                                        <a href="{{ path('medico_revision_mostrar_documento_adjunto', { "id": da.id }) }}" class="list-icons-item" title="Mostrar"><i class="icon-eye"></i></a>
+                                                                    {% endif %}
+                                                                    <a href="#" data-id="{{ da.id }}" target="_self" class="list-icons-item eliminarDocumentoAdjunto" title="Eliminar"><i class="icon-trash"></i></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr >
+                                                        <td colspan="3" align="center">{% trans from 'messages' %}TRANS_SIN_REGISTROS{% endtrans %}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-start align-items-center">
+            {% if app.session.get('privilegiosRol').editRevisionSn is defined and app.session.get('privilegiosRol').editRevisionSn is not null %}
+                {% if app.session.get('privilegiosRol').editRevisionSn %}
+                    {{ form_row(form.guardar) }}
+                {% else %}
+                    {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+                {% endif %}
+            {% else %}
+                {{ form_row(form.guardar, {'attr': {'style': 'display: none;'}}) }}
+            {% endif %}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <!-- Modal imprimir revisión -->
+    <div id="modal_print_revision" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_REVISION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasRevisiones is defined and listPlantillasRevisiones is not empty %}
+                            {% for lpr in listPlantillasRevisiones %}
+                                <option value="{{ lpr.id }}">{{ lpr.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnImprimirRevision">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal imprimir revisión -->
+
+    <!-- Modal imprimir aptitud -->
+    <div id="modal_print_aptitud" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_APTITUD{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantillaAptitud" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasAptitudes is defined and listPlantillasAptitudes is not empty %}
+                            {% for lpa in listPlantillasAptitudes %}
+                                <option value="{{ lpa.id }}">{{ lpa.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnImprimirAptitud">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal imprimir aptitud -->
+
+    <!-- Modal imprimir aptitud -->
+    <div id="modal_print_revision_medica" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_REVISION_MEDICA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantillaRevisionMedica" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasRevisionesMedicas is defined and listPlantillasRevisionesMedicas is not empty %}
+                            {% for lprv in listPlantillasRevisionesMedicas %}
+                                <option value="{{ lprv.id }}">{{ lprv.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnImprimirRevisionMedica">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal imprimir aptitud -->
+
+    <!-- Modal imprimir restriccion -->
+    <div id="modal_print_restriccion" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_RESTRICCION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantillaRestriccion" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillasRestricciones is defined and listPlantillasRestricciones is not empty %}
+                            {% for lpr in listPlantillasRestricciones %}
+                                <option value="{{ lpr.id }}">{{ lpr.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnImprimirRestriccion">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal imprimir restriccion -->
+
+{% endblock %}

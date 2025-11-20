@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" datatype="plaintext" original="file.ext">
+        <body>
+
+            <trans-unit id="1">
+                <source>TRANS_BUSCADORES</source>
+                <target>Extracció de dades</target>
+            </trans-unit>
+
+            <trans-unit id="2">
+                <source>TRANS_LISTADO</source>
+                <target>Llistat</target>
+            </trans-unit>
+
+            <trans-unit id="3">
+                <source>TRANS_NOMBRE_CONSULTA</source>
+                <target>Nom de la consulta</target>
+            </trans-unit>
+
+            <trans-unit id="4">
+                <source>TRANS_CONSULTAS_PROPIAS</source>
+                <target>Consultes propies</target>
+            </trans-unit>
+
+            <trans-unit id="5">
+                <source>TRANS_CONSULTAS_COMPARTIDAS</source>
+                <target>Consultes compartides</target>
+            </trans-unit>
+
+            <trans-unit id="6">
+                <source>TRANS_NUEVA_CONSULTA</source>
+                <target>Nova consulta</target>
+            </trans-unit>
+
+            <trans-unit id="7">
+                <source>TRANS_COMPARTIDA</source>
+                <target>Compartida</target>
+            </trans-unit>
+
+            <trans-unit id="8">
+                <source>TRANS_BUSCADOR</source>
+                <target>Cercador</target>
+            </trans-unit>
+
+            <trans-unit id="9">
+                <source>TRANS_CAMPOS</source>
+                <target>Camps</target>
+            </trans-unit>
+
+            <trans-unit id="10">
+                <source>TRANS_CAMPOS_SELECCIONADOS</source>
+                <target>Camps seleccionats</target>
+            </trans-unit>
+
+            <trans-unit id="11">
+                <source>TRANS_BUSCAR</source>
+                <target>Buscar</target>
+            </trans-unit>
+
+            <trans-unit id="12">
+                <source>TRANS_ELIMINAR_TODOS</source>
+                <target>Eliminar tots</target>
+            </trans-unit>
+
+            <trans-unit id="13">
+                <source>TRANS_AÑADIR_TODOS</source>
+                <target>Afegir tots</target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

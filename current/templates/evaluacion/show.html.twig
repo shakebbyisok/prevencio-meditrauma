@@ -1,0 +1,568 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'evaluacion' %}
+
+{% block title %} {% trans %}TRANS_EVALUACIONES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addEvaluacionSn is defined and app.session.get('privilegiosRol').addEvaluacionSn is not null %}
+        {% if app.session.get('privilegiosRol').addEvaluacionSn %}
+            <a href="#" class="btn btn-labeled btn-labeled-left bg-primary" data-toggle="modal" data-target="#mdal_crear_evaluacion">{% trans %}TRANS_NUEVA_EVALUACION{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var arrayData = [];
+
+            {% for evaluacion in evaluaciones %}
+            var array = [];
+            var actions = '<div class="list-icons">';
+
+            var finalizada;
+            {% if evaluacion.finalizada == true %}
+            finalizada = '<span class="badge badge-flat border-success text-success-600"><i class="icon-checkmark2"></i></span>';
+            {% else %}
+            finalizada = '<span class="badge badge-flat border-danger text-danger-600"><i class="icon-cross3"></i></span>';
+            {% endif %}
+
+            {% if app.session.get('privilegiosRol').editEvaluacionSn is defined and app.session.get('privilegiosRol').editEvaluacionSn is not null %}
+            {% if app.session.get('privilegiosRol').editEvaluacionSn %}
+            actions += '<a href="{{ path('tecnico_evaluaciones_evaluacion_update', { "id": evaluacion.id }) }}" class="list-icons-item" data-popup="tooltip" title="Editar" data-container="body"><i class="icon-pencil7"></i></a>';
+            {% endif %}
+            {% endif %}
+
+            {% if app.session.get('privilegiosRol').printEvaluacionSn is defined and app.session.get('privilegiosRol').printEvaluacionSn is not null %}
+            {% if app.session.get('privilegiosRol').printEvaluacionSn %}
+            {% if evaluacion.fichero_id is not null %}
+            actions += '<a href="{{ path('gdoc_open_file', { "fileId": evaluacion.fichero_id, "tipo": "7" }) }}" class="list-icons-item" target="_blank" data-popup="tooltip" title="Imprimir" data-container="body"><i class="icon-printer2"></i></a>';
+            {% if app.session.get('privilegiosRol').deleteGdocFileSn is defined and app.session.get('privilegiosRol').deleteGdocFileSn is not null %}
+            {% if app.session.get('privilegiosRol').deleteGdocFileSn %}
+            actions += '<a href="#" data-id="{{ evaluacion.fichero_id }}" class="list-icons-item eliminarFichero" data-popup="tooltip" title="Eliminar fichero" data-container="body"><i class="icon-file-minus"></i></a>';
+            {% endif %}
+            {% endif %}
+            {% else %}
+            actions += '<a href="#" data-id="{{ evaluacion.id }}" class="list-icons-item selectEvaluacion" data-popup="tooltip" title="Imprimir" data-container="body"><i class="icon-printer2"></i></a>';
+            {% endif %}
+            {% endif %}
+            {% endif %}
+
+            {% if app.session.get('privilegiosRol').deleteEvaluacionSn is defined and app.session.get('privilegiosRol').deleteEvaluacionSn is not null %}
+            {% if app.session.get('privilegiosRol').deleteEvaluacionSn %}
+            //Petició Joaquin i David eliminar botor delete
+            //actions += '<a href=" path('tecnico_evaluaciones_evaluacion_delete', { "id": evaluacion.id }) " class="list-icons-item" data-popup="tooltip" title="Eliminar" data-container="body" onclick="return confirm(\' trans from 'messages' TRANS_CONFIRM_DELETE_REGISTRO endtrans \');"><i class="icon-trash"></i></a>';
+            {% endif %}
+            {% endif %}
+
+            array.push(actions, finalizada, '{{ evaluacion.numero }}', '{{ evaluacion.empresa }}', '{{ evaluacion.centros }}', '{{ evaluacion.tecnicos }}', '<span style="display:none;">{{ evaluacion.fechainiciotimestamp }}</span>{{ evaluacion.fechainicio }}', '<span style="display:none;">{{ evaluacion.fechafintimestamp }}</span>{{ evaluacion.fechafin }}', '{{ evaluacion.tipo }}', '{{ evaluacion.metodologia }}');
+            arrayData.push(array);
+            {% endfor %}
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                },
+                data: arrayData
+            });
+
+            $('.datatable-export-excel').DataTable({
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx'
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn is defined and app.session.get('privilegiosRol').exportEvaluacionSn is not null %}
+            {% if app.session.get('privilegiosRol').exportEvaluacionSn != true %}
+            $('.dt-buttons').css('display', 'none');
+            {% endif %}
+            {% endif %}
+
+            // Format displayed data
+            function formatRepo (repo) {
+                if (repo.loading) return repo.text;
+
+                var markup = '<div class="clearfix">' +
+                    '<div>' + repo.descripcion + '</div>' +
+                    '</div>';
+
+                return markup;
+            }
+            $('#btnObtenerSeleccion').on('click', function() {
+                // Obtiene los valores seleccionados del Select2
+                var seleccion = $('#selectFichero').val();
+                // Aquí puedes realizar cualquier acción que desees con los valores seleccionados,
+                // como enviarlos por AJAX a tu controlador o mostrarlos en la página.
+                var evaluacionId = $(this).val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_busca_plantilla') }}",
+                    data: {
+                        'id': evaluacionId,
+                    },
+                    dataType: "JSON",
+                    beforeSend: function(data){
+                        $("#DataTables_Table_0").block({
+                            message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_IMPRIMIENDO{% endtrans %}...',
+                            overlayCSS: {
+                                backgroundColor: '#fff',
+                                opacity: 0.8,
+                                cursor: 'wait'
+                            },
+                            css: {
+                                border: 0,
+                                padding: 0,
+                                backgroundColor: 'none'
+                            }
+                        });
+                    },
+                    success: function (data) {
+                        if(data != ""){
+                            if(data.success){
+                                if(data.plantillaId != ""){
+                                    imprimeEvaluacion(evaluacionId, data.plantillaId, 7, seleccion);
+                                }else{
+                                    new PNotify({
+                                        title: 'Ops!',
+                                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                                        icon: 'icon-blocked',
+                                        type: 'error'
+                                    });
+                                }
+                            }else{
+                                location.reload();
+                            }
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                    }
+                });
+            });
+            // Format selection
+            function formatRepoSelection (repo) {
+                return repo.full_name || repo.text;
+            }
+
+            $('.js_busca_ajax_empresa').select2({
+                ajax: {
+                    url: "{{ path('busca_ajax_query',{ 'option': 'empresa' }) }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        var select2Data = $.map(JSON.parse(data), function (obj) {
+                            obj.id = parseInt(obj.id);
+                            obj.text = obj.descripcion;
+
+                            return obj;
+                        });
+                        return {
+                            results: select2Data
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 3,
+                templateResult: formatRepo, // omitted for brevity, see the source of this page
+                templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+            });
+
+            $('#btnAddEvaluacion').click(function () {
+
+                if($('#empresa').val() == ""){
+                    $('#empresa').focus();
+                    return false;
+                }
+                var tipo = $('input:radio[name=tipoEvaluacion]:checked').val();
+
+                if(tipo == undefined){
+                    $('input:radio[name=edad]').focus();
+                    return false;
+                }
+                $('#btnAddEvaluacion').prop("disabled", true);
+                $('#btnAddEvaluacion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('tecnico_evaluaciones_evaluacion_pre_create') }}",
+                    data: {
+                        'empresaId': $('#empresa').val(),
+                        'tipo': tipo
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.href = '{{ path('tecnico_evaluaciones_evaluacion_create') }}?tipo='+tipo;
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+                        $('#btnAddEvaluacion').prop("disabled", false);
+                        $('#btnAddEvaluacion').html("{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}");
+                    }
+                });
+            });
+
+            {% if app.session.get('empresa') is defined and app.session.get('empresa') is not empty %}
+            var empresaId = '{{ app.session.get('empresa').id }}';
+            var empresaDesc = '{{ app.session.get('empresa').empresa }}';
+            $("#empresa").append('<option value="'+empresaId+'">' + empresaDesc + '</option>');
+            {% endif %}
+
+            //Boton que genera la evaluacion
+            {#$('#btnGeneraEvaluacion').click(function(){#}
+
+            {#    $('#btnGeneraEvaluacion').prop("disabled", true);#}
+            {#    $('#btnGeneraEvaluacion').html("<i class=\"icon-spinner2 spinner mr-2\"></i>{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");#}
+
+            {#    $.ajax({#}
+            {#        type: "POST",#}
+            {#        url: "{{ path('gdoc_generar_file') }}",#}
+            {#        data: {#}
+            {#            'plantillaId': $('#plantilla').val(),#}
+            {#            'id': $('#evaluacionId').val(),#}
+            {#            'tipo': 7#}
+            {#        },#}
+            {#        dataType: "JSON",#}
+            {#        success: function (data) {#}
+            {#            if(data != ""){#}
+
+            {#                $('#btnGeneraEvaluacion').prop("disabled", false);#}
+            {#                $('#btnGeneraEvaluacion').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");#}
+
+            {#                var w = window.open();#}
+            {#                w.location = data.url;#}
+
+            {#                location.reload();#}
+            {#            }#}
+            {#        },#}
+            {#        error: function(){#}
+            {#            new PNotify({#}
+            {#                title: 'Ops!',#}
+            {#                text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',#}
+            {#                icon: 'icon-blocked',#}
+            {#                type: 'error'#}
+            {#            });#}
+
+            {#            $('#btnGeneraEvaluacion').prop("disabled", false);#}
+            {#            $('#btnGeneraEvaluacion').html("{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}");#}
+            {#        }#}
+            {#    });#}
+            {#});#}
+        });
+
+        //Boton que busca la id de la plantilla a través de la id de la evaluacion
+        $(document).on('click', 'a.selectEvaluacion', function(){
+            var evaluacionId = $(this).data('id');
+
+            $('#btnObtenerSeleccion').val(evaluacionId);
+            $('#modal_view_puestosTrab').modal('show');
+
+            var url = '{{ path('ruta_del_controlador_que_devuelve_centros') }}';
+
+            xhr = $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    'plantillaId': evaluacionId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    // Obtén los centros de la respuesta AJAX
+                    var centros = response;
+                    var selectFichero = $('#selectFichero');
+
+                    // Vacía todas las opciones existentes
+                    selectFichero.empty();
+
+                    // Agrega la opción "Todos los centros" al Select2
+                    selectFichero.append($('<option>', {
+                        value: '0', // Puedes asignar otro valor si lo prefieres
+                        text: 'Todos los puestos'
+                    }));
+                    // Inicializa el Select2 con los centros
+                    $('#selectFichero').select2({
+                        data: centros.map(function (centro) {
+                            return { id: centro.id, text: centro.descripcion };
+                        })
+                    });
+                    $('#selectFichero').show();
+                }
+            });
+        });
+
+        function imprimeEvaluacion(evaluacionId, plantillaId, tipo, seleccion){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_generar_file') }}",
+                data: {
+                    'plantillaId': plantillaId,
+                    'id': evaluacionId,
+                    'tipo': tipo,
+                    'select2': seleccion
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if(data != ""){
+                        var w = window.open();
+                        w.location = data.url;
+                        location.reload();
+                    }
+                },
+                error: function(){
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        function deleteFichero(id, tipo) {
+            $.ajax({
+                type: "POST",
+                url: "{{ path('gdoc_delete_file') }}",
+                data: {
+                    'id': id,
+                    'tipo': tipo
+                },
+                dataType: "JSON",
+                beforeSend: function(data){
+                    $("#DataTables_Table_0").block({
+                        message: '<i class="icon-spinner2 spinner"></i> {% trans from 'messages' %}TRANS_ELIMINANDO{% endtrans %}...',
+                        overlayCSS: {
+                            backgroundColor: '#fff',
+                            opacity: 0.8,
+                            cursor: 'wait'
+                        },
+                        css: {
+                            border: 0,
+                            padding: 0,
+                            backgroundColor: 'none'
+                        }
+                    });
+                },
+                success: function (data) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    new PNotify({
+                        title: 'Ops!',
+                        text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                        icon: 'icon-blocked',
+                        type: 'error'
+                    });
+                }
+            });
+        }
+
+        //Boton que elimina el fichero seleccionado
+        $(document).on('click', 'a.eliminarFichero', function(){
+            var fileId = $(this).data('id');
+            bootbox.confirm({
+                title: '{% trans from 'messages' %}TRANS_ELIMINAR_FICHERO{% endtrans %}',
+                message: '{% trans from 'messages' %}TRANS_CONFIRM_DELETE_REGISTRO{% endtrans %}',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-link'
+                    }
+                },
+                callback: function (result) {
+                    if(result == true){
+                        deleteFichero(fileId,7)
+                    }
+                }
+            });
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Finalizada">{% trans %}TRANS_FINALIZADA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Número">{% trans %}TRANS_NUMERO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Centro">{% trans %}TRANS_CENTRO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Tecnico">{% trans %}TRANS_TECNICOS{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Inicio">{% trans %}TRANS_FECHA_INICIO{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Fin">{% trans %}TRANS_FECHA_FIN{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Evaluacion">{% trans %}TRANS_EVALUACION{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Metodologia">{% trans %}TRANS_METODOLOGIA{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal view fichero -->
+    <div id="modal_view_puestosTrab" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Imprimir Evaluación</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>Puestos de trabajo</label>
+                    <select id="selectFichero" multiple="multiple" style="display: none;">
+                        <option value="0" selected>Todos los puestos</option>
+                        <!-- Aquí se cargarán las opciones del Select2 -->
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="btnObtenerSeleccion">Obtener Selección</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal crear evaluacion -->
+    <div id="mdal_crear_evaluacion" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_NUEVA_EVALUACION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans %}TRANS_EMPRESA{% endtrans %}</label>
+                    <select id="empresa" class="form-control js_busca_ajax_empresa" data-fouc></select>
+                    <br/>
+                    <br/>
+                    <label>{% trans %}TRANS_TIPO{% endtrans %}</label>
+                    <br/>
+                    <label class='radio-inline'><input type='radio' name='tipoEvaluacion' id='tipoEvaluacion1' value='1'> {% trans %}TRANS_EVALUACION_INICIAL{% endtrans %}</label>
+                    <br/>
+                    <label class='radio-inline'><input type='radio' name='tipoEvaluacion' id='tipoEvaluacion2' value='2'> {% trans %}TRANS_EVALUACION_REVISION{% endtrans %}</label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnAddEvaluacion">{% trans from 'messages' %}TRANS_AÑADIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal generacion evaluacion -->
+    <div id="modal_generate_evaluacion" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_IMPRIMIR_EVALUACION{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'messages' %}TRANS_PLANTILLA{% endtrans %}</label>
+                    <select id="plantilla" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listPlantillas is not empty %}
+                            {% for lp in listPlantillas %}
+                                <option value="{{ lp.id }}">{{ lp.nombre }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <input type="hidden" id="evaluacionId" class="form-control"/>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnGeneraEvaluacion">{% trans from 'messages' %}TRANS_IMPRIMIR{% endtrans %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

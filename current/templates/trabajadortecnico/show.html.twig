@@ -1,0 +1,231 @@
+{% extends 'theme/template.html.twig' %}
+{% trans_default_domain 'trabajadores' %}
+
+{% block title %} {% trans %}TRANS_TRABAJADORES{% endtrans %} {% endblock %}
+{% block subtitle %} {% trans %}TRANS_LISTADO{% endtrans %} {% endblock %}
+
+{% block actions %}
+    {% if app.session.get('privilegiosRol').addTrabajadorTecnicoSn is defined and app.session.get('privilegiosRol').addTrabajadorTecnicoSn is not null %}
+        {% if app.session.get('privilegiosRol').addTrabajadorTecnicoSn %}
+            <a href="{{ path('tecnico_trabajador_create') }}" class="btn btn-labeled btn-labeled-left bg-primary">{% trans %}TRANS_NUEVO_TRABAJADOR{% endtrans %}<b><i class="icon-plus3"></i></b></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block card %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+//Boton para editar una alta/baja
+            <!--Petició 28/07/2023-->
+            $('#btnUpdateAltaBaja').click(function(){
+
+                var empresaEditar = $('#empresaEditar').val();
+                var fechaAltaEditar = $('#fechaAltaEditar').val();
+                var fechaBajaEditar = $('#fechaBajaEditar').val();
+                var motivoBajaEditar = $('#motivoBajaEditar').val();
+
+                if(empresaEditar == ''){
+                    $('#empresaEditar').focus();
+                    return false;
+                }
+
+                $('#btnUpdateAltaBaja').prop("disabled", true);
+                $('#btnUpdateAltaBaja').html("<i class=\"icon-spinner2 spinner mr-2\"></i>Guardar");
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('trabajador_update_alta_baja') }}",
+                    data: {
+                        'altaBajaId': $('#altaBajaId').val(),
+                        'fechaAlta': fechaAltaEditar,
+                        'fechaBaja': fechaBajaEditar,
+                        'empresaId' : empresaEditar,
+                        'motivoBaja': motivoBajaEditar
+                    },
+                    dataType: "JSON",
+                    success: function (data) {
+                        if(data == "OK"){
+                            location.reload();
+                        }
+                    },
+                    error: function(){
+                        new PNotify({
+                            title: 'Ops!',
+                            text: '{% trans from "messages" %}TRANS_AVISO_ERROR{% endtrans %}',
+                            icon: 'icon-blocked',
+                            type: 'error'
+                        });
+
+                        $('#btnUpdateAltaBaja').prop("disabled", false);
+                        $('#btnUpdateAltaBaja').html("Guardar");
+                    }
+                });
+            });
+
+            $.extend( $.fn.dataTable.defaults, {
+                // autoWidth: true,
+                // columnDefs: [{
+                //     width: 100,
+                // }],
+                // ordering: true,
+                deferRender: true,
+                dom: '<"datatable-header"fBl><"datatable-scroll-wrap"t><"datatable-footer"ip>',
+                lengthMenu: [[10, 25, 50, 100, 500, 2000, 5000], [10, 25, 50, 100, 500, 2000, 5000]],
+                language: {
+                    search: '<span>Filtrar:</span> _INPUT_',
+                    searchPlaceholder: 'Escriba para filtrar...',
+                    lengthMenu: '<span>Mostrar:</span> _MENU_',
+                    paginate: { 'first': 'First', 'last': 'Last', 'next': $('html').attr('dir') == 'rtl' ? '&larr;' : '&rarr;', 'previous': $('html').attr('dir') == 'rtl' ? '&rarr;' : '&larr;' }
+                }
+            });
+
+            $('.datatable-export-excel').DataTable({
+                data: null,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "searching": "false",
+                "cache": true,
+                ajax: {
+                    url: '{{ path('tecnico_trabajador_datatable') }}',
+                    type: 'POST',
+                    dataSrc: 'data'
+                },
+                "columnDefs": [
+                    { "name": "actions", "sortable": false, "searchable":false,  "targets": 0 },
+                    { "name": "a.nombre", "targets": 1 },
+                    { "name": "a.dni", "targets": 2 },
+                    { "name": "c.empresa",  "targets": 3 },
+                    { "name": "a.discapacidad", "sortable": false, "searchable": false,  "targets": 4 },
+                    { "name": "puesto", "sortable": false, "searchable": false, "targets": 5 },
+                ],
+                order: [
+                    [1, "asc"]
+                ],
+                columns:[
+                    {data: "actions"},
+                    {data: "nombre"},
+                    {data: "dni"},
+                    {data: "empresa"},
+                    {data: "sensible"},
+                    {data: "puesto"},
+                ],
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: '<i class="icon-file-spreadsheet mr-2"></i> Exportar a Excel',
+                            fieldSeparator: '\t',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            {% if app.session.get('privilegiosRol').exportTrabajadorTecnicoSn is defined and app.session.get('privilegiosRol').exportTrabajadorTecnicoSn is not null %}
+                {% if app.session.get('privilegiosRol').exportTrabajadorTecnicoSn != true %}
+                    $('.dt-buttons').css('display', 'none');
+                {% endif %}
+            {% endif %}
+        });
+    </script>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger bg-white alert-styled-left alert-arrow-left alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+    <div class="card">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper no-footer">
+
+            <div class="datatable-scroll">
+                <table class="table datatable-export-excel dataTable no-footer" id="DataTables_Table_0" role="grid"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_disabled" rowspan="1" colspan="1" aria-label="Actions"
+                            style="width: 100px;">{% trans from 'messages' %}TRANS_ACCIONES{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Nombre" aria-sort="none">{% trans %}TRANS_NOMBRE{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="DNI" aria-sort="none">{% trans %}TRANS_DNI{% endtrans %}
+                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Empresa" aria-sort="none">{% trans %}TRANS_EMPRESA{% endtrans %}
+                        </th>
+                        <th class="sorting_disabled" rowspan="1" colspan="1"
+                            aria-label="Sensible">{% trans %}TRANS_SENSIBLE{% endtrans %}
+                        </th>
+                        <th class="sorting_disabled" rowspan="1" colspan="1"
+                            aria-label="PuestoTrabajo">{% trans %}TRANS_PUESTO_TRABAJO{% endtrans %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal editar alta/baja -->
+    <!--Petició 28/07/2023-->
+    <div id="modal_editar_alta_baja" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans %}TRANS_MODIFICAR_ALTA_BAJA{% endtrans %}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <label>{% trans from 'empresas' %}TRANS_EMPRESA{% endtrans %}</label>
+                    <select id="empresaEditar" class="select-search form-control">
+                        <option value=""></option>
+                        {% if listEmpresa is not empty %}
+                            {% for le in listEmpresa %}
+                                <option value="{{ le.id }}">{{ le.empresa }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+
+                    <label>{% trans %}TRANS_FECHA_ALTA{% endtrans %}</label>
+                    <input type="date" id="fechaAltaEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_FECHA_BAJA{% endtrans %}</label>
+                    <input type="date" id="fechaBajaEditar" class="form-control" />
+
+                    <label>{% trans %}TRANS_MOTIVO_BAJA{% endtrans %}</label>
+                    <textarea id="motivoBajaEditar"  class="form-control"></textarea>
+
+                    <input type="hidden" id="altaBajaId" class="form-control" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-primary" id="btnUpdateAltaBaja">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
