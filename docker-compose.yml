@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL principal
+  postgres:
+    image: postgres:13
+    container_name: prevencio_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: prevencion
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./BBDDs:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Base de datos de estadísticas (opcional)
+  postgres_stats:
+    image: postgres:13
+    container_name: prevencio_postgres_stats
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: stats_meditrauma
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_stats_data:/var/lib/postgresql/data
+      - ./BBDDs:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  # Base de datos de cola (opcional)
+  postgres_queue:
+    image: postgres:13
+    container_name: prevencio_postgres_queue
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: openqueue
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_queue_data:/var/lib/postgresql/data
+      - ./BBDDs:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  postgres_stats_data:
+  postgres_queue_data:
+
