@@ -89,22 +89,44 @@ echo.
 
 REM Paso 4: Instalar dependencias de Composer
 echo [4/7] Verificando dependencias de Composer...
-cd current
-if not exist "vendor" (
-    echo   Instalando dependencias de Composer (esto puede tardar varios minutos)
-    call composer install --no-dev --optimize-autoloader --no-interaction
-    if !errorlevel! equ 0 (
-        echo   ✓ Dependencias instaladas
+where composer >nul 2>&1
+if !errorlevel! neq 0 (
+    echo   ⚠ Composer no está instalado o no está en el PATH
+    echo   Opciones:
+    echo   1. Instalar Composer desde https://getcomposer.org/download/
+    echo   2. Usar composer.phar si está en el directorio
+    echo   3. Continuar sin instalar dependencias (puedes hacerlo manualmente después)
+    echo.
+    if exist "current\composer.phar" (
+        echo   Encontrado composer.phar, usándolo...
+        set COMPOSER_CMD=php current\composer.phar
     ) else (
-        echo   ✗ Error instalando dependencias
-        cd ..
-        pause
-        exit /b 1
+        echo   ⚠ Saltando instalación de dependencias
+        echo   Instala Composer y ejecuta: cd current ^&^& composer install --no-dev --optimize-autoloader
+        set COMPOSER_CMD=
     )
 ) else (
-    echo   ✓ Dependencias ya instaladas
+    set COMPOSER_CMD=composer
 )
-cd ..
+
+if not "!COMPOSER_CMD!"=="" (
+    cd current
+    if not exist "vendor" (
+        echo   Instalando dependencias de Composer (esto puede tardar varios minutos)
+        !COMPOSER_CMD! install --no-dev --optimize-autoloader --no-interaction
+        if !errorlevel! equ 0 (
+            echo   ✓ Dependencias instaladas
+        ) else (
+            echo   ✗ Error instalando dependencias
+            echo   Intenta ejecutar manualmente: cd current ^&^& composer install --no-dev --optimize-autoloader
+        )
+    ) else (
+        echo   ✓ Dependencias ya instaladas
+    )
+    cd ..
+) else (
+    echo   ⚠ Saltando instalación de dependencias (Composer no disponible)
+)
 echo.
 
 REM Paso 5: Configurar permisos y cache
