@@ -32,9 +32,18 @@ try {
     echo "       Username: " . $user->getUsername() . "\n";
     echo "       Email: " . $user->getEmail() . "\n";
     echo "       Enabled: " . ($user->isEnabled() ? 'SI' : 'NO') . "\n";
-    echo "       Locked: " . ($user->isLocked() ? 'SI' : 'NO') . "\n";
-    echo "       Expired: " . ($user->isExpired() ? 'SI' : 'NO') . "\n";
-    echo "       Credentials Expired: " . ($user->isCredentialsExpired() ? 'SI' : 'NO') . "\n";
+    
+    // Verificar métodos disponibles antes de llamarlos
+    if (method_exists($user, 'isLocked')) {
+        echo "       Locked: " . ($user->isLocked() ? 'SI' : 'NO') . "\n";
+    }
+    if (method_exists($user, 'isExpired')) {
+        echo "       Expired: " . ($user->isExpired() ? 'SI' : 'NO') . "\n";
+    }
+    if (method_exists($user, 'isCredentialsExpired')) {
+        echo "       Credentials Expired: " . ($user->isCredentialsExpired() ? 'SI' : 'NO') . "\n";
+    }
+    
     echo "       Roles: " . implode(', ', $user->getRoles()) . "\n";
     echo "       Password Hash: " . substr($user->getPassword(), 0, 30) . "...\n\n";
     
