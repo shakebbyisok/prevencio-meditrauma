@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 echo Restaurando bases de datos en Docker...
 echo.
 
@@ -44,10 +45,15 @@ if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
     set FOUND=1
 ) else if exist "%BBDD_PATH%\dump-prevencion-202511120956" (
     echo   Buscando en carpeta: %BBDD_PATH%\dump-prevencion-202511120956
+    echo   Contenido de la carpeta:
+    dir /b "%BBDD_PATH%\dump-prevencion-202511120956" 2>nul
+    echo.
     for %%f in ("%BBDD_PATH%\dump-prevencion-202511120956\*.sql") do (
         echo   Encontrado: %%f
         docker exec -i prevencio_postgres psql -U postgres -d prevencion < "%%f"
-        set FOUND=1
+        if !errorlevel! equ 0 (
+            set FOUND=1
+        )
     )
 )
 
@@ -55,12 +61,11 @@ if %FOUND% equ 0 (
     echo ✗ No se encontró dump-prevencion-202511120956.sql
     echo   Buscado en: %BBDD_PATH%\dump-prevencion-202511120956.sql
     echo   Buscado en: %BBDD_PATH%\dump-prevencion-202511120956\*.sql
-) else (
-    if %errorlevel% equ 0 (
-        echo ✓ Base de datos prevencion restaurada correctamente
-    ) else (
-        echo ✗ Error restaurando prevencion
+    if exist "%BBDD_PATH%\dump-prevencion-202511120956" (
+        echo   La carpeta existe pero no contiene archivos .sql
     )
+) else (
+    echo ✓ Base de datos prevencion restaurada correctamente
 )
 
 REM Restaurar stats (opcional)
@@ -77,10 +82,15 @@ if exist "%BBDD_PATH%\dump-stats_meditrauma-202511121025.sql" (
     )
 ) else if exist "%BBDD_PATH%\dump-stats_meditrauma-202511121025" (
     echo   Buscando en carpeta: %BBDD_PATH%\dump-stats_meditrauma-202511121025
+    echo   Contenido de la carpeta:
+    dir /b "%BBDD_PATH%\dump-stats_meditrauma-202511121025" 2>nul
+    echo.
     for %%f in ("%BBDD_PATH%\dump-stats_meditrauma-202511121025\*.sql") do (
         echo   Encontrado: %%f
         docker exec -i prevencio_postgres_stats psql -U postgres -d stats_meditrauma < "%%f"
-        set FOUND_STATS=1
+        if !errorlevel! equ 0 (
+            set FOUND_STATS=1
+        )
     )
 )
 
@@ -102,10 +112,15 @@ if exist "%BBDD_PATH%\dump-openqueue-202511121025.sql" (
     )
 ) else if exist "%BBDD_PATH%\dump-openqueue-202511121025" (
     echo   Buscando en carpeta: %BBDD_PATH%\dump-openqueue-202511121025
+    echo   Contenido de la carpeta:
+    dir /b "%BBDD_PATH%\dump-openqueue-202511121025" 2>nul
+    echo.
     for %%f in ("%BBDD_PATH%\dump-openqueue-202511121025\*.sql") do (
         echo   Encontrado: %%f
         docker exec -i prevencio_postgres_queue psql -U postgres -d openqueue < "%%f"
-        set FOUND_QUEUE=1
+        if !errorlevel! equ 0 (
+            set FOUND_QUEUE=1
+        )
     )
 )
 
