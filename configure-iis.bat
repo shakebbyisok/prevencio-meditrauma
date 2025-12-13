@@ -37,31 +37,29 @@ if not exist "C:\Windows\system32\inetsrv\appcmd.exe" (
 
 set APPCMD=C:\Windows\system32\inetsrv\appcmd.exe
 
-echo Verificando si el sitio ya existe...
-"%APPCMD%" list site "%SITE_NAME%" >nul 2>&1
-if !errorlevel! equ 0 (
-    echo ⚠ El sitio %SITE_NAME% ya existe
-    echo ¿Deseas eliminarlo y recrearlo? (S/N)
-    set /p RECREATE=
-    if /i "!RECREATE!"=="S" (
-        echo Eliminando sitio existente...
-        "%APPCMD%" delete site "%SITE_NAME%"
-    ) else (
-        echo Saltando creación del sitio
-        goto :configure_php
-    )
-)
-
 echo.
 echo [1/3] Creando sitio web en IIS...
-"%APPCMD%" add site /name:"%SITE_NAME%" /bindings:http/*:%SITE_PORT%: /physicalPath:"%APP_PATH%"
+echo   Intentando crear sitio %SITE_NAME%...
+"%APPCMD%" add site /name:"%SITE_NAME%" /bindings:http/*:%SITE_PORT%: /physicalPath:"%APP_PATH%" 2>nul
 if !errorlevel! equ 0 (
-    echo ✓ Sitio creado
+    echo ✓ Sitio creado correctamente
 ) else (
-    echo ✗ Error creando sitio
-    echo Intenta crear el sitio manualmente desde IIS Manager
-    pause
-    exit /b 1
+    echo ⚠ El sitio puede que ya exista o hubo un error
+    echo   Intentando eliminarlo y recrearlo...
+    "%APPCMD%" delete site "%SITE_NAME%" >nul 2>&1
+    timeout /t 1 /nobreak >nul
+    "%APPCMD%" add site /name:"%SITE_NAME%" /bindings:http/*:%SITE_PORT%: /physicalPath:"%APP_PATH%"
+    if !errorlevel! equ 0 (
+        echo ✓ Sitio creado correctamente
+    ) else (
+        echo ✗ Error creando sitio
+        echo   Intenta crear el sitio manualmente desde IIS Manager:
+        echo   - Nombre: %SITE_NAME%
+        echo   - Ruta: %APP_PATH%
+        echo   - Puerto: %SITE_PORT%
+        pause
+        exit /b 1
+    )
 )
 
 :configure_php
