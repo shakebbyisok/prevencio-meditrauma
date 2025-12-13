@@ -28,10 +28,10 @@ set PROJECT_PATH=%CD%
 set CONTAINER_NAME=node-build-assets
 
 echo.
-echo [1/3] Descargando imagen de Node.js v18 (con OpenSSL legacy provider)...
-docker pull node:18-slim >nul 2>&1
+echo [1/3] Descargando imagen de Node.js v16 (máxima compatibilidad)...
+docker pull node:16-bullseye-slim >nul 2>&1
 if !errorlevel! equ 0 (
-    echo ✓ Imagen de Node.js v18 lista
+    echo ✓ Imagen de Node.js v16 lista
 ) else (
     echo ⚠ No se pudo descargar la imagen, intentando continuar...
 )
@@ -39,28 +39,23 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/3] Instalando dependencias de npm...
 echo   Esto puede tardar varios minutos...
-echo   Nota: Ignorando scripts nativos problemáticos (node-sass)...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:18-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install --ignore-scripts"
+echo   Nota: Instalando todas las dependencias (incluyendo node-sass)...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install"
 if !errorlevel! neq 0 (
-    echo ⚠ Error con --ignore-scripts, intentando instalación normal...
-    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:18-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install"
-    if !errorlevel! neq 0 (
-        echo ✗ ERROR: Error instalando dependencias
-        echo   node-sass puede estar causando problemas
-        echo   Intenta compilar los assets localmente o actualiza a sass (dart-sass)
-        pause
-        exit /b 1
-    )
+    echo ✗ ERROR: Error instalando dependencias
+    echo   Verifica que Docker tenga suficiente memoria y espacio en disco
+    pause
+    exit /b 1
 )
 echo ✓ Dependencias instaladas
 
 echo.
 echo [3/3] Compilando assets para producción...
-echo   Usando NODE_OPTIONS=--openssl-legacy-provider para compatibilidad...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app -e NODE_OPTIONS=--openssl-legacy-provider node:18-slim sh -c "npm run build"
+echo   Usando Node.js v16 (compatible con webpack 4 y babel antiguo)...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm run build"
 if !errorlevel! neq 0 (
     echo ⚠ Error compilando para producción, intentando modo desarrollo...
-    docker run --rm -v "%PROJECT_PATH%:/app" -w /app -e NODE_OPTIONS=--openssl-legacy-provider node:18-slim sh -c "npm run dev"
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm run dev"
     if !errorlevel! neq 0 (
         echo ✗ ERROR: Error compilando assets
         pause
