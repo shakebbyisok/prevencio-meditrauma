@@ -26,72 +26,47 @@ if !errorlevel! neq 0 (
     exit /b 1
 )
 
-echo [INFO] Creando usuario admin directamente en MySQL...
+REM Verificar que PHP esta instalado
+php --version >nul 2>&1
+if !errorlevel! neq 0 (
+    echo [ERROR] PHP no esta instalado o no esta en el PATH
+    pause
+    exit /b 1
+)
+
+REM Verificar que existe el script PHP
+if not exist "create-admin-user.php" (
+    echo [ERROR] No se encuentra create-admin-user.php
+    pause
+    exit /b 1
+)
+
+echo [INFO] Creando usuario admin usando Symfony encoder...
 echo       Usuario: admin
 echo       Contraseña: admin6291
 echo.
 
-REM Generar hash de contraseña y salt usando PHP
-echo       Generando hash de contraseña y salt...
-for /f "tokens=*" %%H in ('php -r "echo password_hash('admin6291', PASSWORD_BCRYPT);" 2^>nul') do set PASSWORD_HASH=%%H
-for /f "tokens=*" %%S in ('php -r "echo bin2hex(random_bytes(32));" 2^>nul') do set SALT=%%S
-
-if not defined PASSWORD_HASH (
-    echo [ERROR] No se pudo generar el hash de contraseña
-    echo         Verifica que PHP este instalado
+REM Ejecutar script PHP que usa el encoder de Symfony
+php create-admin-user.php
+if !errorlevel! neq 0 (
+    echo.
+    echo [ERROR] Error ejecutando el script PHP
+    echo         Verifica que Symfony este correctamente instalado
     pause
     exit /b 1
 )
 
-if not defined SALT (
-    echo [ERROR] No se pudo generar el salt
-    echo         Verifica que PHP este instalado
-    pause
-    exit /b 1
-)
-
-REM Verificar si el usuario ya existe
-docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM prevencion.fos_user WHERE username='admin';" 2>nul | findstr /C:"0" >nul
-if !errorlevel! equ 0 (
-    echo       Usuario no existe, creando...
-    REM Insertar usuario con todos los campos requeridos
-    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; INSERT INTO fos_user (username, username_canonical, email, email_canonical, enabled, salt, password, locked, expired, credentials_expired, roles, created_at, updated_at, centro_id, servicio_id) VALUES ('admin', 'admin', 'admin@prevencio.local', 'admin@prevencio.local', 1, '%SALT%', '%PASSWORD_HASH%', 0, 0, 0, 'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}', NOW(), NOW(), 1, 1);" 2>nul
-    if !errorlevel! equ 0 (
-        echo       OK - Usuario creado
-        set USER_CREATED=1
-    ) else (
-        echo [ERROR] Error creando usuario
-        echo         Ejecutando comando con salida detallada...
-        docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; INSERT INTO fos_user (username, username_canonical, email, email_canonical, enabled, salt, password, locked, expired, credentials_expired, roles, created_at, updated_at, centro_id, servicio_id) VALUES ('admin', 'admin', 'admin@prevencio.local', 'admin@prevencio.local', 1, '%SALT%', '%PASSWORD_HASH%', 0, 0, 0, 'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}', NOW(), NOW(), 1, 1);"
-        pause
-        exit /b 1
-    )
-) else (
-    echo       Usuario ya existe, actualizando contraseña...
-    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; UPDATE fos_user SET password='%PASSWORD_HASH%', enabled=1, locked=0, expired=0, credentials_expired=0, roles='a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}' WHERE username='admin';" 2>nul
-    if !errorlevel! equ 0 (
-        echo       OK - Contraseña actualizada
-        set USER_CREATED=1
-    ) else (
-        echo [ERROR] Error actualizando usuario
-        pause
-        exit /b 1
-    )
-)
-
-if defined USER_CREATED (
-    echo.
-    echo ============================================================
-    echo   USUARIO ADMIN CREADO
-    echo ============================================================
-    echo.
-    echo   Usuario: admin
-    echo   Contraseña: admin6291
-    echo.
-    echo   Puedes iniciar sesion en: http://localhost/index.php/login
-    echo.
-    echo ============================================================
-)
+echo.
+echo ============================================================
+echo   USUARIO ADMIN CREADO
+echo ============================================================
+echo.
+echo   Usuario: admin
+echo   Contraseña: admin6291
+echo.
+echo   Puedes iniciar sesion en: http://localhost/index.php/login
+echo.
+echo ============================================================
 
 pause
 
