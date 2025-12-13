@@ -73,7 +73,21 @@ del "!PHP_ZIP!" >nul 2>&1
 
 REM Instalar Visual C++ Redistributables si es necesario
 echo   Verificando Visual C++ Redistributables...
-powershell -Command "if (-not (Test-Path 'C:\Windows\System32\vcruntime140.dll')) { Write-Host 'Instalando Visual C++ Redistributables...' -ForegroundColor Yellow; $vcRedist = '%TEMP%\vc_redist.x64.exe'; Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile $vcRedist -UseBasicParsing -TimeoutSec 60; Start-Process -FilePath $vcRedist -ArgumentList '/quiet', '/norestart' -Wait; Remove-Item $vcRedist -Force; Write-Host '✓ Visual C++ instalado' -ForegroundColor Green } else { Write-Host '✓ Visual C++ ya está instalado' -ForegroundColor Green }"
+powershell -Command "$needsVC = $false; try { $null = [System.Runtime.InteropServices.Marshal]::GetActiveObject('VisualStudio.DTE') } catch { $needsVC = $true }; if ($needsVC -or -not (Test-Path 'C:\Windows\System32\vcruntime140.dll')) { Write-Host 'Instalando Visual C++ Redistributables 2015-2022...' -ForegroundColor Yellow; $vcRedist = '%TEMP%\vc_redist.x64.exe'; try { Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile $vcRedist -UseBasicParsing -TimeoutSec 120; Write-Host 'Ejecutando instalador...' -ForegroundColor Yellow; $proc = Start-Process -FilePath $vcRedist -ArgumentList '/install', '/quiet', '/norestart' -Wait -PassThru; if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) { Write-Host '✓ Visual C++ instalado' -ForegroundColor Green } else { Write-Host '⚠ Visual C++ puede requerir reinicio' -ForegroundColor Yellow }; Remove-Item $vcRedist -Force -ErrorAction SilentlyContinue } catch { Write-Host '✗ Error descargando Visual C++' -ForegroundColor Red; Write-Host '  Descarga manualmente desde: https://aka.ms/vs/17/release/vc_redist.x64.exe' -ForegroundColor Yellow } } else { Write-Host '✓ Visual C++ ya está instalado' -ForegroundColor Green }"
+
+REM Verificar que PHP funcione después de instalar VC++
+echo   Verificando que PHP funcione correctamente...
+"!PHP_DIR!\php.exe" -v >nul 2>&1
+if !errorlevel! neq 0 (
+    echo   ⚠ PHP no puede ejecutarse (falta VCRUNTIME140.dll)
+    echo   Instala Visual C++ Redistributables manualmente desde:
+    echo   https://aka.ms/vs/17/release/vc_redist.x64.exe
+    echo   Luego ejecuta este script de nuevo
+    pause
+    exit /b 1
+) else (
+    echo   ✓ PHP funciona correctamente
+)
 
 REM Configurar PHP
 echo   Configurando PHP...
@@ -114,16 +128,23 @@ if exist "!PHP_DIR!\composer.bat" (
 )
 
 echo   Instalando Composer...
-powershell -Command "$ErrorActionPreference = 'Stop'; try { Write-Host 'Descargando Composer...' -ForegroundColor Yellow; Invoke-WebRequest -Uri 'https://getcomposer.org/installer' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing -TimeoutSec 60; Write-Host 'Instalando...' -ForegroundColor Yellow; $proc = Start-Process -FilePath '!PHP_DIR!\php.exe' -ArgumentList '!COMPOSER_SETUP!', '--install-dir=!PHP_DIR!', '--filename=composer' -Wait -PassThru -NoNewWindow; if ($proc.ExitCode -eq 0) { Write-Host '✓ Composer instalado' -ForegroundColor Green } else { Write-Host '⚠ Composer puede haberse instalado con advertencias' -ForegroundColor Yellow } } catch { Write-Host '✗ Error: ' $_.Exception.Message -ForegroundColor Red }"
+powershell -Command "$ErrorActionPreference = 'Stop'; try { Write-Host 'Descargando Composer...' -ForegroundColor Yellow; Invoke-WebRequest -Uri 'https://getcomposer.org/installer' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing -TimeoutSec 60; Write-Host 'Instalando Composer...' -ForegroundColor Yellow; $phpPath = '!PHP_DIR!\php.exe'; if (-not (Test-Path $phpPath)) { throw 'PHP no encontrado en !PHP_DIR!' }; $output = & $phpPath '!COMPOSER_SETUP!' --install-dir='!PHP_DIR!' --filename=composer 2>&1; if ($LASTEXITCODE -eq 0) { Write-Host '✓ Composer instalado correctamente' -ForegroundColor Green } else { Write-Host '⚠ Composer instalado con advertencias:' -ForegroundColor Yellow; Write-Host $output } } catch { Write-Host '✗ Error instalando Composer: ' $_.Exception.Message -ForegroundColor Red; Write-Host '  Verifica que PHP funcione correctamente' -ForegroundColor Yellow }"
 del "!COMPOSER_SETUP!" >nul 2>&1
 
-if not exist "!PHP_DIR!\composer.bat" (
-    if exist "!PHP_DIR!\composer" (
-        echo   ✓ Composer instalado (sin .bat, usando directamente)
-    ) else (
-        echo   ✗ Error instalando Composer
-        echo   Continuando sin Composer (instálalo manualmente después)
-    )
+REM Verificar instalación de Composer
+if exist "!PHP_DIR!\composer.bat" (
+    echo   ✓ Composer instalado correctamente
+) else if exist "!PHP_DIR!\composer" (
+    echo   ✓ Composer instalado (archivo composer sin .bat)
+    REM Crear composer.bat si no existe
+    (
+        echo @echo off
+        echo "!PHP_DIR!\php.exe" "!PHP_DIR!\composer" %%*
+    ) > "!PHP_DIR!\composer.bat"
+    echo   ✓ Archivo composer.bat creado
+) else (
+    echo   ✗ Error: Composer no se instaló correctamente
+    echo   Verifica que PHP funcione: !PHP_DIR!\php.exe -v
 )
 
 :check_docker
