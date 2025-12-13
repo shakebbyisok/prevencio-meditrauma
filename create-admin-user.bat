@@ -31,12 +31,20 @@ echo       Usuario: admin
 echo       Contraseña: admin6291
 echo.
 
-REM Generar hash de contraseña usando PHP (bcrypt)
-echo       Generando hash de contraseña...
+REM Generar hash de contraseña y salt usando PHP
+echo       Generando hash de contraseña y salt...
 for /f "tokens=*" %%H in ('php -r "echo password_hash('admin6291', PASSWORD_BCRYPT);" 2^>nul') do set PASSWORD_HASH=%%H
+for /f "tokens=*" %%S in ('php -r "echo bin2hex(random_bytes(32));" 2^>nul') do set SALT=%%S
 
 if not defined PASSWORD_HASH (
     echo [ERROR] No se pudo generar el hash de contraseña
+    echo         Verifica que PHP este instalado
+    pause
+    exit /b 1
+)
+
+if not defined SALT (
+    echo [ERROR] No se pudo generar el salt
     echo         Verifica que PHP este instalado
     pause
     exit /b 1
@@ -47,14 +55,14 @@ docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM 
 if !errorlevel! equ 0 (
     echo       Usuario no existe, creando...
     REM Insertar usuario con todos los campos requeridos
-    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; INSERT INTO fos_user (username, username_canonical, email, email_canonical, enabled, salt, password, locked, expired, credentials_expired, roles, created_at, updated_at, centro_id, servicio_id) VALUES ('admin', 'admin', 'admin@prevencio.local', 'admin@prevencio.local', 1, NULL, '%PASSWORD_HASH%', 0, 0, 0, 'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}', NOW(), NOW(), 1, 1);" 2>nul
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; INSERT INTO fos_user (username, username_canonical, email, email_canonical, enabled, salt, password, locked, expired, credentials_expired, roles, created_at, updated_at, centro_id, servicio_id) VALUES ('admin', 'admin', 'admin@prevencio.local', 'admin@prevencio.local', 1, '%SALT%', '%PASSWORD_HASH%', 0, 0, 0, 'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}', NOW(), NOW(), 1, 1);" 2>nul
     if !errorlevel! equ 0 (
         echo       OK - Usuario creado
         set USER_CREATED=1
     ) else (
         echo [ERROR] Error creando usuario
         echo         Ejecutando comando con salida detallada...
-        docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; INSERT INTO fos_user (username, username_canonical, email, email_canonical, enabled, salt, password, locked, expired, credentials_expired, roles, created_at, updated_at, centro_id, servicio_id) VALUES ('admin', 'admin', 'admin@prevencio.local', 'admin@prevencio.local', 1, NULL, '%PASSWORD_HASH%', 0, 0, 0, 'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}', NOW(), NOW(), 1, 1);"
+        docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; INSERT INTO fos_user (username, username_canonical, email, email_canonical, enabled, salt, password, locked, expired, credentials_expired, roles, created_at, updated_at, centro_id, servicio_id) VALUES ('admin', 'admin', 'admin@prevencio.local', 'admin@prevencio.local', 1, '%SALT%', '%PASSWORD_HASH%', 0, 0, 0, 'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}', NOW(), NOW(), 1, 1);"
         pause
         exit /b 1
     )
