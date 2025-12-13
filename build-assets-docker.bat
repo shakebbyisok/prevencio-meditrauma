@@ -39,17 +39,20 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/3] Instalando dependencias de npm...
 echo   Esto puede tardar varios minutos...
-echo   Nota: Instalando herramientas de compilación y dependencias...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 python3-pip make g++ build-essential >/dev/null 2>&1 && ln -sf /usr/bin/python3 /usr/bin/python && (npm ci --ignore-scripts || npm install --legacy-peer-deps --ignore-scripts)"
+echo   Nota: Instalando Python, make, g++ y creando symlink...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 python3-pip make g++ build-essential >/dev/null 2>&1 && ln -sf /usr/bin/python3 /usr/bin/python && npm install --legacy-peer-deps"
 if !errorlevel! neq 0 (
-    echo ⚠ Error con --ignore-scripts, intentando instalación completa...
-    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 python3-pip make g++ build-essential >/dev/null 2>&1 && ln -sf /usr/bin/python3 /usr/bin/python && npm install --legacy-peer-deps"
+    echo ⚠ Error con instalación completa, intentando con --ignore-scripts...
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 python3-pip make g++ build-essential >/dev/null 2>&1 && ln -sf /usr/bin/python3 /usr/bin/python && npm install --legacy-peer-deps --ignore-scripts && cd node_modules/node-sass && npm run build"
     if !errorlevel! neq 0 (
         echo ✗ ERROR: Error instalando dependencias
-        echo   node-sass requiere Python y herramientas de compilación
-        echo   Usando solución alternativa: crear manifest básico...
-        call create-basic-manifest.bat
-        exit /b 0
+        echo   Intentando solución alternativa: reemplazar node-sass con sass...
+        docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm uninstall node-sass && npm install --save-dev sass --legacy-peer-deps"
+        if !errorlevel! neq 0 (
+            echo ✗ ERROR: No se pudo instalar dependencias
+            pause
+            exit /b 1
+        )
     )
 )
 echo ✓ Dependencias instaladas
