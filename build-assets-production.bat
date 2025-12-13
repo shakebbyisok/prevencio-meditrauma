@@ -38,21 +38,27 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/4] Instalando herramientas de compilación y dependencias...
 echo   Esto puede tardar varios minutos...
-echo   Estrategia: Limpiar node_modules y reinstalar con sass...
+echo   Estrategia: Usar npm 6 para máxima compatibilidad con Babel antiguo...
 
-REM Limpiar node_modules y package-lock.json si existen, luego instalar
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "rm -rf node_modules package-lock.json 2>/dev/null; npm install --legacy-peer-deps"
+REM Instalar npm 6 primero (más compatible con versiones antiguas)
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm install -g npm@6.14.18 >/dev/null 2>&1"
+
+REM Limpiar node_modules y reinstalar con npm 6
+echo   Limpiando e instalando con npm 6...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "rm -rf node_modules 2>/dev/null; npm install --legacy-peer-deps --no-audit --no-fund"
 if !errorlevel! equ 0 (
-    echo ✓ Dependencias instaladas correctamente
+    echo ✓ Dependencias instaladas con npm 6
     goto :verify_sass
 )
 
 echo.
-echo ⚠ Error con instalación limpia, intentando sin limpiar...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm install --legacy-peer-deps"
-if !errorlevel! equ 0 (
-    echo ✓ Dependencias instaladas
-    goto :verify_sass
+echo ⚠ Error con npm 6, intentando con npm ci...
+if exist "package-lock.json" (
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm ci --legacy-peer-deps"
+    if !errorlevel! equ 0 (
+        echo ✓ Dependencias instaladas con npm ci
+        goto :verify_sass
+    )
 )
 
 echo.
@@ -63,7 +69,7 @@ exit /b 1
 :verify_sass
 echo.
 echo Verificando que sass esté instalado...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "test -d node_modules/sass && echo 'sass encontrado' || (echo 'sass no encontrado, instalando...' && npm install --save-dev sass@^1.32.0 --legacy-peer-deps)"
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "test -d node_modules/sass && echo 'sass encontrado' || (echo 'sass no encontrado, instalando...' && npm install --save-dev sass@^1.32.0 --legacy-peer-deps --no-save)"
 if !errorlevel! equ 0 (
     echo ✓ Sass verificado/instalado
     goto :compile
@@ -98,8 +104,9 @@ exit /b 1
 echo.
 echo [3/4] Compilando assets para producción...
 echo   Esto puede tardar varios minutos...
+echo   Usando npm 6 y Node.js 16 para compatibilidad...
 
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm run build"
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm install -g npm@6.14.18 >/dev/null 2>&1; npm run build"
 if !errorlevel! equ 0 (
     echo ✓ Assets compilados para producción
     goto :verify
@@ -107,7 +114,7 @@ if !errorlevel! equ 0 (
 
 echo.
 echo ⚠ Error compilando para producción, intentando modo desarrollo...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm run dev"
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm install -g npm@6.14.18 >/dev/null 2>&1; npm run dev"
 if !errorlevel! equ 0 (
     echo ✓ Assets compilados en modo desarrollo
     goto :verify
