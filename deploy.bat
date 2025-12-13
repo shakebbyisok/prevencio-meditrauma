@@ -263,15 +263,30 @@ if exist "%PHP_DIR%\php-cgi.exe" (
 
 :skip_iis
 echo.
-echo [10/10] Creando manifest.json para Webpack Encore...
+echo [10/10] Creando manifest.json y entrypoints.json para Webpack Encore...
 if not exist "%CURRENT_PATH%\public\build" mkdir "%CURRENT_PATH%\public\build" >nul 2>&1
+
+REM Crear manifest.json basico
 (
     echo {
     echo   "build/app.js": "/build/app.js",
     echo   "build/app.css": "/build/app.css"
     echo }
 ) > "%CURRENT_PATH%\public\build\manifest.json" 2>nul
-echo       OK - Manifest creado
+
+REM Crear entrypoints.json basico (requerido por Webpack Encore)
+(
+    echo {
+    echo   "entrypoints": {
+    echo     "app": {
+    echo       "js": [],
+    echo       "css": []
+    echo     }
+    echo   }
+    echo }
+) > "%CURRENT_PATH%\public\build\entrypoints.json" 2>nul
+
+echo       OK - Archivos de Webpack Encore creados
 
 echo.
 echo ============================================================
