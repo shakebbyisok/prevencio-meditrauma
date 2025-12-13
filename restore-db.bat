@@ -63,7 +63,16 @@ REM Restaurar base de datos principal
 echo Restaurando prevencion...
 set FOUND=0
 
-if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
+REM Buscar primero el archivo más reciente (meditruamadb)
+if exist "%BBDD_PATH%\meditruamadb_2025-11-06.sql\meditruamadb_2025-11-06.sql" (
+    echo   Encontrado archivo más reciente: meditruamadb_2025-11-06.sql (15GB)
+    echo   Restaurando (esto puede tardar 1-2 horas...)
+    docker cp "%BBDD_PATH%\meditruamadb_2025-11-06.sql\meditruamadb_2025-11-06.sql" prevencio_mysql:/tmp/dump.sql
+    docker exec prevencio_mysql sh -c "mysql -u root -proot123 --default-character-set=binary --binary-mode --force prevencion < /tmp/dump.sql"
+    docker exec prevencio_mysql rm /tmp/dump.sql
+    set FOUND=1
+    echo   ✓ Base de datos prevencion restaurada (algunos procedimientos almacenados pueden fallar, pero las tablas están OK)
+) else if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
     echo   Encontrado: %BBDD_PATH%\dump-prevencion-202511120956.sql
     echo   Restaurando (esto puede tardar varios minutos...)
     docker cp "%BBDD_PATH%\dump-prevencion-202511120956.sql" prevencio_mysql:/tmp/dump.sql
