@@ -39,13 +39,17 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/3] Instalando dependencias de npm...
 echo   Esto puede tardar varios minutos...
-echo   Nota: Instalando todas las dependencias (incluyendo node-sass)...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install"
+echo   Nota: Usando npm ci para instalar versiones exactas del lock file...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && (npm ci || npm install --legacy-peer-deps)"
 if !errorlevel! neq 0 (
-    echo ✗ ERROR: Error instalando dependencias
-    echo   Verifica que Docker tenga suficiente memoria y espacio en disco
-    pause
-    exit /b 1
+    echo ⚠ Error con npm ci, intentando con npm install normal...
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install --legacy-peer-deps"
+    if !errorlevel! neq 0 (
+        echo ✗ ERROR: Error instalando dependencias
+        echo   Verifica que Docker tenga suficiente memoria y espacio en disco
+        pause
+        exit /b 1
+    )
 )
 echo ✓ Dependencias instaladas
 
