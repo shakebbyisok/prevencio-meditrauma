@@ -52,11 +52,23 @@ if not exist "!PHP_DIR!" (
     echo   Descargando PHP 7.4.33 (30MB)...
     echo   Esto puede tardar varios minutos según tu conexión...
     echo   Por favor espera, no cierres esta ventana...
-    powershell -Command "$ProgressPreference = 'Continue'; Write-Host '[1/3] Descargando PHP desde internet...' -ForegroundColor Yellow; try { $webClient = New-Object System.Net.WebClient; Register-ObjectEvent -InputObject $webClient -EventName DownloadProgressChanged -Action { $percent = $args[1].ProgressPercentage; Write-Progress -Activity 'Descargando PHP' -Status \"$percent%% completado\" -PercentComplete $percent } | Out-Null; $webClient.DownloadFile('!PHP_URL!', '!PHP_ZIP!'); Write-Host '[1/3] ✓ Descarga completada' -ForegroundColor Green } catch { Write-Host '[1/3] ✗ Error: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
+    echo.
+    echo   [1/3] Iniciando descarga de PHP...
+    powershell -Command "$ProgressPreference = 'Continue'; Write-Host '[1/3] Conectando al servidor...' -ForegroundColor Yellow; $startTime = Get-Date; $webClient = New-Object System.Net.WebClient; $webClient.Headers.Add('User-Agent', 'Mozilla/5.0'); try { $webClient.DownloadFile('!PHP_URL!', '!PHP_ZIP!'); $elapsed = (Get-Date) - $startTime; Write-Host '[1/3] ✓ Descarga completada en ' $elapsed.TotalSeconds ' segundos' -ForegroundColor Green } catch { Write-Host '[1/3] ✗ Error descargando: ' $_.Exception.Message -ForegroundColor Red; Write-Host '   Intenta descargar manualmente desde: !PHP_URL!' -ForegroundColor Yellow; exit 1 } finally { $webClient.Dispose() }"
     if !errorlevel! neq 0 (
+        echo.
         echo   ✗ Error descargando PHP
-        echo   Descarga manualmente desde: !PHP_URL!
-        echo   Y extráelo en: !PHP_DIR!
+        echo   Posibles causas:
+        echo   - Sin conexión a internet
+        echo   - Firewall bloqueando la descarga
+        echo   - Servidor temporalmente no disponible
+        echo.
+        echo   SOLUCIÓN MANUAL:
+        echo   1. Descarga PHP manualmente desde:
+        echo      !PHP_URL!
+        echo   2. Extrae el ZIP en: !PHP_DIR!
+        echo   3. Ejecuta este script de nuevo
+        echo.
         pause
         exit /b 1
     )
@@ -112,7 +124,7 @@ set COMPOSER_INSTALLER=https://getcomposer.org/installer
 
 if not exist "!PHP_DIR!\composer.bat" (
     echo   [3/3] Descargando instalador de Composer...
-    powershell -Command "$ProgressPreference = 'Continue'; Write-Host '[3/3] Descargando Composer...' -ForegroundColor Yellow; try { Invoke-WebRequest -Uri '!COMPOSER_INSTALLER!' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing; Write-Host '[3/3] ✓ Descarga completada' -ForegroundColor Green } catch { Write-Host '[3/3] ✗ Error: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
+    powershell -Command "$ProgressPreference = 'Continue'; Write-Host '[3/3] Conectando a getcomposer.org...' -ForegroundColor Yellow; $startTime = Get-Date; try { Invoke-WebRequest -Uri '!COMPOSER_INSTALLER!' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing -TimeoutSec 60; $elapsed = (Get-Date) - $startTime; Write-Host '[3/3] ✓ Descarga completada en ' $elapsed.TotalSeconds ' segundos' -ForegroundColor Green } catch { Write-Host '[3/3] ✗ Error: ' $_.Exception.Message -ForegroundColor Red; Write-Host '   Verifica tu conexión a internet' -ForegroundColor Yellow; exit 1 }"
     if !errorlevel! neq 0 (
         echo   ✗ Error descargando Composer
         pause
