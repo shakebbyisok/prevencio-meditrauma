@@ -71,6 +71,10 @@ if not exist "!PHP_DIR!" mkdir "!PHP_DIR!"
 powershell -Command "Write-Host 'Extrayendo archivos...' -ForegroundColor Yellow; Expand-Archive -Path '!PHP_ZIP!' -DestinationPath '!PHP_DIR!' -Force; Write-Host '✓ Extracción completada' -ForegroundColor Green"
 del "!PHP_ZIP!" >nul 2>&1
 
+REM Instalar Visual C++ Redistributables si es necesario
+echo   Verificando Visual C++ Redistributables...
+powershell -Command "if (-not (Test-Path 'C:\Windows\System32\vcruntime140.dll')) { Write-Host 'Instalando Visual C++ Redistributables...' -ForegroundColor Yellow; $vcRedist = '%TEMP%\vc_redist.x64.exe'; Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vc_redist.x64.exe' -OutFile $vcRedist -UseBasicParsing -TimeoutSec 60; Start-Process -FilePath $vcRedist -ArgumentList '/quiet', '/norestart' -Wait; Remove-Item $vcRedist -Force; Write-Host '✓ Visual C++ instalado' -ForegroundColor Green } else { Write-Host '✓ Visual C++ ya está instalado' -ForegroundColor Green }"
+
 REM Configurar PHP
 echo   Configurando PHP...
 set PHP_INI=!PHP_DIR!\php.ini
@@ -110,12 +114,16 @@ if exist "!PHP_DIR!\composer.bat" (
 )
 
 echo   Instalando Composer...
-powershell -Command "$ErrorActionPreference = 'Stop'; try { Write-Host 'Descargando Composer...' -ForegroundColor Yellow; Invoke-WebRequest -Uri 'https://getcomposer.org/installer' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing -TimeoutSec 60; Write-Host 'Instalando...' -ForegroundColor Yellow; & '!PHP_DIR!\php.exe' '!COMPOSER_SETUP!' --install-dir='!PHP_DIR!' --filename=composer; Write-Host '✓ Composer instalado' -ForegroundColor Green } catch { Write-Host '✗ Error: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
+powershell -Command "$ErrorActionPreference = 'Stop'; try { Write-Host 'Descargando Composer...' -ForegroundColor Yellow; Invoke-WebRequest -Uri 'https://getcomposer.org/installer' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing -TimeoutSec 60; Write-Host 'Instalando...' -ForegroundColor Yellow; $proc = Start-Process -FilePath '!PHP_DIR!\php.exe' -ArgumentList '!COMPOSER_SETUP!', '--install-dir=!PHP_DIR!', '--filename=composer' -Wait -PassThru -NoNewWindow; if ($proc.ExitCode -eq 0) { Write-Host '✓ Composer instalado' -ForegroundColor Green } else { Write-Host '⚠ Composer puede haberse instalado con advertencias' -ForegroundColor Yellow } } catch { Write-Host '✗ Error: ' $_.Exception.Message -ForegroundColor Red }"
 del "!COMPOSER_SETUP!" >nul 2>&1
 
 if not exist "!PHP_DIR!\composer.bat" (
-    echo   ✗ Error instalando Composer
-    echo   Continuando sin Composer (instálalo manualmente después)
+    if exist "!PHP_DIR!\composer" (
+        echo   ✓ Composer instalado (sin .bat, usando directamente)
+    ) else (
+        echo   ✗ Error instalando Composer
+        echo   Continuando sin Composer (instálalo manualmente después)
+    )
 )
 
 :check_docker
@@ -159,8 +167,12 @@ if not exist ".env" (
 REM Generar APP_SECRET
 findstr /C:"APP_SECRET=" .env | findstr /V /C:"APP_SECRET=$" | findstr /V /C:"APP_SECRET= " >nul
 if !errorlevel! neq 0 (
-    for /f "tokens=*" %%a in ('php -r "echo bin2hex(random_bytes(16));"') do set NEW_SECRET=%%a
-    powershell -Command "(Get-Content .env) -replace 'APP_SECRET=.*', 'APP_SECRET=!NEW_SECRET!' | Set-Content .env"
+    if exist "!PHP_DIR!\php.exe" (
+        for /f "tokens=*" %%a in ('"!PHP_DIR!\php.exe" -r "echo bin2hex(random_bytes(16));"') do set NEW_SECRET=%%a
+        powershell -Command "(Get-Content .env) -replace 'APP_SECRET=.*', 'APP_SECRET=!NEW_SECRET!' | Set-Content .env"
+    ) else (
+        echo   ⚠ No se pudo generar APP_SECRET (PHP no disponible)
+    )
 )
 
 REM Verificar DATABASE_URL
@@ -235,9 +247,13 @@ if !errorlevel! equ 0 (
 if not "!PHP_CMD!"=="" (
     echo   Limpiando cache...
     !PHP_CMD! bin/console cache:clear --env=prod --no-warmup >nul 2>&1
-    echo   Calentando cache...
-    !PHP_CMD! bin/console cache:warmup --env=prod >nul 2>&1
-    echo   ✓ Cache configurado
+    if !errorlevel! equ 0 (
+        echo   Calentando cache...
+        !PHP_CMD! bin/console cache:warmup --env=prod >nul 2>&1
+        echo   ✓ Cache configurado
+    ) else (
+        echo   ⚠ Error configurando cache (puede ser normal si faltan dependencias)
+    )
 ) else (
     echo   ⚠ PHP no disponible, saltando configuración de cache
 )
