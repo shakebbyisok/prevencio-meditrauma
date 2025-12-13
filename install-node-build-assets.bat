@@ -11,7 +11,7 @@ if !errorlevel! neq 0 (
     echo ⚠ Algunas operaciones pueden requerir permisos de Administrador
 )
 
-set NODE_VERSION=20.11.0
+set NODE_VERSION=20.18.0
 set NODE_ARCH=x64
 set NODE_INSTALLER=node-v%NODE_VERSION%-win-%NODE_ARCH%.msi
 set NODE_URL=https://nodejs.org/dist/v%NODE_VERSION%/%NODE_INSTALLER%
@@ -36,30 +36,44 @@ cd /d "%TEMP_DIR%"
 
 echo.
 echo [3/5] Descargando Node.js v%NODE_VERSION%...
+echo   URL: %NODE_URL%
 echo   Esto puede tardar unos minutos...
-powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%NODE_INSTALLER%' -UseBasicParsing}"
+powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; try { Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%TEMP_DIR%\%NODE_INSTALLER%' -UseBasicParsing -ErrorAction Stop; Write-Host 'Download successful' } catch { Write-Host 'Download failed: ' $_.Exception.Message; exit 1 } }"
 if !errorlevel! neq 0 (
-    echo   ✗ Error descargando Node.js
-    echo   Intentando con URL alternativa...
+    echo   ✗ ERROR: No se pudo descargar Node.js
+    echo   Intentando descargar la versión LTS más reciente...
+    set NODE_VERSION=20.18.0
+    set NODE_INSTALLER=node-v%NODE_VERSION%-win-%NODE_ARCH%.msi
     set NODE_URL=https://nodejs.org/dist/v%NODE_VERSION%/%NODE_INSTALLER%
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%NODE_INSTALLER%' -UseBasicParsing}"
+    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; try { Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%TEMP_DIR%\%NODE_INSTALLER%' -UseBasicParsing -ErrorAction Stop } catch { Write-Host 'Download failed'; exit 1 } }"
     if !errorlevel! neq 0 (
-        echo   ✗ ERROR: No se pudo descargar Node.js
-        echo   Descarga manualmente desde: https://nodejs.org/
+        echo   ✗ ERROR: No se pudo descargar Node.js automáticamente
+        echo   Por favor descarga e instala Node.js manualmente desde:
+        echo   https://nodejs.org/
+        echo   Versión recomendada: LTS (v20.x)
         pause
         exit /b 1
     )
 )
-echo   ✓ Node.js descargado
+
+REM Verificar que el archivo se descargó correctamente
+if not exist "%TEMP_DIR%\%NODE_INSTALLER%" (
+    echo   ✗ ERROR: El archivo no se descargó correctamente
+    echo   Por favor descarga Node.js manualmente desde: https://nodejs.org/
+    pause
+    exit /b 1
+)
+echo   ✓ Node.js descargado correctamente
 
 echo.
 echo [4/5] Instalando Node.js...
 echo   Esto instalará Node.js silenciosamente...
 echo   Por favor espera...
-msiexec /i "%NODE_INSTALLER%" /quiet /norestart ADDLOCAL=ALL
+msiexec /i "%TEMP_DIR%\%NODE_INSTALLER%" /quiet /norestart ADDLOCAL=ALL
 if !errorlevel! neq 0 (
     echo   ✗ ERROR: Error instalando Node.js
-    echo   Intenta instalar manualmente desde: %TEMP_DIR%\%NODE_INSTALLER%
+    echo   Intenta instalar manualmente ejecutando:
+    echo   %TEMP_DIR%\%NODE_INSTALLER%
     pause
     exit /b 1
 )
