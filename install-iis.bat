@@ -19,10 +19,11 @@ if !errorlevel! neq 0 (
 )
 
 echo Verificando si IIS ya está instalado...
-where appcmd >nul 2>&1
-if !errorlevel! equ 0 (
+echo   Buscando appcmd...
+timeout /t 2 /nobreak >nul
+if exist "%windir%\system32\inetsrv\appcmd.exe" (
     echo ✓ IIS ya está instalado
-    appcmd list site
+    "%windir%\system32\inetsrv\appcmd.exe" list site
     echo.
     echo ¿Deseas continuar con la configuración del sitio? (S/N)
     set /p CONTINUE=
@@ -30,6 +31,8 @@ if !errorlevel! equ 0 (
         exit /b 0
     )
     goto :configure_site
+) else (
+    echo   IIS no encontrado, procediendo con la instalación...
 )
 
 echo.
