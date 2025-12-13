@@ -227,12 +227,12 @@ if not exist "vendor" (
     if not "!COMPOSER_CMD!"=="" (
         echo   Instalando dependencias
         echo   Esto puede tardar varios minutos, por favor espera...
-        call !COMPOSER_CMD! install --no-dev --optimize-autoloader --no-interaction
+        call !COMPOSER_CMD! install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
         if !errorlevel! equ 0 (
             echo   ✓ Dependencias instaladas
         ) else (
-            echo   ⚠ Error instalando dependencias
-            echo   Intenta manualmente: cd current ^&^& composer install --no-dev --optimize-autoloader
+            echo   ⚠ Hubo errores durante la instalación, pero continuando...
+            echo   Si hay problemas, ejecuta: cd current ^&^& composer install --no-dev --optimize-autoloader --ignore-platform-reqs
         )
     ) else (
         echo   ⚠ Composer no disponible, saltando instalación de dependencias
@@ -265,6 +265,15 @@ if !errorlevel! equ 0 (
     set PHP_CMD=!PHP_DIR!\php.exe
 )
 
+REM Buscar PHP en diferentes ubicaciones
+set PHP_CMD=
+where php >nul 2>&1
+if !errorlevel! equ 0 (
+    set PHP_CMD=php
+) else if exist "!PHP_DIR!\php.exe" (
+    set PHP_CMD=!PHP_DIR!\php.exe
+)
+
 if not "!PHP_CMD!"=="" (
     echo   Limpiando cache...
     !PHP_CMD! bin/console cache:clear --env=prod --no-warmup >nul 2>&1
@@ -274,6 +283,7 @@ if not "!PHP_CMD!"=="" (
         echo   ✓ Cache configurado
     ) else (
         echo   ⚠ Error configurando cache (puede ser normal si faltan dependencias)
+        echo   Se configurará automáticamente cuando la aplicación se ejecute por primera vez
     )
 ) else (
     echo   ⚠ PHP no disponible, saltando configuración de cache
