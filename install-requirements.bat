@@ -49,9 +49,10 @@ set PHP_ZIP=%TEMP%\php.zip
 set PHP_URL=https://windows.php.net/downloads/releases/php-7.4.33-Win32-vc15-x64.zip
 
 if not exist "!PHP_DIR!" (
-    echo   Descargando PHP 7.4.33...
-    echo   Esto puede tardar unos minutos...
-    powershell -Command "Invoke-WebRequest -Uri '!PHP_URL!' -OutFile '!PHP_ZIP!'"
+    echo   Descargando PHP 7.4.33 (30MB)...
+    echo   Esto puede tardar varios minutos según tu conexión...
+    echo   Por favor espera, no cierres esta ventana...
+    powershell -Command "$ProgressPreference = 'Continue'; Write-Host '[1/3] Descargando PHP desde internet...' -ForegroundColor Yellow; try { $webClient = New-Object System.Net.WebClient; Register-ObjectEvent -InputObject $webClient -EventName DownloadProgressChanged -Action { $percent = $args[1].ProgressPercentage; Write-Progress -Activity 'Descargando PHP' -Status \"$percent%% completado\" -PercentComplete $percent } | Out-Null; $webClient.DownloadFile('!PHP_URL!', '!PHP_ZIP!'); Write-Host '[1/3] ✓ Descarga completada' -ForegroundColor Green } catch { Write-Host '[1/3] ✗ Error: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
     if !errorlevel! neq 0 (
         echo   ✗ Error descargando PHP
         echo   Descarga manualmente desde: !PHP_URL!
@@ -60,9 +61,9 @@ if not exist "!PHP_DIR!" (
         exit /b 1
     )
     
-    echo   Extrayendo PHP...
+    echo   [2/3] Extrayendo PHP (esto puede tardar un minuto)...
     if not exist "!PHP_DIR!" mkdir "!PHP_DIR!"
-    powershell -Command "Expand-Archive -Path '!PHP_ZIP!' -DestinationPath '!PHP_DIR!' -Force"
+    powershell -Command "Write-Host '[2/3] Extrayendo archivos...' -ForegroundColor Yellow; Expand-Archive -Path '!PHP_ZIP!' -DestinationPath '!PHP_DIR!' -Force; Write-Host '[2/3] ✓ Extracción completada' -ForegroundColor Green"
     del "!PHP_ZIP!" >nul 2>&1
     
     echo   ✓ PHP extraído en !PHP_DIR!
@@ -87,16 +88,7 @@ if not exist "!PHP_INI!" (
 REM Habilitar extensiones necesarias
 if exist "!PHP_INI!" (
     echo   Habilitando extensiones necesarias...
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=mysqli', 'extension=mysqli' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=pdo_mysql', 'extension=pdo_mysql' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=mbstring', 'extension=mbstring' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=openssl', 'extension=openssl' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=curl', 'extension=curl' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=fileinfo', 'extension=fileinfo' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=gd2', 'extension=gd2' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=intl', 'extension=intl' | Set-Content '!PHP_INI!'"
-    powershell -Command "(Get-Content '!PHP_INI!') -replace ';extension=zip', 'extension=zip' | Set-Content '!PHP_INI!'"
-    echo   ✓ Extensiones habilitadas
+    powershell -Command "$content = Get-Content '!PHP_INI!'; $extensions = @('mysqli', 'pdo_mysql', 'mbstring', 'openssl', 'curl', 'fileinfo', 'gd2', 'intl', 'zip'); foreach ($ext in $extensions) { $content = $content -replace (';extension=' + $ext), ('extension=' + $ext) }; $content | Set-Content '!PHP_INI!'; Write-Host '✓ Extensiones habilitadas'"
 )
 
 REM Agregar PHP al PATH
@@ -119,8 +111,8 @@ set COMPOSER_SETUP=%TEMP%\composer-setup.php
 set COMPOSER_INSTALLER=https://getcomposer.org/installer
 
 if not exist "!PHP_DIR!\composer.bat" (
-    echo   Descargando instalador de Composer...
-    powershell -Command "Invoke-WebRequest -Uri '!COMPOSER_INSTALLER!' -OutFile '!COMPOSER_SETUP!'"
+    echo   [3/3] Descargando instalador de Composer...
+    powershell -Command "$ProgressPreference = 'Continue'; Write-Host '[3/3] Descargando Composer...' -ForegroundColor Yellow; try { Invoke-WebRequest -Uri '!COMPOSER_INSTALLER!' -OutFile '!COMPOSER_SETUP!' -UseBasicParsing; Write-Host '[3/3] ✓ Descarga completada' -ForegroundColor Green } catch { Write-Host '[3/3] ✗ Error: ' $_.Exception.Message -ForegroundColor Red; exit 1 }"
     if !errorlevel! neq 0 (
         echo   ✗ Error descargando Composer
         pause
@@ -129,11 +121,14 @@ if not exist "!PHP_DIR!\composer.bat" (
     
     echo   Instalando Composer...
     "!PHP_DIR!\php.exe" "!COMPOSER_SETUP!" --install-dir="!PHP_DIR!" --filename=composer
+    if !errorlevel! equ 0 (
+        echo   ✓ Composer instalado correctamente
+    ) else (
+        echo   ⚠ Composer puede haberse instalado pero hubo advertencias
+    )
     del "!COMPOSER_SETUP!" >nul 2>&1
     
-    if exist "!PHP_DIR!\composer.bat" (
-        echo   ✓ Composer instalado
-    ) else (
+    if not exist "!PHP_DIR!\composer.bat" (
         echo   ✗ Error instalando Composer
         pause
         exit /b 1
