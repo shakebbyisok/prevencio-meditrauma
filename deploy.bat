@@ -150,11 +150,11 @@ if !errorlevel! neq 0 (
 )
 
 if not exist "vendor\autoload.php" (
-    echo       Instalando dependencias (esto puede tardar)...
-    %COMPOSER_CMD% install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction >nul 2>&1
+    echo       Instalando dependencias - esto puede tardar...
+    !COMPOSER_CMD! install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction >nul 2>&1
     if !errorlevel! neq 0 (
         echo [WARN] Error instalando dependencias, intentando con --no-plugins...
-        %COMPOSER_CMD% install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction --no-plugins >nul 2>&1
+        !COMPOSER_CMD! install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction --no-plugins >nul 2>&1
     )
     echo       OK - Dependencias instaladas
 ) else (
