@@ -16,12 +16,21 @@ echo Estado del sitio:
 "%APPCMD%" list site "%SITE_NAME%" /state
 
 echo.
-echo [1/3] Iniciando sitio si está detenido...
+echo [1/3] Resolviendo conflicto de puerto 80...
+REM Detener y cambiar binding del sitio por defecto
+"%APPCMD%" stop site "Default Web Site" >nul 2>&1
+"%APPCMD%" set site "Default Web Site" /-bindings.[protocol='http',bindingInformation='*:80:'] >nul 2>&1
+"%APPCMD%" set site "Default Web Site" /+bindings.[protocol='http',bindingInformation='*:8080:'] >nul 2>&1
+echo ✓ Puerto 80 liberado
+
+echo.
+echo Iniciando sitio %SITE_NAME%...
 "%APPCMD%" start site "%SITE_NAME%"
 if !errorlevel! equ 0 (
-    echo ✓ Sitio iniciado
+    echo ✓ Sitio iniciado correctamente
 ) else (
-    echo ⚠ El sitio puede que ya esté iniciado o hubo un error
+    echo ⚠ Error al iniciar el sitio, verificando...
+    "%APPCMD%" list site "%SITE_NAME%"
 )
 
 echo.
@@ -36,7 +45,15 @@ echo ✓ Sitio por defecto detenido
 
 echo.
 echo Verificando que el sitio esté funcionando...
-"%APPCMD%" list site "%SITE_NAME%" /state
+"%APPCMD%" list site "%SITE_NAME%"
+echo.
+echo Verificando que el servicio IIS esté corriendo...
+net start W3SVC >nul 2>&1
+if !errorlevel! equ 0 (
+    echo ✓ Servicio IIS iniciado
+) else (
+    echo ⚠ El servicio IIS puede no estar corriendo
+)
 
 echo.
 echo ========================================
