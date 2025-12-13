@@ -51,13 +51,14 @@ echo.
 echo ⚠ Error con instalación normal, intentando reemplazar node-sass con sass...
 echo   Sass (dart-sass) no requiere compilación nativa...
 
-REM Intentar reemplazar node-sass con sass
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm uninstall node-sass 2>/dev/null; npm install --save-dev sass --legacy-peer-deps && npm install --legacy-peer-deps"
+REM Eliminar node-sass y node_modules/node-sass si existe
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "rm -rf node_modules/node-sass 2>/dev/null; npm uninstall node-sass 2>/dev/null || true"
+
+REM Instalar sass y reinstalar dependencias
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm install --save-dev sass@^1.32.0 --legacy-peer-deps && npm install --legacy-peer-deps"
 if !errorlevel! equ 0 (
     echo ✓ Dependencias instaladas (usando sass en lugar de node-sass)
-    
-    REM Actualizar webpack.config.js para usar sass si es necesario
-    REM (Encore debería detectarlo automáticamente, pero verificamos)
+    echo   Webpack Encore detectará automáticamente sass
     goto :compile
 )
 
