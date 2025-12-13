@@ -87,15 +87,20 @@ if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
         ) else (
             echo   Restaurando archivos...
             for %%f in (*.sql) do (
-                echo     Restaurando: %%f (esto puede tardar varios minutos...)
-                docker cp "%%f" prevencio_mysql:/tmp/dump.sql
-                docker exec prevencio_mysql sh -c "mysql -u root -proot123 prevencion < /tmp/dump.sql"
-                docker exec prevencio_mysql rm /tmp/dump.sql
+                set "SQL_FILE=%%f"
+                echo     Restaurando: !SQL_FILE! (esto puede tardar varios minutos...)
+                docker cp "!SQL_FILE!" prevencio_mysql:/tmp/dump.sql
                 if !errorlevel! equ 0 (
-                    set FOUND=1
-                    echo     ✓ Restaurado correctamente
+                    docker exec prevencio_mysql sh -c "mysql -u root -proot123 prevencion < /tmp/dump.sql"
+                    docker exec prevencio_mysql rm /tmp/dump.sql
+                    if !errorlevel! equ 0 (
+                        set FOUND=1
+                        echo     ✓ Restaurado correctamente
+                    ) else (
+                        echo     ✗ Error al restaurar (ver errores arriba)
+                    )
                 ) else (
-                    echo     ✗ Error al restaurar (ver errores arriba)
+                    echo     ✗ Error al copiar archivo al contenedor
                 )
             )
         )
@@ -103,16 +108,21 @@ if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
     ) else (
         echo   ⚠ No se pudo acceder con pushd, usando ruta completa...
         for %%f in ("%BBDD_PATH%\dump-prevencion-202511120956\*.sql") do (
-            echo   Encontrado: %%f
-            echo   Restaurando: %%f (esto puede tardar varios minutos...)
-            docker cp "%%f" prevencio_mysql:/tmp/dump.sql
-            docker exec prevencio_mysql sh -c "mysql -u root -proot123 prevencion < /tmp/dump.sql"
-            docker exec prevencio_mysql rm /tmp/dump.sql
+            set "SQL_FILE=%%f"
+            echo   Encontrado: !SQL_FILE!
+            echo   Restaurando: !SQL_FILE! (esto puede tardar varios minutos...)
+            docker cp "!SQL_FILE!" prevencio_mysql:/tmp/dump.sql
             if !errorlevel! equ 0 (
-                set FOUND=1
-                echo   ✓ Restaurado correctamente
+                docker exec prevencio_mysql sh -c "mysql -u root -proot123 prevencion < /tmp/dump.sql"
+                docker exec prevencio_mysql rm /tmp/dump.sql
+                if !errorlevel! equ 0 (
+                    set FOUND=1
+                    echo   ✓ Restaurado correctamente
+                ) else (
+                    echo   ✗ Error al restaurar (ver errores arriba)
+                )
             ) else (
-                echo   ✗ Error al restaurar (ver errores arriba)
+                echo   ✗ Error al copiar archivo al contenedor
             )
         )
     )
