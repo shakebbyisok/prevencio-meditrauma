@@ -186,7 +186,7 @@ echo       OK - Permisos configurados
 cd /d "%PROJECT_ROOT%"
 
 echo.
-echo [9/10] Configurando IIS...
+echo [9/10] Instalando y configurando IIS...
 set APP_PATH=%CURRENT_PATH%\public
 set SITE_NAME=PrevencioMeditrauma
 set SITE_PORT=80
@@ -197,12 +197,34 @@ where appcmd >nul 2>&1
 if !errorlevel! neq 0 (
     set APPCMD=%SystemRoot%\System32\inetsrv\appcmd.exe
     if not exist "%APPCMD%" (
-        echo [WARN] IIS no esta instalado o appcmd no encontrado
-        echo         Instala IIS desde Panel de Control
-        goto :skip_iis
+        echo       IIS no encontrado, instalando...
+        dism /online /enable-feature /featurename:IIS-WebServerRole /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-WebServer /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-CommonHttpFeatures /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-HttpErrors /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-HttpLogging /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-RequestFiltering /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-StaticContent /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-DefaultDocument /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-DirectoryBrowsing /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-ApplicationInit /all /norestart >nul 2>&1
+        dism /online /enable-feature /featurename:IIS-CGI /all /norestart >nul 2>&1
+        if not exist "%APPCMD%" (
+            echo [WARN] IIS instalado pero appcmd no disponible todavia
+            echo         Reinicia el servidor o ejecuta este script de nuevo
+            goto :skip_iis
+        )
     )
 ) else (
     set APPCMD=appcmd
+)
+
+REM Verificar que el servicio IIS esta corriendo
+sc query W3SVC | findstr "RUNNING" >nul 2>&1
+if !errorlevel! neq 0 (
+    echo       Iniciando servicio IIS...
+    net start W3SVC >nul 2>&1
+    timeout /t 3 /nobreak >nul
 )
 
 REM Instalar FastCGI Module
