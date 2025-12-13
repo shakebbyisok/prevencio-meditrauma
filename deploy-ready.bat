@@ -34,10 +34,10 @@ echo.
 
 REM Paso 2: Verificar bases de datos restauradas
 echo [2/7] Verificando bases de datos...
-for /f "tokens=2" %%a in ('docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '"'"'prevencion'"'"';" 2^>nul') do set TABLE_COUNT=%%a
-if "!TABLE_COUNT!"=="" (
-    set TABLE_COUNT=0
-)
+docker exec prevencio_mysql mysql -u root -proot123 -N -e "USE prevencion; SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'prevencion';" > %TEMP%\table_count.txt 2>nul
+set /p TABLE_COUNT=<%TEMP%\table_count.txt
+del %TEMP%\table_count.txt >nul 2>&1
+if "!TABLE_COUNT!"=="" set TABLE_COUNT=0
 if !TABLE_COUNT! LSS 10 (
     echo   ⚠ Base de datos prevencion parece vacía (solo !TABLE_COUNT! tablas encontradas)
     echo   ¿Deseas restaurar las bases de datos ahora? (S/N)
