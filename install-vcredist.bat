@@ -50,12 +50,16 @@ del "%VCREDIST%" >nul 2>&1
 echo.
 echo Verificando que PHP funcione...
 if exist "C:\php\php.exe" (
-    C:\php\php.exe -v
+    C:\php\php.exe -v >nul 2>&1
     if !errorlevel! equ 0 (
         echo ✓ PHP funciona correctamente
+        C:\php\php.exe -v
     ) else (
         echo ✗ PHP aún no funciona, puede requerir reinicio
+        echo   Ejecuta: C:\php\php.exe -v para verificar manualmente
     )
+) else (
+    echo ⚠ PHP no encontrado en C:\php
 )
 
 echo.
