@@ -1,58 +1,61 @@
 version: '3.8'
 
 services:
-  # Base de datos PostgreSQL principal
-  postgres:
-    image: postgres:13
-    container_name: prevencio_postgres
+  # Base de datos MySQL principal
+  mysql:
+    image: mysql:8.0
+    container_name: prevencio_mysql
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: prevencion
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: prevencion
+      MYSQL_USER: prevencion_user
+      MYSQL_PASSWORD: prevencion123
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./BBDDs:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
     restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   # Base de datos de estadísticas (opcional)
-  postgres_stats:
-    image: postgres:13
-    container_name: prevencio_postgres_stats
+  mysql_stats:
+    image: mysql:8.0
+    container_name: prevencio_mysql_stats
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: stats_meditrauma
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: stats_meditrauma
+      MYSQL_USER: stats_user
+      MYSQL_PASSWORD: stats123
     ports:
-      - "5433:5432"
+      - "3307:3306"
     volumes:
-      - postgres_stats_data:/var/lib/postgresql/data
-      - ./BBDDs:/docker-entrypoint-initdb.d
+      - mysql_stats_data:/var/lib/mysql
     restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   # Base de datos de cola (opcional)
-  postgres_queue:
-    image: postgres:13
-    container_name: prevencio_postgres_queue
+  mysql_queue:
+    image: mysql:8.0
+    container_name: prevencio_mysql_queue
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: openqueue
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: openqueue
+      MYSQL_USER: queue_user
+      MYSQL_PASSWORD: queue123
     ports:
-      - "5434:5432"
+      - "3308:3306"
     volumes:
-      - postgres_queue_data:/var/lib/postgresql/data
-      - ./BBDDs:/docker-entrypoint-initdb.d
+      - mysql_queue_data:/var/lib/mysql
     restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 volumes:
-  postgres_data:
-  postgres_stats_data:
-  postgres_queue_data:
+  mysql_data:
+  mysql_stats_data:
+  mysql_queue_data:
 

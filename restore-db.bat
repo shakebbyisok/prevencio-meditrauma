@@ -1,10 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
-echo Restaurando bases de datos en Docker...
+echo Restaurando bases de datos MySQL en Docker...
 echo.
 
-REM Esperar a que PostgreSQL esté listo
-timeout /t 10
+REM Esperar a que MySQL esté listo
+echo Esperando a que MySQL esté listo...
+timeout /t 15
+echo Verificando conexión a MySQL...
+docker exec prevencio_mysql mysqladmin ping -h localhost -u root -proot123 >nul 2>&1
+if !errorlevel! neq 0 (
+    echo ⚠ MySQL aún no está listo, esperando más tiempo...
+    timeout /t 10
+)
 
 REM Buscar archivos .sql en BBDDs o db (compatibilidad)
 REM Buscar primero en directorio padre (donde normalmente están), luego en actual
@@ -58,7 +65,8 @@ set FOUND=0
 
 if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
     echo   Encontrado: %BBDD_PATH%\dump-prevencion-202511120956.sql
-    docker exec -i prevencio_postgres psql -U postgres -d prevencion < "%BBDD_PATH%\dump-prevencion-202511120956.sql"
+    echo   Restaurando (esto puede tardar varios minutos...)
+    docker exec -i prevencio_mysql mysql -u root -proot123 prevencion < "%BBDD_PATH%\dump-prevencion-202511120956.sql"
     set FOUND=1
 ) else if exist "%BBDD_PATH%\dump-prevencion-202511120956" (
     echo   Buscando en carpeta: %BBDD_PATH%\dump-prevencion-202511120956
@@ -77,20 +85,30 @@ if exist "%BBDD_PATH%\dump-prevencion-202511120956.sql" (
         ) else (
             echo   Restaurando archivos...
             for %%f in (*.sql) do (
-                echo     Restaurando: %%f
-                docker exec -i prevencio_postgres psql -U postgres -d prevencion < "%%f"
+            echo     Restaurando: %%f (esto puede tardar varios minutos...)
+            docker exec -i prevencio_mysql mysql -u root -proot123 prevencion < "%%f"
                 if !errorlevel! equ 0 (
                     set FOUND=1
                     echo     ✓ Restaurado correctamente
                 ) else (
-                    echo     ✗ Error al restaurar
+                    echo     ✗ Error al restaurar (ver errores arriba)
                 )
             )
         )
         popd >nul 2>&1
     ) else (
-        echo   ⚠ No se pudo acceder a la carpeta
-        popd >nul 2>&1
+        echo   ⚠ No se pudo acceder a la carpeta, intentando con ruta completa...
+        for %%f in ("%BBDD_PATH%\dump-prevencion-202511120956\*.sql") do (
+            echo   Encontrado: %%f
+            echo   Restaurando: %%f (esto puede tardar varios minutos...)
+            docker exec -i prevencio_mysql mysql -u root -proot123 prevencion < "%%f"
+            if !errorlevel! equ 0 (
+                set FOUND=1
+                echo   ✓ Restaurado correctamente
+            ) else (
+                echo   ✗ Error al restaurar (ver errores arriba)
+            )
+        )
     )
     echo.
 )
@@ -117,9 +135,9 @@ set FOUND_STATS=0
 
 if exist "%BBDD_PATH%\dump-stats_meditrauma-202511121025.sql" (
     echo   Encontrado: %BBDD_PATH%\dump-stats_meditrauma-202511121025.sql
-    docker exec -i prevencio_postgres_stats psql -U postgres -d stats_meditrauma < "%BBDD_PATH%\dump-stats_meditrauma-202511121025.sql"
+    docker exec -i prevencio_mysql_stats mysql -u root -proot123 stats_meditrauma < "%BBDD_PATH%\dump-stats_meditrauma-202511121025.sql"
     set FOUND_STATS=1
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo ✓ Base de datos stats_meditrauma restaurada correctamente
     )
 ) else if exist "%BBDD_PATH%\dump-stats_meditrauma-202511121025" (
@@ -128,7 +146,7 @@ if exist "%BBDD_PATH%\dump-stats_meditrauma-202511121025.sql" (
     if !errorlevel! equ 0 (
         for %%f in (*.sql) do (
             echo   Encontrado: %%f
-            docker exec -i prevencio_postgres_stats psql -U postgres -d stats_meditrauma < "%%f"
+            docker exec -i prevencio_mysql_stats mysql -u root -proot123 stats_meditrauma < "%%f"
             if !errorlevel! equ 0 (
                 set FOUND_STATS=1
                 echo   ✓ Restaurado correctamente
@@ -149,9 +167,9 @@ set FOUND_QUEUE=0
 
 if exist "%BBDD_PATH%\dump-openqueue-202511121025.sql" (
     echo   Encontrado: %BBDD_PATH%\dump-openqueue-202511121025.sql
-    docker exec -i prevencio_postgres_queue psql -U postgres -d openqueue < "%BBDD_PATH%\dump-openqueue-202511121025.sql"
+    docker exec -i prevencio_mysql_queue mysql -u root -proot123 openqueue < "%BBDD_PATH%\dump-openqueue-202511121025.sql"
     set FOUND_QUEUE=1
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo ✓ Base de datos openqueue restaurada correctamente
     )
 ) else if exist "%BBDD_PATH%\dump-openqueue-202511121025" (
@@ -160,7 +178,7 @@ if exist "%BBDD_PATH%\dump-openqueue-202511121025.sql" (
     if !errorlevel! equ 0 (
         for %%f in (*.sql) do (
             echo   Encontrado: %%f
-            docker exec -i prevencio_postgres_queue psql -U postgres -d openqueue < "%%f"
+            docker exec -i prevencio_mysql_queue mysql -u root -proot123 openqueue < "%%f"
             if !errorlevel! equ 0 (
                 set FOUND_QUEUE=1
                 echo   ✓ Restaurado correctamente
