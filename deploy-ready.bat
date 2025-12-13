@@ -91,8 +91,8 @@ REM Paso 4: Instalar dependencias de Composer
 echo [4/7] Verificando dependencias de Composer...
 cd current
 if not exist "vendor" (
-    echo   Instalando dependencias de Composer (esto puede tardar varios minutos)...
-    composer install --no-dev --optimize-autoloader --no-interaction
+    echo   Instalando dependencias de Composer (esto puede tardar varios minutos)
+    call composer install --no-dev --optimize-autoloader --no-interaction
     if !errorlevel! equ 0 (
         echo   ✓ Dependencias instaladas
     ) else (
