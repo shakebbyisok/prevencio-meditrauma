@@ -192,16 +192,18 @@ if not exist "vendor" (
     )
     
     if not "!COMPOSER_CMD!"=="" (
-        echo   Instalando dependencias (esto puede tardar varios minutos)...
-        !COMPOSER_CMD! install --no-dev --optimize-autoloader --no-interaction
+        echo   Instalando dependencias
+        echo   Esto puede tardar varios minutos, por favor espera...
+        call !COMPOSER_CMD! install --no-dev --optimize-autoloader --no-interaction
         if !errorlevel! equ 0 (
             echo   ✓ Dependencias instaladas
         ) else (
-            echo   ⚠ Error instalando dependencias, intenta manualmente después
+            echo   ⚠ Error instalando dependencias
+            echo   Intenta manualmente: cd current ^&^& composer install --no-dev --optimize-autoloader
         )
     ) else (
         echo   ⚠ Composer no disponible, saltando instalación de dependencias
-        echo   Ejecuta manualmente después: composer install --no-dev --optimize-autoloader
+        echo   Ejecuta manualmente después: cd current ^&^& composer install --no-dev --optimize-autoloader
     )
 ) else (
     echo   ✓ Dependencias ya instaladas
