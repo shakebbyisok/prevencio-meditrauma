@@ -28,10 +28,10 @@ set PROJECT_PATH=%CD%
 set CONTAINER_NAME=node-build-assets
 
 echo.
-echo [1/3] Descargando imagen de Node.js v16 (compatible con webpack antiguo)...
-docker pull node:16-slim >nul 2>&1
+echo [1/3] Descargando imagen de Node.js v18 (con OpenSSL legacy provider)...
+docker pull node:18-slim >nul 2>&1
 if !errorlevel! equ 0 (
-    echo ✓ Imagen de Node.js v16 lista
+    echo ✓ Imagen de Node.js v18 lista
 ) else (
     echo ⚠ No se pudo descargar la imagen, intentando continuar...
 )
@@ -39,11 +39,11 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/3] Instalando dependencias de npm...
 echo   Esto puede tardar varios minutos...
-echo   Nota: Usando Node.js v16 para compatibilidad con webpack antiguo...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install --ignore-scripts"
+echo   Nota: Ignorando scripts nativos problemáticos (node-sass)...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:18-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install --ignore-scripts"
 if !errorlevel! neq 0 (
     echo ⚠ Error con --ignore-scripts, intentando instalación normal...
-    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install"
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:18-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install"
     if !errorlevel! neq 0 (
         echo ✗ ERROR: Error instalando dependencias
         echo   node-sass puede estar causando problemas
@@ -56,8 +56,8 @@ echo ✓ Dependencias instaladas
 
 echo.
 echo [3/3] Compilando assets para producción...
-echo   Usando Node.js v16 para evitar errores de OpenSSL...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-slim sh -c "npm run build"
+echo   Usando NODE_OPTIONS=--openssl-legacy-provider para compatibilidad...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app -e NODE_OPTIONS=--openssl-legacy-provider node:18-slim sh -c "npm run build"
 if !errorlevel! neq 0 (
     echo ⚠ Error compilando para producción, intentando modo desarrollo...
     docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-alpine sh -c "npm run dev"
