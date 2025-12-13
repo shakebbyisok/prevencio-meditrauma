@@ -11,7 +11,7 @@ if !errorlevel! neq 0 (
     echo ⚠ Algunas operaciones pueden requerir permisos de Administrador
 )
 
-set NODE_VERSION=20.18.0
+set NODE_VERSION=20.17.0
 set NODE_ARCH=x64
 set NODE_INSTALLER=node-v%NODE_VERSION%-win-%NODE_ARCH%.msi
 set NODE_URL=https://nodejs.org/dist/v%NODE_VERSION%/%NODE_INSTALLER%
@@ -38,14 +38,14 @@ echo.
 echo [3/5] Descargando Node.js v%NODE_VERSION%...
 echo   URL: %NODE_URL%
 echo   Esto puede tardar unos minutos...
-powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; try { Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%TEMP_DIR%\%NODE_INSTALLER%' -UseBasicParsing -ErrorAction Stop; Write-Host 'Download successful' } catch { Write-Host 'Download failed: ' $_.Exception.Message; exit 1 } }"
+powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; try { $webClient = New-Object System.Net.WebClient; $webClient.DownloadFile('%NODE_URL%', '%TEMP_DIR%\%NODE_INSTALLER%'); Write-Host 'Download successful' } catch { Write-Host 'Download failed: ' $_.Exception.Message; Write-Host 'Trying Invoke-WebRequest method...'; try { Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%TEMP_DIR%\%NODE_INSTALLER%' -UseBasicParsing -ErrorAction Stop; Write-Host 'Download successful (alternative method)' } catch { Write-Host 'Both methods failed'; exit 1 } } }"
 if !errorlevel! neq 0 (
     echo   ✗ ERROR: No se pudo descargar Node.js
     echo   Intentando descargar la versión LTS más reciente...
-    set NODE_VERSION=20.18.0
+    set NODE_VERSION=20.17.0
     set NODE_INSTALLER=node-v%NODE_VERSION%-win-%NODE_ARCH%.msi
     set NODE_URL=https://nodejs.org/dist/v%NODE_VERSION%/%NODE_INSTALLER%
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; try { Invoke-WebRequest -Uri '%NODE_URL%' -OutFile '%TEMP_DIR%\%NODE_INSTALLER%' -UseBasicParsing -ErrorAction Stop } catch { Write-Host 'Download failed'; exit 1 } }"
+    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; try { $webClient = New-Object System.Net.WebClient; $webClient.DownloadFile('%NODE_URL%', '%TEMP_DIR%\%NODE_INSTALLER%'); Write-Host 'Download successful' } catch { Write-Host 'Download failed'; exit 1 } }"
     if !errorlevel! neq 0 (
         echo   ✗ ERROR: No se pudo descargar Node.js automáticamente
         echo   Por favor descarga e instala Node.js manualmente desde:
