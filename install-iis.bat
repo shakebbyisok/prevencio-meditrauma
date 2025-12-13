@@ -19,9 +19,7 @@ if !errorlevel! neq 0 (
 )
 
 echo Verificando si IIS ya está instalado...
-echo   Buscando appcmd...
-timeout /t 2 /nobreak >nul
-if exist "%windir%\system32\inetsrv\appcmd.exe" (
+if exist "C:\Windows\system32\inetsrv\appcmd.exe" (
     echo ✓ IIS ya está instalado
     "%windir%\system32\inetsrv\appcmd.exe" list site
     echo.
