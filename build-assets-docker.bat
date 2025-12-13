@@ -60,7 +60,7 @@ echo   Usando NODE_OPTIONS=--openssl-legacy-provider para compatibilidad...
 docker run --rm -v "%PROJECT_PATH%:/app" -w /app -e NODE_OPTIONS=--openssl-legacy-provider node:18-slim sh -c "npm run build"
 if !errorlevel! neq 0 (
     echo ⚠ Error compilando para producción, intentando modo desarrollo...
-    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-alpine sh -c "npm run dev"
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app -e NODE_OPTIONS=--openssl-legacy-provider node:18-slim sh -c "npm run dev"
     if !errorlevel! neq 0 (
         echo ✗ ERROR: Error compilando assets
         pause
