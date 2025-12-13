@@ -28,8 +28,8 @@ set PROJECT_PATH=%CD%
 set CONTAINER_NAME=node-build-assets
 
 echo.
-echo [1/3] Descargando imagen de Node.js (si no existe)...
-docker pull node:20-alpine >nul 2>&1
+echo [1/3] Descargando imagen de Node.js con herramientas de compilación...
+docker pull node:20-slim >nul 2>&1
 if !errorlevel! equ 0 (
     echo ✓ Imagen de Node.js lista
 ) else (
@@ -39,17 +39,24 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/3] Instalando dependencias de npm...
 echo   Esto puede tardar varios minutos...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-alpine sh -c "npm install"
+echo   Nota: Ignorando scripts nativos problemáticos (node-sass)...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install --ignore-scripts"
 if !errorlevel! neq 0 (
-    echo ✗ ERROR: Error instalando dependencias
-    pause
-    exit /b 1
+    echo ⚠ Error con --ignore-scripts, intentando instalación normal...
+    docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 make g++ >/dev/null 2>&1 && npm install"
+    if !errorlevel! neq 0 (
+        echo ✗ ERROR: Error instalando dependencias
+        echo   node-sass puede estar causando problemas
+        echo   Intenta compilar los assets localmente o actualiza a sass (dart-sass)
+        pause
+        exit /b 1
+    )
 )
 echo ✓ Dependencias instaladas
 
 echo.
 echo [3/3] Compilando assets para producción...
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-alpine sh -c "npm run build"
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-slim sh -c "npm run build"
 if !errorlevel! neq 0 (
     echo ⚠ Error compilando para producción, intentando modo desarrollo...
     docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:20-alpine sh -c "npm run dev"
