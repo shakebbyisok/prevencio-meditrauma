@@ -38,13 +38,39 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/4] Instalando herramientas de compilación y dependencias...
 echo   Esto puede tardar varios minutos...
-echo   Estrategia: Instalar Python3, make, g++ y crear symlink...
+echo   Estrategia: Limpiar node_modules y reinstalar con sass...
 
-REM Instalar dependencias con todas las herramientas necesarias
-docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "apt-get update -qq && apt-get install -y -qq python3 python3-pip make g++ build-essential >/dev/null 2>&1 && ln -sf /usr/bin/python3 /usr/bin/python && npm install --legacy-peer-deps"
+REM Limpiar node_modules y package-lock.json si existen, luego instalar
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "rm -rf node_modules package-lock.json 2>/dev/null; npm install --legacy-peer-deps"
 if !errorlevel! equ 0 (
     echo ✓ Dependencias instaladas correctamente
+    goto :verify_sass
+)
+
+echo.
+echo ⚠ Error con instalación limpia, intentando sin limpiar...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "npm install --legacy-peer-deps"
+if !errorlevel! equ 0 (
+    echo ✓ Dependencias instaladas
+    goto :verify_sass
+)
+
+echo.
+echo ✗ ERROR: No se pudieron instalar las dependencias
+pause
+exit /b 1
+
+:verify_sass
+echo.
+echo Verificando que sass esté instalado...
+docker run --rm -v "%PROJECT_PATH%:/app" -w /app node:16-bullseye-slim sh -c "test -d node_modules/sass && echo 'sass encontrado' || (echo 'sass no encontrado, instalando...' && npm install --save-dev sass@^1.32.0 --legacy-peer-deps)"
+if !errorlevel! equ 0 (
+    echo ✓ Sass verificado/instalado
     goto :compile
+) else (
+    echo ✗ ERROR: No se pudo instalar sass
+    pause
+    exit /b 1
 )
 
 echo.
