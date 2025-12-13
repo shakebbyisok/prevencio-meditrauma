@@ -175,7 +175,7 @@ if not exist "var\sessions" mkdir "var\sessions" >nul 2>&1
 echo       OK - Cache limpiada
 
 echo.
-echo [8/8] Configurando permisos para IIS...
+echo [8/10] Configurando permisos para IIS...
 icacls "%CURRENT_PATH%" /grant "IIS_IUSRS:(OI)(CI)R" /T /Q >nul 2>&1
 icacls "%CURRENT_PATH%" /grant "IUSR:(OI)(CI)R" /T /Q >nul 2>&1
 icacls "%CURRENT_PATH%\var" /grant "IIS_IUSRS:(OI)(CI)F" /T /Q >nul 2>&1
@@ -186,18 +186,79 @@ echo       OK - Permisos configurados
 cd /d "%PROJECT_ROOT%"
 
 echo.
+echo [9/10] Configurando IIS...
+set APP_PATH=%CURRENT_PATH%\public
+set SITE_NAME=PrevencioMeditrauma
+set SITE_PORT=80
+set PHP_DIR=C:\php
+
+REM Verificar IIS
+where appcmd >nul 2>&1
+if !errorlevel! neq 0 (
+    set APPCMD=%SystemRoot%\System32\inetsrv\appcmd.exe
+    if not exist "%APPCMD%" (
+        echo [WARN] IIS no esta instalado o appcmd no encontrado
+        echo         Instala IIS desde Panel de Control
+        goto :skip_iis
+    )
+) else (
+    set APPCMD=appcmd
+)
+
+REM Instalar FastCGI Module
+dism /online /enable-feature /featurename:IIS-CGI /all /norestart >nul 2>&1
+
+REM Configurar FastCGI para PHP
+if exist "%PHP_DIR%\php-cgi.exe" (
+    "%APPCMD%" set config -section:system.webServer/fastCgi /+"[fullPath='%PHP_DIR%\php-cgi.exe',monitorChangesTo='php.ini',activityTimeout='600',requestTimeout='600',instanceMaxRequests='10000']" /commit:apphost >nul 2>&1
+    
+    REM Detener Default Web Site si usa puerto 80
+    "%APPCMD%" list site "Default Web Site" >nul 2>&1
+    if !errorlevel! equ 0 (
+        "%APPCMD%" set site "Default Web Site" /-bindings.[protocol='http',bindingInformation='*:80:'] >nul 2>&1
+        "%APPCMD%" set site "Default Web Site" /+bindings.[protocol='http',bindingInformation='*:8080:'] >nul 2>&1
+        "%APPCMD%" stop site "Default Web Site" >nul 2>&1
+    )
+    
+    REM Crear sitio
+    "%APPCMD%" stop site "%SITE_NAME%" >nul 2>&1
+    "%APPCMD%" delete site "%SITE_NAME%" >nul 2>&1
+    "%APPCMD%" add site /name:"%SITE_NAME%" /physicalPath:"%APP_PATH%" /bindings:protocol=http,bindingInformation=*:%SITE_PORT%: >nul 2>&1
+    
+    REM Configurar handler PHP
+    "%APPCMD%" set config "%SITE_NAME%" /section:system.webServer/handlers /-"[name='PHP_via_FastCGI']" >nul 2>&1
+    "%APPCMD%" set config "%SITE_NAME%" /section:system.webServer/handlers /+[name='PHP_via_FastCGI',path='*.php',verb='*',modules='FastCgiModule',scriptProcessor='%PHP_DIR%\php-cgi.exe',resourceType='Either'] >nul 2>&1
+    
+    REM Iniciar sitio y reiniciar IIS
+    "%APPCMD%" start site "%SITE_NAME%" >nul 2>&1
+    iisreset /noforce >nul 2>&1
+    
+    echo       OK - IIS configurado: http://localhost
+) else (
+    echo [WARN] PHP no encontrado en %PHP_DIR%
+    echo         Instala PHP en C:\php
+)
+
+:skip_iis
+echo.
+echo [10/10] Creando manifest.json para Webpack Encore...
+if not exist "%CURRENT_PATH%\public\build" mkdir "%CURRENT_PATH%\public\build" >nul 2>&1
+(
+    echo {
+    echo   "build/app.js": "/build/app.js",
+    echo   "build/app.css": "/build/app.css"
+    echo }
+) > "%CURRENT_PATH%\public\build\manifest.json" 2>nul
+echo       OK - Manifest creado
+
+echo.
 echo ============================================================
 echo   DEPLOYMENT COMPLETADO
 echo ============================================================
 echo.
 echo   Base de datos: MySQL en Docker (puerto 3306)
-echo   Aplicacion:    %CURRENT_PATH%\public
-echo.
-echo   SIGUIENTE PASO - Configurar IIS:
-echo   1. Abre IIS Manager
-echo   2. Crea un nuevo sitio apuntando a: %CURRENT_PATH%\public
-echo   3. Configura PHP Handler (FastCGI a C:\php\php-cgi.exe)
-echo   4. Accede a: http://localhost/index.php
+echo   Aplicacion:    %APP_PATH%
+echo   URL:           http://localhost
 echo.
 echo   Para restaurar la base de datos:
 echo   restore-db.bat
