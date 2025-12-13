@@ -50,7 +50,7 @@ echo.
 echo [2/3] Instalando URL Rewrite Module...
 echo Descargando URL Rewrite...
 set URL_REWRITE=%TEMP%\rewrite_amd64.msi
-set URL_REWRITE_URL=https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64.msi
+set URL_REWRITE_URL=https://www.iis.net/downloads/file.aspx?id=17866
 
 powershell -Command "$ProgressPreference = 'SilentlyContinue'; Write-Host 'Descargando URL Rewrite Module...' -ForegroundColor Yellow; Invoke-WebRequest -Uri '%URL_REWRITE_URL%' -OutFile '%URL_REWRITE%' -UseBasicParsing -TimeoutSec 120"
 if exist "%URL_REWRITE%" (
