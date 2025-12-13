@@ -263,7 +263,7 @@ if exist "%PHP_DIR%\php-cgi.exe" (
 
 :skip_iis
 echo.
-echo [10/10] Creando manifest.json y entrypoints.json para Webpack Encore...
+echo [10/10] Creando archivos de Webpack Encore y limpiando cache...
 if not exist "%CURRENT_PATH%\public\build" mkdir "%CURRENT_PATH%\public\build" >nul 2>&1
 
 REM Crear manifest.json basico
@@ -286,7 +286,12 @@ REM Crear entrypoints.json basico (requerido por Webpack Encore)
     echo }
 ) > "%CURRENT_PATH%\public\build\entrypoints.json" 2>nul
 
-echo       OK - Archivos de Webpack Encore creados
+REM Limpiar cache de nuevo para aplicar cambios de webpack_encore.yaml
+if exist "%CURRENT_PATH%\var\cache\prod" (
+    rmdir /s /q "%CURRENT_PATH%\var\cache\prod" >nul 2>&1
+)
+
+echo       OK - Archivos creados y cache limpiada
 
 echo.
 echo ============================================================
