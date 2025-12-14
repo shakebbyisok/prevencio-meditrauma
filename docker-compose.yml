@@ -1,59 +1,52 @@
 services:
-  # Base de datos MySQL principal
-  mysql:
-    image: mysql:8.0
-    container_name: prevencio_mysql
+  # Base de datos PostgreSQL principal
+  postgres:
+    image: postgres:13
+    container_name: prevencio_postgres
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: prevencion
-      MYSQL_USER: prevencion_user
-      MYSQL_PASSWORD: prevencion123
+      POSTGRES_USER: prevencion
+      POSTGRES_PASSWORD: prevencion123
+      POSTGRES_DB: prevencion
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      test: ["CMD-SHELL", "pg_isready -U prevencion -d prevencion"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Base de datos de estadísticas (opcional)
-  mysql_stats:
-    image: mysql:8.0
-    container_name: prevencio_mysql_stats
+  # Base de datos de estadísticas
+  postgres_stats:
+    image: postgres:13
+    container_name: prevencio_postgres_stats
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: stats_meditrauma
-      MYSQL_USER: stats_user
-      MYSQL_PASSWORD: stats123
+      POSTGRES_USER: stats_user
+      POSTGRES_PASSWORD: stats123
+      POSTGRES_DB: stats_meditrauma
     ports:
-      - "3307:3306"
+      - "5433:5432"
     volumes:
-      - mysql_stats_data:/var/lib/mysql
+      - postgres_stats_data:/var/lib/postgresql/data
     restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
-  # Base de datos de cola (opcional)
-  mysql_queue:
-    image: mysql:8.0
-    container_name: prevencio_mysql_queue
+  # Base de datos de cola
+  postgres_queue:
+    image: postgres:13
+    container_name: prevencio_postgres_queue
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: openqueue
-      MYSQL_USER: queue_user
-      MYSQL_PASSWORD: queue123
+      POSTGRES_USER: queue_user
+      POSTGRES_PASSWORD: queue123
+      POSTGRES_DB: openqueue
     ports:
-      - "3308:3306"
+      - "5434:5432"
     volumes:
-      - mysql_queue_data:/var/lib/mysql
+      - postgres_queue_data:/var/lib/postgresql/data
     restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 volumes:
-  mysql_data:
-  mysql_stats_data:
-  mysql_queue_data:
-
+  postgres_data:
+  postgres_stats_data:
+  postgres_queue_data:
