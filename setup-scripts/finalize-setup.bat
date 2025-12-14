@@ -37,7 +37,15 @@ if !errorlevel! equ 0 (
 )
 
 echo.
-echo [2/4] Creando tablas faltantes usando Doctrine...
+echo [2/5] Eliminando foreign keys problemáticas temporalmente...
+REM Eliminar foreign keys que pueden causar conflictos con Doctrine
+REM Intentar eliminar las foreign keys (ignorar errores si no existen)
+docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user DROP FOREIGN KEY fk_user_centro;" >nul 2>&1
+docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user DROP FOREIGN KEY fk_user_servicio;" >nul 2>&1
+echo       OK - Foreign keys eliminadas temporalmente (si existían)
+
+echo.
+echo [3/5] Creando tablas faltantes usando Doctrine...
 cd current
 
 if not exist "bin\console" (
@@ -60,7 +68,7 @@ if !errorlevel! neq 0 (
 echo       OK - Esquema actualizado
 
 echo.
-echo [3/4] Verificando tablas creadas...
+echo [4/5] Verificando tablas creadas...
 for /f "tokens=*" %%T in ('docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '\''prevencion'\'';" 2^>nul') do set NEW_TABLE_COUNT=%%T
 echo       Tablas totales ahora: !NEW_TABLE_COUNT!
 
@@ -73,7 +81,7 @@ if !errorlevel! equ 0 (
 )
 
 echo.
-echo [4/4] Limpiando cache de Symfony...
+echo [5/5] Limpiando cache de Symfony...
 if exist "var\cache\prod" (
     rmdir /s /q "var\cache\prod" >nul 2>&1
 )
