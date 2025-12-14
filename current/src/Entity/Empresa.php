@@ -36,7 +36,7 @@ class Empresa
 	private $codigoEmpresa;
 
     /**
-     * @ORM\Column(type="string", length=2000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
      */
     private $empresa;
@@ -48,7 +48,7 @@ class Empresa
     private $cif;
 
     /**
-     * @ORM\Column(type="string", length=2000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
      */
     private $marcaComercial;
@@ -155,7 +155,7 @@ class Empresa
 	private $consentimientoCesionDatos;
 
 	/**
-	 * @ORM\Column(type="string", length=2000, nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $domicilioPostal;
@@ -193,7 +193,7 @@ class Empresa
 	private $provinciaPostal;
 
 	/**
-	 * @ORM\Column(type="string", length=2000, nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $domicilioFiscal;
@@ -291,7 +291,7 @@ class Empresa
 	private $fechaBajaTecnica;
 
 	/**
-	 * @ORM\Column(type="string", length=2000, nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $motivoBajaTecnica;
@@ -308,8 +308,8 @@ class Empresa
 	 */
 	private $fechaBajaVigilanciaSalud;
 
-	/**
-     * @ORM\Column(type="string", length=2000, nullable=true)
+    /**
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $motivoBajaVigilanciaSalud;
@@ -452,19 +452,19 @@ class Empresa
 	private $anulado = false;
 
 	/**
-	 * @ORM\Column(type="string", length=2000, nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $actuaciones;
 
 	/**
-	 * @ORM\Column(type="string", length=2000, nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $avisosControl;
 
 	/**
-	 * @ORM\Column(type="string", length=2000, nullable=true)
+	 * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
 	 */
 	private $estructuraDepartamental;
@@ -502,7 +502,7 @@ class Empresa
     private $estadoEmpresaTecnico;
 
     /**
-     * @ORM\Column(type="string", length=2000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
      */
     private $logo;
@@ -532,7 +532,7 @@ class Empresa
     private $fechaBaja;
 
     /**
-     * @ORM\Column(type="string", length=2000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
      */
     private $motivoBaja;
