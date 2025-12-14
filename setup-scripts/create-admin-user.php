@@ -88,9 +88,33 @@ $userManager->updatePassword($user);
 $em->persist($user);
 $em->flush();
 
-// Establecer centro_id y servicio_id usando SQL directo si no existen métodos setter
-$stmt = $connection->prepare("UPDATE fos_user SET centro_id = 1, servicio_id = 1 WHERE username = :username");
-$stmt->execute(['username' => 'admin']);
+// Establecer centro_id y servicio_id usando SQL directo si las columnas existen
+try {
+    // Verificar si las columnas existen
+    $columns = $connection->executeQuery("SHOW COLUMNS FROM fos_user LIKE 'centro_id'")->fetchAll();
+    $hasCentroId = !empty($columns);
+    
+    $columns = $connection->executeQuery("SHOW COLUMNS FROM fos_user LIKE 'servicio_id'")->fetchAll();
+    $hasServicioId = !empty($columns);
+    
+    if ($hasCentroId || $hasServicioId) {
+        $updates = [];
+        if ($hasCentroId) {
+            $updates[] = "centro_id = 1";
+        }
+        if ($hasServicioId) {
+            $updates[] = "servicio_id = 1";
+        }
+        if (!empty($updates)) {
+            $sql = "UPDATE fos_user SET " . implode(", ", $updates) . " WHERE username = :username";
+            $stmt = $connection->prepare($sql);
+            $stmt->execute(['username' => 'admin']);
+        }
+    }
+} catch (\Exception $e) {
+    // Ignorar si las columnas no existen
+    // echo "  [INFO] Columnas centro_id/servicio_id no disponibles: " . $e->getMessage() . "\n";
+}
 
 echo "✓ Usuario 'admin' creado/actualizado correctamente\n";
 echo "\n";
