@@ -162,7 +162,7 @@ if not exist "vendor\autoload.php" (
 )
 
 echo.
-echo [7/8] Limpiando cache de Symfony...
+echo [7/10] Limpiando cache de Symfony...
 if exist "var\cache\prod" (
     rmdir /s /q "var\cache\prod" >nul 2>&1
 )
@@ -294,6 +294,21 @@ if exist "%CURRENT_PATH%\var\cache\prod" (
 echo       OK - Archivos creados y cache limpiada
 
 echo.
+echo [10/10] Configurando timeout de FastCGI...
+where php >nul 2>&1
+if !errorlevel! equ 0 (
+    for /f "tokens=*" %%p in ('where php') do set PHP_PATH=%%p
+    for %%f in ("!PHP_PATH!") do set PHP_DIR=%%~dpf
+    set PHP_CGI=!PHP_DIR!php-cgi.exe
+    
+    if exist "!PHP_CGI!" (
+        %SystemRoot%\System32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='!PHP_CGI!'].activityTimeout:300" /commit:apphost >nul 2>&1
+        %SystemRoot%\System32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='!PHP_CGI!'].requestTimeout:300" /commit:apphost >nul 2>&1
+    )
+)
+echo       OK - FastCGI configurado
+
+echo.
 echo ============================================================
 echo   DEPLOYMENT COMPLETADO
 echo ============================================================
@@ -302,8 +317,10 @@ echo   Base de datos: MySQL en Docker (puerto 3306)
 echo   Aplicacion:    %APP_PATH%
 echo   URL:           http://localhost
 echo.
-echo   Para restaurar la base de datos:
-echo   restore-db.bat
+echo   Siguientes pasos:
+echo   1. Restaurar base de datos: restore-db.bat
+echo   2. Crear tablas faltantes: create-missing-tables.bat
+echo   3. Crear usuario admin: create-admin-user.bat
 echo.
 echo ============================================================
 pause

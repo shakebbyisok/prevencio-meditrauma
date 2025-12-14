@@ -7,7 +7,7 @@ echo   CREAR USUARIO ADMIN
 echo ============================================================
 echo.
 
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
 REM Verificar Docker
 docker ps >nul 2>&1
@@ -21,7 +21,7 @@ REM Verificar que MySQL esta corriendo
 docker exec prevencio_mysql mysqladmin ping -h localhost -u root -proot123 >nul 2>&1
 if !errorlevel! neq 0 (
     echo [ERROR] MySQL no esta corriendo
-    echo         Ejecuta primero: deploy.bat
+    echo         Ejecuta primero: setup-scripts\deploy.bat
     pause
     exit /b 1
 )
@@ -47,7 +47,7 @@ echo       Contraseña: admin6291
 echo.
 
 REM Ejecutar script PHP que usa el encoder de Symfony
-php create-admin-user.php
+php setup-scripts\create-admin-user.php
 if !errorlevel! neq 0 (
     echo.
     echo [ERROR] Error ejecutando el script PHP

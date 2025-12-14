@@ -106,8 +106,25 @@ if not defined QUEUE_DUMP (
 )
 
 echo.
+echo [4/4] Verificando y agregando columnas faltantes en fos_user...
+docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='prevencion' AND TABLE_NAME='fos_user' AND COLUMN_NAME='rol_id';" 2>nul | findstr /C:"0" >nul
+if !errorlevel! equ 0 (
+    echo       Agregando columna rol_id...
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user ADD COLUMN rol_id INT NOT NULL DEFAULT 1 AFTER id;" 2>nul
+)
+docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='prevencion' AND TABLE_NAME='fos_user' AND COLUMN_NAME='password_mail';" 2>nul | findstr /C:"0" >nul
+if !errorlevel! equ 0 (
+    echo       Agregando columnas relacionadas con mail...
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user ADD COLUMN password_mail VARCHAR(255) NULL, ADD COLUMN host_mail VARCHAR(255) NULL, ADD COLUMN puerto_mail VARCHAR(255) NULL, ADD COLUMN encriptacion_mail VARCHAR(255) NULL, ADD COLUMN mail VARCHAR(255) NULL, ADD COLUMN user_mail VARCHAR(255) NULL;" 2>nul
+)
+echo       OK - Columnas verificadas
+
+echo.
 echo ============================================================
 echo   RESTAURACION COMPLETADA
 echo ============================================================
+echo.
+echo   Base de datos restaurada y columnas verificadas.
+echo   Si faltan tablas, ejecuta: create-missing-tables.bat
 echo.
 pause

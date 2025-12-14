@@ -2,14 +2,14 @@
 // Script para crear usuario admin usando FOSUserBundle UserManager
 // Ejecutar: php create-admin-user.php
 
-require __DIR__.'/current/vendor/autoload.php';
+require __DIR__.'/../current/vendor/autoload.php';
 
 use Symfony\Component\Dotenv\Dotenv;
 
 // Cargar variables de entorno
-if (file_exists(__DIR__.'/current/.env')) {
+if (file_exists(__DIR__.'/../current/.env')) {
     $dotenv = new Dotenv();
-    $dotenv->load(__DIR__.'/current/.env');
+    $dotenv->load(__DIR__.'/../current/.env');
 }
 
 $kernel = new \App\Kernel($_ENV['APP_ENV'] ?? 'prod', false);
