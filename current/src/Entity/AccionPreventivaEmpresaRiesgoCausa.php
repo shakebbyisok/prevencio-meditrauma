@@ -58,7 +58,7 @@ class AccionPreventivaEmpresaRiesgoCausa
     private $empresaExterna;
 
     /**
-     * @ORM\Column(type="string", length=20000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
      */
     private $observaciones;
@@ -84,7 +84,7 @@ class AccionPreventivaEmpresaRiesgoCausa
     private $preventivaEmpresa;
 
     /**
-     * @ORM\Column(type="string", length=20000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned()
      */
     private $descripcion;
