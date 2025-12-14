@@ -30,6 +30,13 @@ foreach ($files as $file) {
             $content
         );
         
+        // Reemplazar VARCHAR(20000) con TEXT
+        $content = preg_replace(
+            '/@ORM\\\\Column\(type="string", length=20000/',
+            '@ORM\Column(type="text"',
+            $content
+        );
+        
         if ($content !== $original) {
             file_put_contents($file->getPathname(), $content);
             $fixed++;
