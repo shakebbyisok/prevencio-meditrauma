@@ -45,6 +45,9 @@ foreach ($files as $file) {
         
         // $var != valor , condición
         '/\$([a-zA-Z_][a-zA-Z0-9_]*)\s*!=\s*([^,)]+)\s*,\s*([^,)]+)/' => '\$$1 != $2 || $3',
+        
+        // str_contains($var, 'texto') , str_contains($var, 'texto')
+        '/str_contains\(\$([^,)]+),\s*([^)]+)\)\s*,\s*str_contains\(\$([^,)]+),\s*([^)]+)\)/' => 'str_contains(\$$1, $2) || str_contains(\$$3, $4)',
     ];
     
     // Aplicar reemplazos múltiples veces
