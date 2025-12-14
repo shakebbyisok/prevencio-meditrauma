@@ -7,6 +7,8 @@ $replacements = [
     // Corregir operadores OR lógicos en PHP que fueron reemplazados con comas
     "/is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)/" => "is_null($1) || is_null($2)",
     "/\$parts\[1\]\s*!=\s*'\.'\s*,\s*\$parts\[1\]/" => "\$parts[1] != '.' && \$parts[1]",
+    "/!\$([a-zA-Z_][a-zA-Z0-9_]*)\s*,\s*is_numeric\(\$\1\)/" => "!\$$1 || is_numeric(\$$1)",
+    "/!\$([a-zA-Z_][a-zA-Z0-9_]*)\s*,\s*([^,)]+)\)/" => "!\$$1 || $2)",
 ];
 
 $totalFiles = 0;
@@ -37,6 +39,12 @@ foreach ($files as $file) {
     if ($newContent !== $content) {
         $fileReplacements++;
         $content = $newContent;
+    }
+    
+    // Reemplazar !$variable , is_numeric($variable) con ||
+    $content = preg_replace("/!\$([a-zA-Z_][a-zA-Z0-9_]*)\s*,\s*is_numeric\(\$\1\)/", "!\$$1 || is_numeric(\$$1)", $content);
+    if ($content !== $originalContent) {
+        $fileReplacements++;
     }
     
     if ($content !== $originalContent) {
