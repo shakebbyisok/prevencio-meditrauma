@@ -52,6 +52,12 @@ foreach ($files as $file) {
         
         // Patrón: $var == "" , $var == 0
         "/\$([a-zA-Z_][a-zA-Z0-9_]*)\s*==\s*\"\"\s*,\s*\$\1\s*==\s*0/",
+        
+        // Patrón: $var === num1 , $var === num2 , $var === num3
+        "/\$([a-zA-Z_][a-zA-Z0-9_]*)\s*===\s*(\d+)\s*,\s*\$\1\s*===\s*(\d+)\s*,\s*\$\1\s*===\s*(\d+)/",
+        
+        // Patrón: $var === num1 , $var === num2
+        "/\$([a-zA-Z_][a-zA-Z0-9_]*)\s*===\s*(\d+)\s*,\s*\$\1\s*===\s*(\d+)/",
     ];
     
     $replacements = [
@@ -71,6 +77,8 @@ foreach ($files as $file) {
         "!\$$1 || count(\$$1) == 0",
         "\$$1 != \"\" || \$$1 != \"\"",
         "\$$1 == \"\" || \$$1 == 0",
+        "\$$1 === $2 || \$$1 === $3 || \$$1 === $4",
+        "\$$1 === $2 || \$$1 === $3",
     ];
     
     // Aplicar reemplazos múltiples veces hasta que no haya más cambios
