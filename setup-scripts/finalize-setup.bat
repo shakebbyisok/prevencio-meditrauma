@@ -37,7 +37,21 @@ if !errorlevel! equ 0 (
 )
 
 echo.
-echo [2/5] Eliminando foreign keys problemáticas temporalmente...
+echo [2/5] Limpiando datos problemáticos antes de actualizar esquema...
+REM Corregir valores de rol_id inválidos
+REM Verificar si privilegio_roles está vacía y establecer todos los rol_id a NULL si es necesario
+for /f "tokens=*" %%C in ('docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM prevencion.privilegio_roles;" 2^>nul') do set ROLE_COUNT=%%C
+if "!ROLE_COUNT!"=="0" (
+    echo       Tabla privilegio_roles vacia, estableciendo todos los rol_id a NULL...
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; UPDATE fos_user SET rol_id = NULL WHERE rol_id IS NOT NULL;" >nul 2>&1
+) else (
+    echo       Corrigiendo valores de rol_id invalidos...
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; UPDATE fos_user SET rol_id = NULL WHERE rol_id IS NOT NULL AND rol_id NOT IN (SELECT id FROM privilegio_roles);" >nul 2>&1
+)
+echo       OK - Valores de rol_id invalidos corregidos
+
+echo.
+echo [3/5] Eliminando foreign keys problemáticas temporalmente...
 REM Eliminar foreign keys que pueden causar conflictos con Doctrine
 REM Intentar eliminar las foreign keys (ignorar errores si no existen)
 docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user DROP FOREIGN KEY fk_user_centro;" >nul 2>&1
@@ -45,7 +59,7 @@ docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TA
 echo       OK - Foreign keys eliminadas temporalmente (si existían)
 
 echo.
-echo [3/5] Creando tablas faltantes usando Doctrine...
+echo [4/5] Creando tablas faltantes usando Doctrine...
 cd current
 
 if not exist "bin\console" (
@@ -68,7 +82,7 @@ if !errorlevel! neq 0 (
 echo       OK - Esquema actualizado
 
 echo.
-echo [4/5] Verificando tablas creadas...
+echo [5/6] Verificando tablas creadas...
 for /f "tokens=*" %%T in ('docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '\''prevencion'\'';" 2^>nul') do set NEW_TABLE_COUNT=%%T
 echo       Tablas totales ahora: !NEW_TABLE_COUNT!
 
@@ -81,7 +95,7 @@ if !errorlevel! equ 0 (
 )
 
 echo.
-echo [5/5] Limpiando cache de Symfony...
+echo [6/6] Limpiando cache de Symfony...
 if exist "var\cache\prod" (
     rmdir /s /q "var\cache\prod" >nul 2>&1
 )
