@@ -35,8 +35,8 @@ if !errorlevel! neq 0 (
 )
 
 REM Verificar que existe el script PHP
-if not exist "create-admin-user.php" (
-    echo [ERROR] No se encuentra create-admin-user.php
+if not exist "setup-scripts\create-admin-user.php" (
+    echo [ERROR] No se encuentra setup-scripts\create-admin-user.php
     pause
     exit /b 1
 )
