@@ -21,6 +21,9 @@ foreach ($files as $file) {
     
     // Buscar patrones específicos conocidos primero
     $specificPatterns = [
+        // is_null(...) , is_null(...) , is_null(...)
+        '/is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)/' => 'is_null($1) || is_null($2) || is_null($3)',
+        
         // is_null(...) , is_null(...)
         '/is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)/' => 'is_null($1) || is_null($2)',
         
