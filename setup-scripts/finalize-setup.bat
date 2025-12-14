@@ -39,16 +39,25 @@ if !errorlevel! equ 0 (
 echo.
 echo [2/5] Limpiando datos problemáticos antes de actualizar esquema...
 REM Corregir valores de rol_id inválidos
-REM Verificar si privilegio_roles está vacía y establecer todos los rol_id a NULL si es necesario
+REM Primero modificar la columna para permitir NULL, luego establecer valores inválidos a NULL
 for /f "tokens=*" %%C in ('docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM prevencion.privilegio_roles;" 2^>nul') do set ROLE_COUNT=%%C
 if "!ROLE_COUNT!"=="0" (
-    echo       Tabla privilegio_roles vacia, estableciendo todos los rol_id a NULL...
-    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; UPDATE fos_user SET rol_id = NULL WHERE rol_id IS NOT NULL;" >nul 2>&1
+    echo       Tabla privilegio_roles vacia, modificando columna rol_id para permitir NULL...
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user MODIFY COLUMN rol_id INT DEFAULT NULL; UPDATE fos_user SET rol_id = NULL WHERE rol_id IS NOT NULL;" >nul 2>&1
+    if !errorlevel! neq 0 (
+        echo [WARN] No se pudo modificar la columna rol_id, continuando...
+    ) else (
+        echo       OK - Columna rol_id modificada y valores establecidos a NULL
+    )
 ) else (
-    echo       Corrigiendo valores de rol_id invalidos...
-    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; UPDATE fos_user SET rol_id = NULL WHERE rol_id IS NOT NULL AND rol_id NOT IN (SELECT id FROM privilegio_roles);" >nul 2>&1
+    echo       Modificando columna rol_id para permitir NULL y corrigiendo valores invalidos...
+    docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TABLE fos_user MODIFY COLUMN rol_id INT DEFAULT NULL; UPDATE fos_user SET rol_id = NULL WHERE rol_id IS NOT NULL AND rol_id NOT IN (SELECT id FROM privilegio_roles);" >nul 2>&1
+    if !errorlevel! neq 0 (
+        echo [WARN] No se pudo modificar la columna rol_id, continuando...
+    ) else (
+        echo       OK - Columna rol_id modificada y valores invalidos corregidos
+    )
 )
-echo       OK - Valores de rol_id invalidos corregidos
 
 echo.
 echo [3/5] Eliminando foreign keys problemáticas temporalmente...
