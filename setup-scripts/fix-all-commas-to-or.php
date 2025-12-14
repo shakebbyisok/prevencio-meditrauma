@@ -48,6 +48,9 @@ foreach ($files as $file) {
         
         // str_contains($var, 'texto') , str_contains($var, 'texto')
         '/str_contains\(\$([^,)]+),\s*([^)]+)\)\s*,\s*str_contains\(\$([^,)]+),\s*([^)]+)\)/' => 'str_contains(\$$1, $2) || str_contains(\$$3, $4)',
+        
+        // str_contains(strtolower($var['key']), 'texto') , str_contains(strtolower($var['key']), 'texto')
+        '/str_contains\(strtolower\(\$([^)]+)\)\s*,\s*([^)]+)\)\s*,\s*str_contains\(strtolower\(\$([^)]+)\)\s*,\s*([^)]+)\)/' => 'str_contains(strtolower(\$$1), $2) || str_contains(strtolower(\$$3), $4)',
     ];
     
     // Aplicar reemplazos múltiples veces
