@@ -43,6 +43,10 @@ foreach ($files as $file) {
     
     // Reemplazar !$variable , is_numeric($variable) con ||
     $content = preg_replace("/!\$([a-zA-Z_][a-zA-Z0-9_]*)\s*,\s*is_numeric\(\$\1\)/", "!\$$1 || is_numeric(\$$1)", $content);
+    
+    // Reemplazar !$objeto->metodo() , !$objeto->metodo() con ||
+    $content = preg_replace("/!\$([a-zA-Z_][a-zA-Z0-9_]*)->([a-zA-Z_][a-zA-Z0-9_]*\(\))\s*,\s*!\$\1->([a-zA-Z_][a-zA-Z0-9_]*\(\))/", "!\$$1->$2 || !\$$1->$3", $content);
+    
     if ($content !== $originalContent) {
         $fileReplacements++;
     }
