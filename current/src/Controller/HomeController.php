@@ -23,6 +23,11 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('change_password_otic');
         }
         $rol = $user->getRol();
+        if ($rol === null) {
+            // Si el usuario no tiene rol asignado, redirigir a una página de error o asignar un rol por defecto
+            $this->addFlash('error', 'No tienes un rol asignado. Por favor, contacta con el administrador.');
+            return $this->redirectToRoute('fos_user_security_logout');
+        }
         $rolId = $rol->getId();
 
         $id = $usuario->getId();
