@@ -21,8 +21,14 @@ foreach ($files as $file) {
     
     // Buscar patrones específicos conocidos primero
     $specificPatterns = [
-        // is_null(...) , is_null(...) , is_null(...)
+        // is_null(...) , is_null(...) , is_null(...) - patrón más flexible que incluye ->
         '/is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)/' => 'is_null($1) || is_null($2) || is_null($3)',
+        
+        // Patrón específico para métodos encadenados como $obj->method() , $obj->method()
+        '/\$([a-zA-Z_][a-zA-Z0-9_]*)->([a-zA-Z_][a-zA-Z0-9_]*\(\))\s*===\s*(\d+)\s*,\s*\$\1->([a-zA-Z_][a-zA-Z0-9_]*\(\))\s*===\s*(\d+)\s*,\s*\$\1->([a-zA-Z_][a-zA-Z0-9_]*\(\))\s*===\s*(\d+)/' => '\$$1->$2 === $3 || \$$1->$4 === $5 || \$$1->$6 === $7',
+        
+        // Patrón para is_null con métodos encadenados
+        '/is_null\(\$([a-zA-Z_][a-zA-Z0-9_]*)->([a-zA-Z_][a-zA-Z0-9_]*\(\))\)\s*,\s*is_null\(\$\1->([a-zA-Z_][a-zA-Z0-9_]*\(\))\)\s*,\s*is_null\(\$\1->([a-zA-Z_][a-zA-Z0-9_]*\(\))\)/' => 'is_null(\$$1->$2()) || is_null(\$$1->$3()) || is_null(\$$1->$4())',
         
         // is_null(...) , is_null(...)
         '/is_null\(([^)]+)\)\s*,\s*is_null\(([^)]+)\)/' => 'is_null($1) || is_null($2)',
