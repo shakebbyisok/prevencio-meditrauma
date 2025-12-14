@@ -68,9 +68,16 @@ docker exec prevencio_mysql mysql -u root -proot123 -e "USE prevencion; ALTER TA
 echo       OK - Foreign keys eliminadas temporalmente (si existían)
 
 echo.
-echo [4/5] Creando tablas faltantes usando Doctrine...
+echo [4/5] Limpiando cache de Doctrine antes de actualizar esquema...
 cd current
+if exist "var\cache\prod" (
+    rmdir /s /q "var\cache\prod" >nul 2>&1
+)
+mkdir "var\cache\prod" >nul 2>&1
+echo       OK - Cache limpiado
 
+echo.
+echo [5/6] Creando tablas faltantes usando Doctrine...
 if not exist "bin\console" (
     echo [ERROR] No se encuentra bin\console
     echo         Asegurate de estar en el directorio correcto
@@ -78,9 +85,21 @@ if not exist "bin\console" (
     exit /b 1
 )
 
+REM Primero ver qué cambios intenta hacer
+echo       Verificando cambios necesarios...
+php bin/console doctrine:schema:update --dump-sql --env=prod --no-interaction | findstr /C:"rol_id" >nul 2>&1
+if !errorlevel! equ 0 (
+    echo [WARN] Doctrine intenta modificar rol_id, limpiando cache nuevamente...
+    if exist "var\cache\prod" (
+        rmdir /s /q "var\cache\prod" >nul 2>&1
+    )
+    mkdir "var\cache\prod" >nul 2>&1
+)
+
 REM Ejecutar doctrine:schema:update --force
+REM Deshabilitar opcache temporalmente para asegurar que lea la entidad actualizada
 echo       Ejecutando doctrine:schema:update --force...
-php bin/console doctrine:schema:update --force --env=prod --no-interaction
+php -d opcache.enable=0 bin/console doctrine:schema:update --force --env=prod --no-interaction
 if !errorlevel! neq 0 (
     echo [ERROR] Error ejecutando doctrine:schema:update
     echo         Verifica los logs para mas detalles
@@ -91,7 +110,7 @@ if !errorlevel! neq 0 (
 echo       OK - Esquema actualizado
 
 echo.
-echo [5/6] Verificando tablas creadas...
+echo [6/7] Verificando tablas creadas...
 for /f "tokens=*" %%T in ('docker exec prevencio_mysql mysql -u root -proot123 -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '\''prevencion'\'';" 2^>nul') do set NEW_TABLE_COUNT=%%T
 echo       Tablas totales ahora: !NEW_TABLE_COUNT!
 
@@ -104,7 +123,7 @@ if !errorlevel! equ 0 (
 )
 
 echo.
-echo [6/6] Limpiando cache de Symfony...
+echo [7/7] Limpiando cache de Symfony...
 if exist "var\cache\prod" (
     rmdir /s /q "var\cache\prod" >nul 2>&1
 )
