@@ -108,7 +108,7 @@ class AnaliticasController extends AbstractController
 
             if (str_contains($file, $carpeta)) {
                 $parts = explode("/", $file);
-                if ($parts[1] != '.' || $parts[1] != '..') {
+                if ($parts[1] != '.' && $parts[1] != '..') {
                     if (!file_exists($rutaTmp . "/" . basename($file))) {
                         $sftp->get($file, $rutaTmp . "/" . basename($file));
                         $sftp->delete($file);
